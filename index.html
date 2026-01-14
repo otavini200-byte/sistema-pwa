@@ -228,9 +228,11 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwRkUUhHHU3ymcRaEyhnLki-mXuqUnOV3a3-cFa2NVm4q74c0Wd-MGdqvdQHxfx2sokFg/exec";
 
 /* ===== Debug: se der erro, aparece ===== */
-window.addEventListener("error", (e) => {
-  alert("Erro no JS: " + (e?.message || e));
+window.addEventListener("error", function(e){
+  var msg = (e && e.message) ? e.message : String(e);
+  alert("Erro no JS: " + msg);
 });
+
 
 /* ===== PWA SW ===== */
 if ("serviceWorker" in navigator) {
