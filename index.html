@@ -22,7 +22,6 @@
   --danger:#f04438;
   --radius:16px;
 }
-
 .dark{
   --bg:#0f1116;
   --card:#171a22;
@@ -33,14 +32,11 @@
   --shadow2: 0 8px 18px rgba(0,0,0,.35);
 }
 
-/* ✅ BLINDA O HIDDEN PRA NUNCA BUGAR */
+/* ✅ BLINDA O HIDDEN (não buga com display:flex) */
 .hidden{ display:none !important; }
 
 /* ✅ BLOQUEIA “ROLAGEM/BORRACHA” NO SITE TODO */
-html,body{
-  height:100%;
-  overscroll-behavior:none;
-}
+html,body{ height:100%; overscroll-behavior:none; }
 body{
   margin:0;
   background:var(--bg);
@@ -52,33 +48,21 @@ body{
 
 *{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
 
-/* ✅ container geral: animação suave de troca de telas */
-.view{
-  height:100%;
-  width:100%;
-  animation:fade .20s ease;
-}
-@keyframes fade{
-  from{ opacity:0; transform:translateY(10px); }
-  to{ opacity:1; transform:translateY(0); }
-}
+/* views */
+.view{ height:100%; width:100%; animation:fade .18s ease; }
+@keyframes fade{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-/* ---------- Toast ---------- */
+/* Toast */
 .toast{
-  position:fixed;
-  right:16px;
-  bottom:16px;
+  position:fixed; right:16px; bottom:16px;
   background:var(--card);
   border:1px solid var(--line);
   box-shadow:var(--shadow2);
   padding:12px 14px;
   border-radius:14px;
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
+  display:flex; gap:10px; align-items:flex-start;
   max-width:min(420px, calc(100vw - 32px));
-  opacity:0;
-  transform:translateY(10px);
+  opacity:0; transform:translateY(10px);
   pointer-events:none;
   transition:all .18s ease;
   z-index:9999;
@@ -91,7 +75,35 @@ body{
 .toast .t-title{ font-weight:800; font-size:13px; }
 .toast .t-msg{ font-size:12px; color:var(--muted); margin-top:2px; white-space:pre-wrap; }
 
-/* ---------- Login screens ---------- */
+/* Overlay */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.25);
+  backdrop-filter: blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9998;
+  opacity:0; pointer-events:none;
+  transition:opacity .18s ease;
+}
+.overlay.show{ opacity:1; pointer-events:auto; }
+.loading-box{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px 16px;
+  box-shadow:var(--shadow2);
+  display:flex; align-items:center; gap:10px;
+}
+.spinner{
+  width:18px; height:18px; border-radius:999px;
+  border:2px solid rgba(106,75,201,.25);
+  border-top-color: var(--secondary);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg);} }
+.loading-text{ font-size:12px; color:var(--muted); }
+
+/* Auth */
 .auth{
   height:100%;
   display:flex;
@@ -130,7 +142,6 @@ input:focus,select:focus{
   border-color:rgba(106,75,201,.55);
   box-shadow:0 0 0 4px rgba(106,75,201,.12);
 }
-
 .btn{
   border:none;
   cursor:pointer;
@@ -138,11 +149,7 @@ input:focus,select:focus{
   transition:transform .12s ease, opacity .12s ease;
 }
 .btn:hover{ opacity:.92; transform:translateY(-1px); }
-.btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-  transform:none;
-}
+.btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
 .btn-primary{ background:linear-gradient(135deg,var(--secondary),var(--primary)); color:#fff; }
 .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--text); }
 .btn-danger{ background:var(--danger); color:#fff; }
@@ -161,63 +168,52 @@ input:focus,select:focus{
 }
 .login-links span:hover{ opacity:.85; }
 
-.small{ font-size:12px; color:var(--muted); margin-top:10px; white-space:pre-wrap; }
-
-.actions{
+/* ✅ Painel de erro (não explode layout) */
+.small{ margin-top:10px; display:none; }
+.small.show{ display:block; }
+.errBox{
+  border:1px solid var(--line);
+  background:rgba(240,68,56,.06);
+  padding:10px 12px;
+  border-radius:14px;
+  color:var(--danger);
+  font-size:12px;
+  line-height:1.35;
+}
+.errActions{
   display:flex;
   gap:10px;
-  margin-top:12px;
+  margin-top:8px;
   flex-wrap:wrap;
 }
-.actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
-
-/* ---------- Loading overlay (mais fluido) ---------- */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.25);
-  backdrop-filter: blur(4px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9998;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .18s ease;
-}
-.overlay.show{
-  opacity:1;
-  pointer-events:auto;
-}
-.loading-box{
-  background:var(--card);
+.errBtn{
+  width:auto;
+  padding:8px 10px;
+  border-radius:12px;
   border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px 16px;
-  box-shadow:var(--shadow2);
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.spinner{
-  width:18px; height:18px;
-  border-radius:999px;
-  border:2px solid rgba(106,75,201,.25);
-  border-top-color: var(--secondary);
-  animation:spin .8s linear infinite;
-}
-@keyframes spin{ to{ transform:rotate(360deg); } }
-.loading-text{
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:800;
   font-size:12px;
-  color:var(--muted);
 }
-
-/* ---------- App Shell ---------- */
-.app{
-  height:100%;
-  display:flex;
+.errDetails{
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px dashed var(--line);
+  background:rgba(106,75,201,.06);
+  color:var(--text);
+  font-size:12px;
+  white-space:pre-wrap;
+  max-height:160px;
+  overflow:auto;
+  display:none;
 }
+.errDetails.show{ display:block; }
 
+/* App shell */
+.app{ height:100%; display:flex; }
 .sidebar{
   width:290px;
   background:linear-gradient(180deg, #24133f, #140b25);
@@ -229,7 +225,7 @@ input:focus,select:focus{
 }
 .side-top{
   display:flex; align-items:center; justify-content:space-between;
-  padding:10px 10px;
+  padding:10px;
   background:rgba(255,255,255,.06);
   border-radius:16px;
 }
@@ -250,15 +246,13 @@ input:focus,select:focus{
 
 .nav{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
 .nav .item{
-  padding:12px 12px;
+  padding:12px;
   border-radius:16px;
   background:rgba(255,255,255,.08);
   cursor:pointer;
   user-select:none;
   transition:transform .12s ease, background .12s ease;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
 }
 .nav .item:hover{ background:rgba(255,255,255,.14); transform:translateY(-1px); }
 .nav .item.active{ background:rgba(255,255,255,.22); }
@@ -266,7 +260,6 @@ input:focus,select:focus{
 
 .side-bottom{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
 
-/* Main sem scroll */
 .main{
   flex:1;
   height:100%;
@@ -317,7 +310,7 @@ input:focus,select:focus{
   flex:1 1 auto;
   border:1px solid var(--line);
   border-radius:14px;
-  overflow:auto;
+  overflow:auto;                 /* ✅ único scroll permitido */
   -webkit-overflow-scrolling: touch;
   min-height:0;
 }
@@ -346,6 +339,13 @@ table.sheet{ width:100%; border-collapse:collapse; }
   background:rgba(106,75,201,.10);
   box-shadow: inset 0 0 0 2px rgba(106,75,201,.22);
 }
+
+.actions{
+  display:flex; gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
 </style>
 </head>
 
@@ -368,7 +368,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
   </div>
 </div>
 
-<!-- ✅ VIEWS (controle central) -->
+<!-- VIEWS -->
 <div id="view_login" class="view auth">
   <div class="login-card">
     <div class="brand">
@@ -393,7 +393,14 @@ table.sheet{ width:100%; border-collapse:collapse; }
       <span onclick="toggleSenha()">👁 Ver senha</span>
     </div>
 
-    <div class="small" id="statusLogin"></div>
+    <div class="small" id="statusLogin">
+      <div class="errBox" id="errMsg">—</div>
+      <div class="errActions">
+        <button class="errBtn" onclick="toggleErrDetails()">Ver detalhes</button>
+        <button class="errBtn" onclick="limparErro()">Fechar</button>
+      </div>
+      <div class="errDetails" id="errDetails">—</div>
+    </div>
   </div>
 </div>
 
@@ -603,8 +610,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbw9QhuCIvuLHeEgtHUfIXHv7Cnj6CbGg2N9U8mt9JWkZbfauUhy2AZBxz25VGfN21r65Q/exec";
+const API_URL = "COLE_AQUI_SUA_URL_DO_WEBAPP_EXEC";
 
+/* Estado */
 const COLUNAS_FIXAS = 9;
 let NIVEL = "";
 let USUARIO_LOGADO = "";
@@ -615,21 +623,17 @@ let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044
 /* Helpers */
 function $(id){ return document.getElementById(id); }
 
-/* ✅ Controle único de telas (sem gambiarra) */
+/* Views */
 function trocarView(nome){
-  const views = ["login","cadastro","recuperar","app"];
-  views.forEach(v => $("view_"+v).classList.add("hidden"));
+  ["login","cadastro","recuperar","app"].forEach(v => $("view_"+v).classList.add("hidden"));
   $("view_"+nome).classList.remove("hidden");
-
-  // limpar msg
-  if(nome==="login") $("statusLogin").textContent="";
+  limparErro();
 }
 
 /* Overlay */
 function loading(on, text){
-  const ov = $("overlay");
   $("overlayText").textContent = text || "Processando...";
-  ov.classList.toggle("show", !!on);
+  $("overlay").classList.toggle("show", !!on);
 }
 
 /* Toast */
@@ -642,6 +646,23 @@ function toast(type,title,msg){
   t.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* Erros limpos */
+function mostrarErro(msgCurta, detalhes=""){
+  $("statusLogin").classList.add("show");
+  $("errMsg").textContent = msgCurta || "Ocorreu um erro.";
+  $("errDetails").textContent = detalhes || "";
+  $("errDetails").classList.remove("show");
+}
+function limparErro(){
+  $("statusLogin").classList.remove("show");
+  $("errMsg").textContent = "";
+  $("errDetails").textContent = "";
+  $("errDetails").classList.remove("show");
+}
+function toggleErrDetails(){
+  $("errDetails").classList.toggle("show");
 }
 
 /* Ver senha */
@@ -685,7 +706,7 @@ function abrir(id){
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
 }
 
-/* Data e números */
+/* Números */
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 function normalizeQTD(str){
   const s=(str||"0").toString().trim();
@@ -693,7 +714,7 @@ function normalizeQTD(str){
   if(isNaN(v)) v=0;
   return v;
 }
-function absQTDNumFromText(txt){ return Math.abs(normalizeQTD(txt)); } // ✅ sem negativo
+function absQTDNumFromText(txt){ return Math.abs(normalizeQTD(txt)); }
 function formatQtdTxtFromNum(n){
   if (Number.isInteger(n)) return String(n);
   let s = n.toFixed(3).replace(".", ",");
@@ -708,31 +729,37 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* ✅ API (COM DETECTOR DE HTML) */
+/* ✅ API blindada (não exibe HTML gigante) */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
 
-  const r = await fetch(API_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"text/plain;charset=utf-8" },
-    body: payload,
-    redirect:"follow"
-  });
-
-  const txt = await r.text();
-
-  // se voltar HTML (permissão do Google) ele avisa direto
-  if (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html")) {
-    throw new Error(
-      "A API retornou HTML (provável permissão/Deploy do Apps Script).\n" +
-      "Deploy > Web app > Who has access = Anyone.\n" +
-      "Depois cole a NOVA URL /exec no API_URL."
-    );
+  let r, txt;
+  try{
+    r = await fetch(API_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: payload,
+      redirect:"follow"
+    });
+    txt = await r.text();
+  }catch(e){
+    throw new Error("Sem conexão com a API. Verifique internet ou URL /exec.");
   }
 
-  if(!r.ok) throw new Error("HTTP "+r.status+" :: "+txt.slice(0,200));
-  try{ return JSON.parse(txt); }
-  catch(e){ throw new Error("Resposta não-JSON: "+txt.slice(0,200)); }
+  // se voltar HTML (permissão do Google), corta
+  if (txt && (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html"))){
+    throw new Error("API retornou HTML (Deploy/Permissão). Publique como Web App: Anyone e use a URL /exec.");
+  }
+
+  if(!r.ok){
+    throw new Error("Falha na API (HTTP "+r.status+").");
+  }
+
+  try{
+    return JSON.parse(txt);
+  }catch(e){
+    throw new Error("API respondeu formato inválido (não JSON).");
+  }
 }
 
 /* Planilha */
@@ -805,7 +832,7 @@ function salvarCfgTransfer(){
   toast("ok","Salvo","Outro Local atualizado.");
 }
 
-/* Permissões */
+/* Permissões UI */
 function aplicarPermissoesUI(){
   $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
   $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
@@ -839,7 +866,7 @@ async function getLocalPorItem(codigoItem){
   const res=await api("cod_get_local", code);
   if(res.ok && res.found) return res.value;
 
-  const local=prompt(`LOCAL não cadastrado para item "${code}" (COD D/E).\nDigite o LOCAL (ex: 164):`);
+  const local=prompt(`LOCAL não cadastrado para item "${code}".\nDigite o LOCAL (ex: 164):`);
   if(local===null) throw new Error("Cadastro de local cancelado.");
   const out=local.toString().trim();
   if(!out) throw new Error("LOCAL vazio.");
@@ -864,9 +891,9 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
-/* ✅ AUTH */
+/* AUTH */
 async function entrar(){
-  $("statusLogin").textContent="";
+  limparErro();
   const u = $("usuario").value.trim();
   const s = $("senha").value.trim();
   if(!u || !s) return toast("warn","Atenção","Preencha usuário e senha.");
@@ -875,7 +902,6 @@ async function entrar(){
   btn.disabled = true;
   const oldTxt = btn.textContent;
   btn.textContent = "Entrando...";
-
   loading(true, "Validando login...");
 
   try{
@@ -889,7 +915,6 @@ async function entrar(){
     USUARIO_LOGADO = res.usuario || u;
     PERMS = res.perms || PERMS;
 
-    // ✅ troca tela de verdade
     trocarView("app");
 
     $("sideUser").textContent = USUARIO_LOGADO;
@@ -910,8 +935,8 @@ async function entrar(){
     if(NIVEL==="ADMIN") adminRecarregar();
 
   }catch(err){
-    $("statusLogin").textContent = "Erro: " + err.message;
-    toast("danger","Erro",err.message);
+    mostrarErro("Não foi possível entrar agora.", err.message);
+    toast("danger","Erro", err.message);
   }finally{
     loading(false);
     btn.disabled = false;
@@ -920,6 +945,7 @@ async function entrar(){
 }
 
 async function cadastrar(){
+  limparErro();
   try{
     loading(true, "Criando conta...");
     const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
@@ -937,6 +963,7 @@ async function cadastrar(){
 }
 
 async function recuperarSenha(){
+  limparErro();
   try{
     loading(true, "Enviando email...");
     const res = await api("recuperar", $("rUser").value);
@@ -1094,27 +1121,34 @@ async function importacaoRequisicao(){
   }
 }
 
-/* ADMIN */
+/* ADMIN (mantido simples) */
 async function adminRecarregar(){
-  const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
-  if(!res.ok) return;
+  try{
+    const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
+    if(!res.ok) return;
 
-  const sel=$("admEmailUser");
-  sel.innerHTML="";
-  res.usuarios.forEach(u=>{
-    const op=document.createElement("option");
-    op.value=u.usuario; op.textContent=u.usuario;
-    sel.appendChild(op);
-  });
+    const sel=$("admEmailUser");
+    sel.innerHTML="";
+    res.usuarios.forEach(u=>{
+      const op=document.createElement("option");
+      op.value=u.usuario; op.textContent=u.usuario;
+      sel.appendChild(op);
+    });
 
-  const wrap=$("adminPermsWrap");
-  wrap.innerHTML="<div class='small'>Permissões carregadas.</div>";
+    $("adminPermsWrap").innerHTML="<div class='subhint'>Permissões carregadas.</div>";
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }
 }
 async function adminSalvarEmail(){
-  const alvo=$("admEmailUser").value;
-  const novo=$("admEmailNovo").value;
-  const r=await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
-  toast(r.ok?"ok":"danger","Admin", r.ok ? "Email atualizado!" : (r.msg||"Erro"));
+  try{
+    const alvo=$("admEmailUser").value;
+    const novo=$("admEmailNovo").value;
+    const r=await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
+    toast(r.ok?"ok":"danger","Admin", r.ok ? "Email atualizado!" : (r.msg||"Erro"));
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }
 }
 
 /* ENTER login */
@@ -1124,6 +1158,5 @@ $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 /* Inicial */
 trocarView("login");
 </script>
-
 </body>
 </html>
