@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sistema</title>
+
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#6a4bc9" />
+  <style>
+    :root{
+      --primary:#6a4bc9;
+      --secondary:#2c1a4d;
+      --bg:#f2f4f8;
+      --card:#fff;
+      --text:#333;
+      --shadow: rgba(0,0,0,0.12);
+      --line:#d7d7d7;
+    }
+    .dark{
+      --bg:#121212;
+      --card:#1e1e1e;
+      --text:#f1f1f1;
+      --shadow: rgba(0,0,0,0.5);
+      --line:#444;
+    }
+    *{box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif;}
+    body{margin:0;background:var(--bg);color:var(--text);transition:all .25s;}
+    body.lock{overflow:hidden;}
+
+    input, select{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      outline:none;
+      background:var(--card);
+      color:var(--text);
+    }
+    input:focus, select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(106,75,201,0.18);}
+
+    button{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      cursor:pointer;
+      transition:transform .15s, opacity .15s;
+      margin-top:6px;
+    }
+    button:hover{opacity:0.92;transform:translateY(-1px);}
+    .btn-danger{background:#c0392b;}
+    .btn-ghost{
+      background:transparent;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.25);
+    }
+    .row{display:flex;gap:10px;flex-wrap:wrap;}
+    .row > *{flex:1;min-width:160px;}
+
+    /* LOGIN */
+    .login{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+    .login-card{
+      background:var(--card);
+      padding:36px;
+      width:390px;
+      border-radius:16px;
+      box-shadow:0 14px 40px var(--shadow);
+      transition:transform .2s;
+    }
+    .login-card:hover{transform:translateY(-3px);}
+    .login-card h2{text-align:center;margin:0 0 18px 0;}
+    .login-links{text-align:center;margin-top:12px;font-size:13px;}
+    .login-links span{cursor:pointer;color:var(--secondary);margin:0 6px;}
+    .login-links span:hover{color:var(--primary);}
+
+    /* SISTEMA */
+    .hidden{display:none;}
+    .sistema{display:flex;min-height:100vh;}
+    .sidebar{
+      width:270px;
+      background:linear-gradient(180deg,var(--primary),#1b0f30);
+      color:#fff;
+      padding:18px;
+      position:relative;
+    }
+    .sidebar h3{text-align:center;margin:6px 0 14px 0;}
+    .menu div{
+      padding:12px;
+      margin-bottom:10px;
+      background:rgba(255,255,255,.12);
+      border-radius:10px;
+      text-align:center;
+      cursor:pointer;
+      transition:all .15s;
+      user-select:none;
+    }
+    .menu div:hover{background:rgba(255,255,255,.22);}
+    .menu.inferior{position:absolute;bottom:18px;width:234px;}
+
+    .conteudo{flex:1;padding:26px;}
+    .box{
+      background:var(--card);
+      padding:22px;
+      border-radius:16px;
+      box-shadow:0 10px 26px var(--shadow);
+      max-width:1300px;
+      opacity:0;
+      transform:translateY(10px);
+      transition:all .22s;
+    }
+    .box.show{opacity:1;transform:translateY(0);}
+
+    .tabela-container{
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:auto;
+      min-height:260px;
+      background:rgba(255,255,255,0.35);
+    }
+    .dark .tabela-container{background:rgba(0,0,0,0.12);}
+    .tabela-colagem{width:100%;border-collapse:collapse;}
+    .tabela-colagem td{
+      border:1px solid var(--line);
+      padding:7px;
+      font-size:13px;
+      min-width:110px;
+    }
+    .tabela-colagem td:focus{outline:none;background:rgba(106,75,201,0.10);}
+
+    .hint{font-size:12px;opacity:.78;margin-top:10px}
+    .small{font-size:12px;opacity:.8}
+
+    .table-admin{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    .table-admin th, .table-admin td{
+      border:1px solid var(--line);
+      padding:8px;
+      font-size:13px;
+    }
+    .table-admin th{background:rgba(106,75,201,0.10);text-align:left;}
+  </style>
+</head>
+
+<body class="lock">
+  <!-- LOGIN -->
+  <div class="login" id="loginBox">
+    <div class="login-card">
+      <h2>🔐 Login</h2>
+      <input id="usuario" placeholder="Usuário">
+      <input id="senha" type="password" placeholder="Senha">
+      <button id="btnEntrar">Entrar</button>
+
+      <div class="login-links">
+        <span id="lnkCadastro">Criar conta</span> |
+        <span id="lnkRecuperar">Recuperar senha</span> |
+        <span id="lnkVerSenha">👁 Ver senha</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CADASTRO -->
+  <div class="login hidden" id="cadastro">
+    <div class="login-card">
+      <h2>Criar conta</h2>
+      <input id="cUser" placeholder="Usuário">
+      <input id="cSenha" placeholder="Senha">
+      <input id="cEmail" placeholder="Email">
+      <button id="btnCadastrar">Cadastrar</button>
+      <button id="btnVoltarCad">Voltar</button>
+    </div>
+  </div>
+
+  <!-- RECUPERAR -->
+  <div class="login hidden" id="recuperar">
+    <div class="login-card">
+      <h2>Recuperar senha</h2>
+      <input id="rUser" placeholder="Usuário">
+      <button id="btnRecuperar">Enviar email</button>
+      <button id="btnVoltarRec">Voltar</button>
+    </div>
+  </div>
+
+  <!-- SISTEMA -->
+  <div class="sistema hidden" id="sistema">
+    <div class="sidebar">
+      <h3>Sistema</h3>
+
+      <div class="menu" id="menuPrincipal">
+        <div id="m_transferencia">📦 Transferência</div>
+        <div id="m_zeramento">🔁 Zeramento</div>
+        <div id="m_requisicao">📝 Requisição</div>
+      </div>
+
+      <div class="menu inferior" id="menuInferior">
+        <div id="btnConfig">⚙️ Configurações</div>
+      </div>
+
+      <div class="menu hidden" id="menuConfig">
+        <div id="btnConta">👤 Conta</div>
+        <div id="btnAdminMenu" class="hidden">🛡️ Admin</div>
+        <div id="btnVoltarMenu">⬅ Voltar</div>
+      </div>
+
+      <div class="menu hidden" id="menuConta">
+        <div id="btnSenha">🔑 Alterar senha</div>
+        <div id="btnTema">🌙 Tema</div>
+        <div id="btnSair">🚪 Sair</div>
+        <div id="btnVoltarConta">⬅ Voltar</div>
+      </div>
+
+      <div class="menu hidden" id="menuAdmin">
+        <div id="btnAdminEmail">✉️ Alterar Email</div>
+        <div id="btnAdminPerms">🧩 Permissões</div>
+        <div id="btnVoltarAdmin">⬅ Voltar</div>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <div class="box hidden" id="transferencia">
+        <h2>📦 Transferência</h2>
+        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
+        <div class="row">
+          <button id="btnImpT">Importação</button>
+          <button class="btn-danger" id="btnLimparT">Limpar</button>
+        </div>
+        <div class="hint">9 colunas • converte chaves 5/6/7 via COD (A/B)</div>
+      </div>
+
+      <div class="box hidden" id="zeramento">
+        <h2>🔁 Zeramento</h2>
+        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
+        <div class="row">
+          <button id="btnImpZ">Importação</button>
+          <button class="btn-danger" id="btnLimparZ">Limpar</button>
+        </div>
+        <div class="hint">qtd1&gt;qtd2 → S/5906 • qtd2&gt;qtd1 → E/1905</div>
+      </div>
+
+      <div class="box hidden" id="requisicao">
+        <h2>📝 Requisição</h2>
+        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
+        <div class="row">
+          <button id="btnImpR">Importação</button>
+          <button class="btn-danger" id="btnLimparR">Limpar</button>
+        </div>
+        <div class="hint">
+          Cole: Pedido | Cliente | CódigoItem | Chave5 | Chave6 | Chave7 | Qtd<br>
+          (chave 5/6/7 não converte; local vem da COD D/E)
+        </div>
+      </div>
+
+      <div class="box hidden" id="tema">
+        <h2>🌙 Tema</h2>
+        <div class="row">
+          <button id="btnClaro">Claro</button>
+          <button id="btnEscuro">Escuro</button>
+        </div>
+      </div>
+
+      <div class="box hidden" id="senhaBox">
+        <h2>🔑 Alterar senha</h2>
+        <input id="novaSenha" placeholder="Nova senha">
+        <input id="confirmaSenha" placeholder="Confirmar senha">
+        <button id="btnSalvarSenha">Salvar</button>
+        <div class="small">Backend de troca de senha não foi implementado ainda.</div>
+      </div>
+
+      <div class="box hidden" id="adminEmail">
+        <h2>✉️ Alterar Email (Admin)</h2>
+        <div class="row">
+          <select id="admEmailUser"></select>
+          <input id="admEmailNovo" placeholder="Novo email">
+        </div>
+        <div class="row">
+          <button id="btnSalvarEmail">Salvar Email</button>
+          <button class="btn-danger" id="btnVoltarAE">Voltar</button>
+        </div>
+      </div>
+
+      <div class="box hidden" id="adminPerms">
+        <h2>🧩 Permissões (Admin)</h2>
+        <div class="small">Defina EDITAR / VISUALIZAR / BLOQUEAR</div>
+        <div id="adminPermsWrap"></div>
+        <div class="row">
+          <button id="btnReloadAdmin">Recarregar</button>
+          <button class="btn-danger" id="btnVoltarAP">Voltar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =========================
+   1) COLE AQUI SUA URL /exec
+========================= */
+const API_URL = "COLE_AQUI_SUA_URL_DO_DEPLOY_EXEC";
+
+/* =========================
+   2) Chamada API (CORS-safe)
+========================= */
+async function api(action, ...args){
+  const payload = JSON.stringify({ action, args });
+  const r = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: payload
+  });
+  const data = await r.json();
+  return data;
+}
+
+/* ===== Estado ===== */
+let NIVEL = "";
+let USUARIO_LOGADO = "";
+let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+const COLUNAS_FIXAS = 9;
+const codCache = new Map();
+
+/* ===== Helpers UI ===== */
+function $(id){ return document.getElementById(id); }
+function showOnlyLogin(id){
+  ["loginBox","cadastro","recuperar"].forEach(x => $(x).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+}
+function hideAllSideMenus(){
+  ["menuPrincipal","menuInferior","menuConfig","menuConta","menuAdmin"].forEach(id=>$(id).classList.add("hidden"));
+}
+function openConfig(){ hideAllSideMenus(); $("menuConfig").classList.remove("hidden"); }
+function openConta(){ hideAllSideMenus(); $("menuConta").classList.remove("hidden"); }
+function openAdmin(){ hideAllSideMenus(); $("menuAdmin").classList.remove("hidden"); }
+function backMain(){ hideAllSideMenus(); $("menuPrincipal").classList.remove("hidden"); $("menuInferior").classList.remove("hidden"); }
+
+function abrir(boxId){
+  document.querySelectorAll(".box").forEach(b=>{ b.classList.remove("show"); b.classList.add("hidden"); });
+  const box = $(boxId);
+  box.classList.remove("hidden");
+  setTimeout(()=>box.classList.add("show"),10);
+}
+
+/* ===== Tabelas ===== */
+function criarTabela(boxId, linhas=10, colunas=9){
+  const tbody = document.querySelector(`#${boxId} .tabela-colagem tbody`);
+  tbody.innerHTML = "";
+  for(let i=0;i<linhas;i++){
+    const tr = document.createElement("tr");
+    for(let j=0;j<colunas;j++){
+      const td = document.createElement("td");
+      td.contentEditable = "true";
+      td.addEventListener("paste", handlePaste);
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+function limparTabela(boxId){ criarTabela(boxId, 10, COLUNAS_FIXAS); }
+
+function handlePaste(e){
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  const rows = text.split(/\r?\n/).filter(r => r !== "");
+  const startCell = e.target;
+  const tr = startCell.parentElement;
+  const tbody = tr.parentElement;
+
+  const rowIndex = Array.from(tbody.rows).indexOf(tr);
+  const colIndex = Array.from(tr.cells).indexOf(startCell);
+
+  rows.forEach((r, i)=>{
+    const cols = r.split(/\t/);
+    let targetRow = tbody.rows[rowIndex + i];
+    if(!targetRow){
+      targetRow = tbody.insertRow();
+      for(let k=0;k<COLUNAS_FIXAS;k++){
+        const td = targetRow.insertCell();
+        td.contentEditable = "true";
+        td.addEventListener("paste", handlePaste);
+      }
+    }
+    cols.forEach((c, j)=>{
+      const td = targetRow.cells[colIndex + j];
+      if(td) td.innerText = c;
+    });
+  });
+}
+
+/* ===== Utils ===== */
+function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
+function normalizeQTD(str){
+  const s = (str || "0").toString().trim();
+  let v = parseFloat(s.replace(/\./g,"").replace(",", "."));
+  if(isNaN(v)) v = 0;
+  return v;
+}
+function baixarComoTXT(nome, texto){
+  const blob = new Blob([texto], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nome + ".txt";
+  a.click();
+}
+
+/* ===== Permissões UI ===== */
+function setBoxReadOnly(boxId, ro){
+  document.querySelectorAll(`#${boxId} .tabela-colagem td`).forEach(td=>td.contentEditable = (!ro).toString());
+}
+function aplicarPermissoesUI(){
+  $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
+  $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
+  $("m_requisicao").style.display = (PERMS.requisicao==="BLOQUEAR") ? "none" : "";
+
+  if(PERMS.transferencia === "VISUALIZAR") setBoxReadOnly("transferencia", true);
+  if(PERMS.zeramento === "VISUALIZAR") setBoxReadOnly("zeramento", true);
+  if(PERMS.requisicao === "VISUALIZAR") setBoxReadOnly("requisicao", true);
+
+  if(NIVEL === "CONSULTA"){
+    setBoxReadOnly("transferencia", true);
+    setBoxReadOnly("zeramento", true);
+    setBoxReadOnly("requisicao", true);
+  }
+
+  $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
+}
+
+/* ===== COD map (Transfer/Zeramento) ===== */
+async function mapearOuCadastrar(chave){
+  const key = (chave || "").toString().trim();
+  if(!key) return "";
+  const norm = key.toLowerCase();
+  if(codCache.has(norm)) return codCache.get(norm);
+
+  const res = await api("cod_get", key);
+  if(res.ok && res.found){
+    codCache.set(norm, res.value);
+    return res.value;
+  }
+
+  const saida = prompt(`CHAVE não cadastrada na aba COD (A/B):\n\n"${key}"\nDigite o que deve sair no TXT:`);
+  if(saida === null) throw new Error("Cadastro cancelado: " + key);
+  const out = saida.toString().trim();
+  if(!out) throw new Error("Saída vazia: " + key);
+
+  const saved = await api("cod_set", key, out);
+  if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar COD");
+
+  codCache.set(norm, out);
+  return out;
+}
+
+/* ===== Local por item (Requisição) ===== */
+async function getLocalPorItem(codigoItem){
+  const code = (codigoItem || "").toString().trim();
+  if(!code) return "";
+
+  const res = await api("cod_get_local", code);
+  if(res.ok && res.found) return res.value;
+
+  const local = prompt(`LOCAL não cadastrado para item "${code}" (COD D/E).\nDigite o LOCAL (ex: 164):`);
+  if(local === null) throw new Error("Cadastro de local cancelado.");
+  const out = local.toString().trim();
+  if(!out) throw new Error("LOCAL vazio.");
+
+  const saved = await api("cod_set_local", code, out);
+  if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar local.");
+  return out;
+}
+
+/* ===== Requisitante ===== */
+async function getRequisitantePorUsuario(usuario){
+  const u = (usuario || "").toString().trim().toLowerCase();
+  if(!u) return "74";
+
+  const res = await api("req_get", u);
+  if(res.ok && res.found) return res.value;
+
+  const req = prompt(`Requisitante não cadastrado para "${u}".\nDigite o valor (ex: 74):`);
+  if(req === null) throw new Error("Cadastro cancelado.");
+  const out = req.toString().trim();
+  if(!out) throw new Error("Requisitante vazio.");
+
+  const saved = await api("req_set", u, out);
+  if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar requisitante.");
+
+  return out;
+}
+
+/* ===== Transferência ===== */
+async function gerarLinhasTransferencia(){
+  if(PERMS.transferencia === "BLOQUEAR") throw new Error("Sem acesso à Transferência.");
+
+  const rows = document.querySelectorAll("#transferencia .tabela-colagem tbody tr");
+  const hoje = dataHoje_ptBR();
+  const saida = [];
+
+  for(const tr of rows){
+    const c = Array.from(tr.cells).map(td => (td.innerText || "").trim());
+    while(c.length < 9) c.push("");
+
+    const codigo = c[0];
+    const chave5 = c[2], chave6 = c[3], chave7 = c[4];
+    const qtd1 = normalizeQTD(c[5] || "0");
+    const qtd2 = normalizeQTD(c[6] || "0");
+    const qtd3num = normalizeQTD(c[7] || "0");
+    const qtd3txt = (c[7] || "0").toString().trim() || "0";
+    const localInformado = (c[8] || "164").toString().trim() || "164";
+
+    if(!codigo && qtd1===0 && qtd2===0 && qtd3num===0 && !chave5 && !chave6 && !chave7) continue;
+
+    const campo5 = await mapearOuCadastrar(chave5);
+    const campo6 = await mapearOuCadastrar(chave6);
+    const campo7 = await mapearOuCadastrar(chave7);
+
+    let origem = localInformado, destino = "4044";
+    if(qtd2 > qtd1){ origem = "4044"; destino = localInformado; }
+
+    const valor = (qtd3num * 0.01).toFixed(2).replace(".", ",");
+
+    saida.push(["M1","T",hoje,codigo,campo5,campo6,campo7,origem,destino,qtd3txt,"0,01",valor,"5949"].join("|"));
+  }
+
+  return saida;
+}
+
+/* ===== Zeramento ===== */
+async function gerarLinhasZeramento(){
+  if(PERMS.zeramento === "BLOQUEAR") throw new Error("Sem acesso ao Zeramento.");
+
+  const rows = document.querySelectorAll("#zeramento .tabela-colagem tbody tr");
+  const hoje = dataHoje_ptBR();
+  const saida = [];
+
+  for(const tr of rows){
+    const c = Array.from(tr.cells).map(td => (td.innerText || "").trim());
+    while(c.length < 9) c.push("");
+
+    const codigo = c[0];
+    const chave5 = c[2], chave6 = c[3], chave7 = c[4];
+    const qtd1 = normalizeQTD(c[5] || "0");
+    const qtd2 = normalizeQTD(c[6] || "0");
+    const qtd3num = normalizeQTD(c[7] || "0");
+    const qtd3txt = (c[7] || "0").toString().trim() || "0";
+    const localInformado = (c[8] || "164").toString().trim() || "164";
+
+    if(!codigo && qtd1===0 && qtd2===0 && qtd3num===0 && !chave5 && !chave6 && !chave7) continue;
+
+    const campo5 = await mapearOuCadastrar(chave5);
+    const campo6 = await mapearOuCadastrar(chave6);
+    const campo7 = await mapearOuCadastrar(chave7);
+
+    const tipo  = (qtd2 > qtd1) ? "E" : "S";
+    const final = (qtd2 > qtd1) ? "1905" : "5906";
+    const valor = (qtd3num * 0.01).toFixed(2).replace(".", ",");
+
+    saida.push(["M1",tipo,hoje,codigo,campo5,campo6,campo7,localInformado,qtd3txt,"0,01",valor,final].join("|"));
+  }
+
+  return saida;
+}
+
+/* ===== Requisição ===== */
+async function gerarLinhasRequisicao(){
+  if(PERMS.requisicao === "BLOQUEAR") throw new Error("Sem acesso à Requisição.");
+
+  const rows = document.querySelectorAll("#requisicao .tabela-colagem tbody tr");
+  const hoje = dataHoje_ptBR();
+  const requisitante = await getRequisitantePorUsuario(USUARIO_LOGADO);
+
+  const pedidos = new Map(); // pedido -> { cliente, itens: [] }
+
+  for(const tr of rows){
+    const raw = Array.from(tr.cells).map(td => (td.innerText || "").trim());
+    if(raw.every(x => !x)) continue;
+
+    const pedido = (raw[0] || "").trim();
+    const cliente = (raw[1] || "").trim();
+    const codigoItem = (raw[2] || "").trim();
+    const chave5 = (raw[3] || "").trim();
+    const chave6 = (raw[4] || "").trim();
+    const chave7 = (raw[5] || "").trim();
+    const qtdTxt  = (raw[6] || "0").toString().trim() || "0";
+
+    if(!pedido || !codigoItem) continue;
+
+    if(!pedidos.has(pedido)) pedidos.set(pedido, { cliente, itens: [] });
+    else if(!pedidos.get(pedido).cliente && cliente) pedidos.get(pedido).cliente = cliente;
+
+    pedidos.get(pedido).itens.push({ codigoItem, chave5, chave6, chave7, qtdTxt });
+  }
+
+  const saida = [];
+  for(const [pedido, obj] of pedidos.entries()){
+    const cliente = obj.cliente || "";
+
+    // R com "  -  "
+    saida.push(["R",hoje,"1","1",requisitante,"27",`${pedido}  -  ${cliente}`,pedido,"0","0"].join("|"));
+
+    for(const it of obj.itens){
+      const local = await getLocalPorItem(it.codigoItem);
+      saida.push(["I","P",it.codigoItem,it.chave5||"",it.chave6||"",it.chave7||"",it.qtdTxt,"3",local].join("|"));
+    }
+  }
+
+  return saida;
+}
+
+/* ===== Admin UI ===== */
+async function adminRecarregar(){
+  if(NIVEL !== "ADMIN") return;
+  const res = await api("admin_listarUsuarios", USUARIO_LOGADO);
+  if(!res.ok){ alert(res.msg || "Erro ao listar usuários"); return; }
+
+  const sel = $("admEmailUser");
+  sel.innerHTML = "";
+  res.usuarios.forEach(u=>{
+    const op = document.createElement("option");
+    op.value = u.usuario;
+    op.textContent = u.usuario;
+    sel.appendChild(op);
+  });
+
+  renderPermsTable(res.usuarios);
+}
+
+function renderPermsTable(users){
+  const wrap = $("adminPermsWrap");
+  wrap.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.className = "table-admin";
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Nível</th>
+        <th>Transferência</th>
+        <th>Zeramento</th>
+        <th>Requisição</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+  `;
+  const tb = document.createElement("tbody");
+
+  const niveis = ["ADMIN","OPERADOR","CONSULTA","USER"];
+  const perms = ["EDITAR","VISUALIZAR","BLOQUEAR"];
+
+  users.forEach(u=>{
+    const tr = document.createElement("tr");
+
+    const selNivel = mkSelect(niveis, u.nivel);
+    const selT = mkSelect(perms, u.perms.transferencia);
+    const selZ = mkSelect(perms, u.perms.zeramento);
+    const selR = mkSelect(perms, u.perms.requisicao);
+
+    const btn = document.createElement("button");
+    btn.textContent = "Salvar";
+    btn.onclick = async ()=>{
+      const r = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
+      alert(r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
+    };
+
+    tr.appendChild(tdText(u.usuario));
+    tr.appendChild(tdWrap(selNivel));
+    tr.appendChild(tdWrap(selT));
+    tr.appendChild(tdWrap(selZ));
+    tr.appendChild(tdWrap(selR));
+    tr.appendChild(tdWrap(btn));
+    tb.appendChild(tr);
+  });
+
+  table.appendChild(tb);
+  wrap.appendChild(table);
+
+  function mkSelect(opts, current){
+    const s = document.createElement("select");
+    opts.forEach(o=>{
+      const op = document.createElement("option");
+      op.value = o; op.textContent = o;
+      if((current||"").toUpperCase() === o) op.selected = true;
+      s.appendChild(op);
+    });
+    return s;
+  }
+  function tdText(t){ const td=document.createElement("td"); td.textContent=t; return td; }
+  function tdWrap(el){ const td=document.createElement("td"); td.appendChild(el); return td; }
+}
+
+/* ===== Eventos ===== */
+function init(){
+  // PWA Service Worker
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js");
+
+  $("lnkCadastro").onclick = ()=>showOnlyLogin("cadastro");
+  $("lnkRecuperar").onclick = ()=>showOnlyLogin("recuperar");
+  $("btnVoltarCad").onclick = ()=>showOnlyLogin("loginBox");
+  $("btnVoltarRec").onclick = ()=>showOnlyLogin("loginBox");
+
+  $("lnkVerSenha").onclick = ()=>{
+    $("senha").type = ($("senha").type === "password") ? "text" : "password";
+  };
+
+  $("btnEntrar").onclick = entrar;
+  $("usuario").addEventListener("keyup", e=>{ if(e.key==="Enter") entrar(); });
+  $("senha").addEventListener("keyup", e=>{ if(e.key==="Enter") entrar(); });
+
+  $("btnCadastrar").onclick = cadastrar;
+  $("btnRecuperar").onclick = recuperarSenha;
+
+  $("m_transferencia").onclick = ()=>abrir("transferencia");
+  $("m_zeramento").onclick = ()=>abrir("zeramento");
+  $("m_requisicao").onclick = ()=>abrir("requisicao");
+
+  $("btnConfig").onclick = openConfig;
+  $("btnVoltarMenu").onclick = backMain;
+
+  $("btnConta").onclick = openConta;
+  $("btnAdminMenu").onclick = openAdmin;
+
+  $("btnVoltarConta").onclick = openConfig;
+  $("btnVoltarAdmin").onclick = openConfig;
+
+  $("btnSenha").onclick = ()=>abrir("senhaBox");
+  $("btnTema").onclick = ()=>abrir("tema");
+  $("btnSair").onclick = logout;
+
+  $("btnClaro").onclick = ()=>document.documentElement.classList.remove("dark");
+  $("btnEscuro").onclick = ()=>document.documentElement.classList.add("dark");
+
+  $("btnImpT").onclick = async ()=>{
+    try{
+      const linhas = await gerarLinhasTransferencia();
+      if(!linhas.length) return alert("Nada para importar.");
+      baixarComoTXT("importacao_transferencia", linhas.join("\n"));
+    }catch(err){ alert("Erro: " + err.message); }
+  };
+  $("btnLimparT").onclick = ()=>limparTabela("transferencia");
+
+  $("btnImpZ").onclick = async ()=>{
+    try{
+      const linhas = await gerarLinhasZeramento();
+      if(!linhas.length) return alert("Nada para importar.");
+      baixarComoTXT("importacao_zeramento", linhas.join("\n"));
+    }catch(err){ alert("Erro: " + err.message); }
+  };
+  $("btnLimparZ").onclick = ()=>limparTabela("zeramento");
+
+  $("btnImpR").onclick = async ()=>{
+    try{
+      const linhas = await gerarLinhasRequisicao();
+      if(!linhas.length) return alert("Nada para importar.");
+      baixarComoTXT("importacao_requisicao", linhas.join("\n"));
+    }catch(err){ alert("Erro: " + err.message); }
+  };
+  $("btnLimparR").onclick = ()=>limparTabela("requisicao");
+
+  $("btnAdminEmail").onclick = ()=>abrir("adminEmail");
+  $("btnAdminPerms").onclick = ()=>abrir("adminPerms");
+  $("btnReloadAdmin").onclick = adminRecarregar;
+
+  $("btnSalvarEmail").onclick = async ()=>{
+    const alvo = $("admEmailUser").value;
+    const novo = $("admEmailNovo").value;
+    const r = await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
+    alert(r.ok ? "Email atualizado!" : (r.msg || "Erro"));
+  };
+  $("btnVoltarAE").onclick = openConfig;
+  $("btnVoltarAP").onclick = openConfig;
+
+  $("btnSalvarSenha").onclick = ()=>alert("Backend de senha ainda não implementado.");
+
+  // tela inicial
+  showOnlyLogin("loginBox");
+}
+
+async function entrar(){
+  if(API_URL.includes(https://script.google.com/macros/s/AKfycbwRkUUhHHU3ymcRaEyhnLki-mXuqUnOV3a3-cFa2NVm4q74c0Wd-MGdqvdQHxfx2sokFg/exec")) return alert("Você precisa colar sua URL /exec em API_URL no index.html");
+
+  const u = $("usuario").value;
+  const s = $("senha").value;
+
+  const res = await api("login", u, s);
+  if(!res.ok) return alert("Usuário ou senha inválidos");
+
+  NIVEL = res.nivel;
+  USUARIO_LOGADO = res.usuario;
+  PERMS = res.perms || PERMS;
+
+  document.body.classList.remove("lock");
+  $("loginBox").classList.add("hidden");
+  $("cadastro").classList.add("hidden");
+  $("recuperar").classList.add("hidden");
+
+  $("sistema").classList.remove("hidden");
+
+  criarTabela("transferencia", 10, COLUNAS_FIXAS);
+  criarTabela("zeramento", 10, COLUNAS_FIXAS);
+  criarTabela("requisicao", 10, COLUNAS_FIXAS);
+
+  aplicarPermissoesUI();
+
+  if(NIVEL === "ADMIN") await adminRecarregar();
+}
+
+async function cadastrar(){
+  const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
+  alert(res.ok ? "Conta criada!" : (res.msg || "Erro"));
+  if(res.ok) showOnlyLogin("loginBox");
+}
+
+async function recuperarSenha(){
+  const res = await api("recuperar", $("rUser").value);
+  alert(res.ok ? "Email enviado!" : (res.msg || "Erro"));
+}
+
+function logout(){
+  NIVEL=""; USUARIO_LOGADO=""; PERMS={transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+  $("sistema").classList.add("hidden");
+  $("loginBox").classList.remove("hidden");
+  document.body.classList.add("lock");
+  $("senha").value="";
+  backMain();
+}
+
+init();
+</script>
+</body>
+</html>
