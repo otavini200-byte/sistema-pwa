@@ -22,6 +22,7 @@
   --danger:#f04438;
   --radius:16px;
 }
+
 .dark{
   --bg:#0f1116;
   --card:#171a22;
@@ -32,13 +33,13 @@
   --shadow2: 0 8px 18px rgba(0,0,0,.35);
 }
 
-/* ✅ AGORA FUNCIONA DE VERDADE */
-.hidden{display:none !important;}
+/* ✅ BLINDA O HIDDEN PRA NUNCA BUGAR */
+.hidden{ display:none !important; }
 
 /* ✅ BLOQUEIA “ROLAGEM/BORRACHA” NO SITE TODO */
 html,body{
   height:100%;
-  overscroll-behavior: none;
+  overscroll-behavior:none;
 }
 body{
   margin:0;
@@ -50,7 +51,17 @@ body{
 }
 
 *{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
-</style>
+
+/* ✅ container geral: animação suave de troca de telas */
+.view{
+  height:100%;
+  width:100%;
+  animation:fade .20s ease;
+}
+@keyframes fade{
+  from{ opacity:0; transform:translateY(10px); }
+  to{ opacity:1; transform:translateY(0); }
+}
 
 /* ---------- Toast ---------- */
 .toast{
@@ -80,8 +91,8 @@ body{
 .toast .t-title{ font-weight:800; font-size:13px; }
 .toast .t-msg{ font-size:12px; color:var(--muted); margin-top:2px; white-space:pre-wrap; }
 
-/* ---------- Login (sem scroll) ---------- */
-.login{
+/* ---------- Login screens ---------- */
+.auth{
   height:100%;
   display:flex;
   align-items:center;
@@ -95,9 +106,7 @@ body{
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   padding:28px;
-  animation:fade .22s ease;
 }
-@keyframes fade{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 .brand{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
 .logo{
   width:44px; height:44px; border-radius:16px;
@@ -121,6 +130,7 @@ input:focus,select:focus{
   border-color:rgba(106,75,201,.55);
   box-shadow:0 0 0 4px rgba(106,75,201,.12);
 }
+
 .btn{
   border:none;
   cursor:pointer;
@@ -129,7 +139,7 @@ input:focus,select:focus{
 }
 .btn:hover{ opacity:.92; transform:translateY(-1px); }
 .btn:disabled{
-  opacity:.6;
+  opacity:.55;
   cursor:not-allowed;
   transform:none;
 }
@@ -153,13 +163,61 @@ input:focus,select:focus{
 
 .small{ font-size:12px; color:var(--muted); margin-top:10px; white-space:pre-wrap; }
 
-/* ---------- App Shell (sem scroll) ---------- */
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
+
+/* ---------- Loading overlay (mais fluido) ---------- */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  backdrop-filter: blur(4px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9998;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease;
+}
+.overlay.show{
+  opacity:1;
+  pointer-events:auto;
+}
+.loading-box{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px 16px;
+  box-shadow:var(--shadow2);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.spinner{
+  width:18px; height:18px;
+  border-radius:999px;
+  border:2px solid rgba(106,75,201,.25);
+  border-top-color: var(--secondary);
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.loading-text{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* ---------- App Shell ---------- */
 .app{
   height:100%;
   display:flex;
 }
 
-/* Sidebar fixa */
 .sidebar{
   width:290px;
   background:linear-gradient(180deg, #24133f, #140b25);
@@ -178,6 +236,7 @@ input:focus,select:focus{
 .side-user{ display:flex; flex-direction:column; gap:2px; }
 .side-user b{ font-size:13px; }
 .side-user span{ font-size:12px; opacity:.8; }
+
 .icon-btn{
   width:36px; height:36px;
   border-radius:14px;
@@ -207,11 +266,11 @@ input:focus,select:focus{
 
 .side-bottom{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
 
-/* Main sem scroll: quem rola é só a planilha */
+/* Main sem scroll */
 .main{
   flex:1;
   height:100%;
-  overflow:hidden;         /* ✅ bloqueia scroll aqui também */
+  overflow:hidden;
   padding:18px;
   display:flex;
   flex-direction:column;
@@ -240,7 +299,6 @@ input:focus,select:focus{
   font-size:12px;
 }
 
-/* Card ocupa o resto da tela e não cria scroll geral */
 .card{
   flex:1 1 auto;
   background:var(--card);
@@ -250,19 +308,18 @@ input:focus,select:focus{
   padding:16px;
   display:flex;
   flex-direction:column;
-  min-height:0;            /* ✅ importantíssimo para flex + overflow */
+  min-height:0;
 }
 .card h2{ font-size:16px; margin:0 0 10px 0; }
 .subhint{ font-size:12px; color:var(--muted); margin-top:10px; }
 
-/* Só aqui pode rolar */
 .sheet-wrap{
   flex:1 1 auto;
   border:1px solid var(--line);
   border-radius:14px;
-  overflow:auto;                  /* ✅ único scroll permitido */
+  overflow:auto;
   -webkit-overflow-scrolling: touch;
-  min-height:0;                   /* ✅ */
+  min-height:0;
 }
 table.sheet{ width:100%; border-collapse:collapse; }
 .sheet thead th{
@@ -289,15 +346,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
   background:rgba(106,75,201,.10);
   box-shadow: inset 0 0 0 2px rgba(106,75,201,.22);
 }
-
-.actions{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-  flex-wrap:wrap;
-  flex:0 0 auto;
-}
-.actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
 </style>
 </head>
 
@@ -312,8 +360,16 @@ table.sheet{ width:100%; border-collapse:collapse; }
   </div>
 </div>
 
-<!-- LOGIN -->
-<div class="login" id="loginBox">
+<!-- Overlay loading -->
+<div id="overlay" class="overlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div class="loading-text" id="overlayText">Processando...</div>
+  </div>
+</div>
+
+<!-- ✅ VIEWS (controle central) -->
+<div id="view_login" class="view auth">
   <div class="login-card">
     <div class="brand">
       <div class="logo"></div>
@@ -331,10 +387,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
     <button id="btnEntrar" class="btn btn-primary" onclick="entrar()">Entrar</button>
 
-    <!-- ✅ VOLTARAM A FUNCIONAR -->
     <div class="login-links">
-      <span onclick="showLogin('cadastro')">Criar conta</span> |
-      <span onclick="showLogin('recuperar')">Recuperar senha</span> |
+      <span onclick="trocarView('cadastro')">Criar conta</span> |
+      <span onclick="trocarView('recuperar')">Recuperar senha</span> |
       <span onclick="toggleSenha()">👁 Ver senha</span>
     </div>
 
@@ -342,8 +397,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
   </div>
 </div>
 
-<!-- CADASTRO -->
-<div class="login hidden" id="cadastro">
+<div id="view_cadastro" class="view auth hidden">
   <div class="login-card">
     <div class="brand">
       <div class="logo"></div>
@@ -364,13 +418,12 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
     <div class="actions">
       <button class="btn btn-primary" onclick="cadastrar()">Cadastrar</button>
-      <button class="btn btn-ghost" onclick="showLogin('loginBox')">Voltar</button>
+      <button class="btn btn-ghost" onclick="trocarView('login')">Voltar</button>
     </div>
   </div>
 </div>
 
-<!-- RECUPERAR -->
-<div class="login hidden" id="recuperar">
+<div id="view_recuperar" class="view auth hidden">
   <div class="login-card">
     <div class="brand">
       <div class="logo"></div>
@@ -385,171 +438,172 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
     <div class="actions">
       <button class="btn btn-primary" onclick="recuperarSenha()">Enviar</button>
-      <button class="btn btn-ghost" onclick="showLogin('loginBox')">Voltar</button>
+      <button class="btn btn-ghost" onclick="trocarView('login')">Voltar</button>
     </div>
   </div>
 </div>
 
-<!-- APP -->
-<div class="app hidden" id="sistema">
-  <aside class="sidebar">
-    <div class="side-top">
-      <div class="side-user">
-        <b id="sideUser">-</b>
-        <span id="sideNivel">-</span>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="icon-btn" title="Tema" onclick="toggleTema()">🌙</button>
-        <button class="icon-btn" title="Config" onclick="abrirConfig()">⚙️</button>
-      </div>
-    </div>
-
-    <div class="nav" id="menuPrincipal">
-      <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
-        <span>📦 Transferência</span><small>Editar</small>
-      </div>
-      <div id="m_zeramento" class="item" onclick="abrir('zeramento')">
-        <span>🔁 Zeramento</span><small>Editar</small>
-      </div>
-      <div id="m_requisicao" class="item" onclick="abrir('requisicao')">
-        <span>📝 Requisição</span><small>Editar</small>
-      </div>
-    </div>
-
-    <div class="nav hidden" id="menuConfig">
-      <div class="item" onclick="abrir('cfgTransfer')">
-        <span>🔁 Transferência (Locais)</span><small>Config</small>
-      </div>
-      <div id="btnAdminMenu" class="item hidden" onclick="abrir('adminPerms')">
-        <span>🛡️ Admin</span><small>Controle</small>
-      </div>
-      <div class="item" onclick="voltarMenu()">
-        <span>⬅ Voltar</span><small>Menu</small>
-      </div>
-    </div>
-
-    <div class="side-bottom">
-      <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="topbar">
-      <div class="title">
-        <b id="topTitle">Transferência</b>
-        <span id="topSubtitle">Cole seus dados e clique em Importação</span>
-      </div>
-      <div class="pill" id="pillUser">—</div>
-    </div>
-
-    <!-- TRANSFERÊNCIA -->
-    <section class="card hidden" id="transferencia">
-      <h2>📦 Transferência</h2>
-
-      <div class="sheet-wrap">
-        <table class="sheet">
-          <thead>
-            <tr>
-              <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
-              <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+<div id="view_app" class="view hidden">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="side-top">
+        <div class="side-user">
+          <b id="sideUser">-</b>
+          <span id="sideNivel">-</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-btn" title="Tema" onclick="toggleTema()">🌙</button>
+          <button class="icon-btn" title="Config" onclick="abrirConfig()">⚙️</button>
+        </div>
       </div>
 
-      <div class="actions">
-        <button class="btn btn-primary" onclick="importacaoTransferencia()">Importação</button>
-        <button class="btn btn-ghost" onclick="limparTabela('transferencia')">Limpar</button>
+      <div class="nav" id="menuPrincipal">
+        <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
+          <span>📦 Transferência</span><small>Editar</small>
+        </div>
+        <div id="m_zeramento" class="item" onclick="abrir('zeramento')">
+          <span>🔁 Zeramento</span><small>Editar</small>
+        </div>
+        <div id="m_requisicao" class="item" onclick="abrir('requisicao')">
+          <span>📝 Requisição</span><small>Editar</small>
+        </div>
       </div>
 
-      <div class="subhint">✅ Scroll bloqueado no app. Só a planilha rola. QTD3 sempre vira positivo no TXT.</div>
-    </section>
-
-    <!-- ZERAMENTO -->
-    <section class="card hidden" id="zeramento">
-      <h2>🔁 Zeramento</h2>
-
-      <div class="sheet-wrap">
-        <table class="sheet">
-          <thead>
-            <tr>
-              <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
-              <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="nav hidden" id="menuConfig">
+        <div class="item" onclick="abrir('cfgTransfer')">
+          <span>🔁 Transferência (Locais)</span><small>Config</small>
+        </div>
+        <div id="btnAdminMenu" class="item hidden" onclick="abrir('adminPerms')">
+          <span>🛡️ Admin</span><small>Controle</small>
+        </div>
+        <div class="item" onclick="voltarMenu()">
+          <span>⬅ Voltar</span><small>Menu</small>
+        </div>
       </div>
 
-      <div class="actions">
-        <button class="btn btn-primary" onclick="importacaoZeramento()">Importação</button>
-        <button class="btn btn-ghost" onclick="limparTabela('zeramento')">Limpar</button>
+      <div class="side-bottom">
+        <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="title">
+          <b id="topTitle">Transferência</b>
+          <span id="topSubtitle">Cole seus dados e clique em Importação</span>
+        </div>
+        <div class="pill" id="pillUser">—</div>
       </div>
 
-      <div class="subhint">qtd2&gt;qtd1 → “E” e final 1905, senão “S” e final 5906. QTD3 sempre positivo.</div>
-    </section>
+      <!-- TRANSFERÊNCIA -->
+      <section class="card hidden" id="transferencia">
+        <h2>📦 Transferência</h2>
 
-    <!-- REQUISIÇÃO -->
-    <section class="card hidden" id="requisicao">
-      <h2>📝 Requisição</h2>
+        <div class="sheet-wrap">
+          <table class="sheet">
+            <thead>
+              <tr>
+                <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+                <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
 
-      <div class="sheet-wrap">
-        <table class="sheet">
-          <thead>
-            <tr>
-              <th>Pedido</th><th>Cliente</th><th>Código Item</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
-              <th>Qtd</th><th>(vazio)</th><th>(vazio)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="importacaoTransferencia()">Importação</button>
+          <button class="btn btn-ghost" onclick="limparTabela('transferencia')">Limpar</button>
+        </div>
 
-      <div class="actions">
-        <button class="btn btn-primary" onclick="importacaoRequisicao()">Importação</button>
-        <button class="btn btn-ghost" onclick="limparTabela('requisicao')">Limpar</button>
-      </div>
+        <div class="subhint">✅ Sem scroll no app. Só a planilha rola. QTD3 vira sempre positivo no TXT.</div>
+      </section>
 
-      <div class="subhint">Cole vários pedidos misturados: o sistema separa pelo número do pedido.</div>
-    </section>
+      <!-- ZERAMENTO -->
+      <section class="card hidden" id="zeramento">
+        <h2>🔁 Zeramento</h2>
 
-    <!-- CFG TRANSFER -->
-    <section class="card hidden" id="cfgTransfer">
-      <h2>🔁 Transferência (Locais)</h2>
-      <label>Outro Local (ex: 4044)</label>
-      <input id="cfgLocalOutro" placeholder="4044">
-      <div class="actions">
-        <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
-        <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
-      </div>
-      <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o alternativo.</div>
-    </section>
+        <div class="sheet-wrap">
+          <table class="sheet">
+            <thead>
+              <tr>
+                <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+                <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
 
-    <!-- ADMIN -->
-    <section class="card hidden" id="adminPerms">
-      <h2>🛡️ Admin</h2>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="importacaoZeramento()">Importação</button>
+          <button class="btn btn-ghost" onclick="limparTabela('zeramento')">Limpar</button>
+        </div>
 
-      <h3 style="margin:10px 0 0 0; font-size:14px;">✉️ Alterar Email</h3>
-      <div class="actions" style="gap:10px">
-        <select id="admEmailUser" style="min-width:220px"></select>
-        <input id="admEmailNovo" placeholder="Novo email">
-      </div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="adminSalvarEmail()">Salvar Email</button>
-        <button class="btn btn-ghost" onclick="adminRecarregar()">Recarregar</button>
-      </div>
+        <div class="subhint">qtd2&gt;qtd1 → “E” e final 1905, senão “S” e final 5906. QTD3 sempre positivo.</div>
+      </section>
 
-      <h3 style="margin:16px 0 0 0; font-size:14px;">🧩 Permissões</h3>
-      <div id="adminPermsWrap"></div>
-    </section>
+      <!-- REQUISIÇÃO -->
+      <section class="card hidden" id="requisicao">
+        <h2>📝 Requisição</h2>
 
-  </main>
+        <div class="sheet-wrap">
+          <table class="sheet">
+            <thead>
+              <tr>
+                <th>Pedido</th><th>Cliente</th><th>Código Item</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+                <th>Qtd</th><th>(vazio)</th><th>(vazio)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="importacaoRequisicao()">Importação</button>
+          <button class="btn btn-ghost" onclick="limparTabela('requisicao')">Limpar</button>
+        </div>
+
+        <div class="subhint">Cole vários pedidos misturados: o sistema separa pelo número do pedido.</div>
+      </section>
+
+      <!-- CFG TRANSFER -->
+      <section class="card hidden" id="cfgTransfer">
+        <h2>🔁 Transferência (Locais)</h2>
+        <label>Outro Local (ex: 4044)</label>
+        <input id="cfgLocalOutro" placeholder="4044">
+        <div class="actions">
+          <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
+          <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
+        </div>
+        <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o alternativo.</div>
+      </section>
+
+      <!-- ADMIN -->
+      <section class="card hidden" id="adminPerms">
+        <h2>🛡️ Admin</h2>
+
+        <h3 style="margin:10px 0 0 0; font-size:14px;">✉️ Alterar Email</h3>
+        <div class="actions" style="gap:10px">
+          <select id="admEmailUser" style="min-width:220px"></select>
+          <input id="admEmailNovo" placeholder="Novo email">
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="adminSalvarEmail()">Salvar Email</button>
+          <button class="btn btn-ghost" onclick="adminRecarregar()">Recarregar</button>
+        </div>
+
+        <h3 style="margin:16px 0 0 0; font-size:14px;">🧩 Permissões</h3>
+        <div id="adminPermsWrap"></div>
+      </section>
+
+    </main>
+  </div>
 </div>
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbwVDN_9ngsTs9c7BnUVaY4j7Y8-xyOIRjezf647QCIMb-UHTRzBLirbtr6WHvInnast6w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw9QhuCIvuLHeEgtHUfIXHv7Cnj6CbGg2N9U8mt9JWkZbfauUhy2AZBxz25VGfN21r65Q/exec";
 
 const COLUNAS_FIXAS = 9;
 let NIVEL = "";
@@ -558,26 +612,36 @@ let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const codCache = new Map();
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
-/* Toast */
-let toastTimer=null;
-function toast(type,title,msg){
-  const t = document.getElementById("toast");
-  t.className = "toast " + (type||"");
-  document.getElementById("toastTitle").textContent = title||"";
-  document.getElementById("toastMsg").textContent = msg||"";
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
-}
-
 /* Helpers */
 function $(id){ return document.getElementById(id); }
 
-/* ✅ Login screens (garantido) */
-function showLogin(id){
-  ["loginBox","cadastro","recuperar"].forEach(x=>$(x).classList.add("hidden"));
-  $(id).classList.remove("hidden");
-  $("statusLogin").textContent="";
+/* ✅ Controle único de telas (sem gambiarra) */
+function trocarView(nome){
+  const views = ["login","cadastro","recuperar","app"];
+  views.forEach(v => $("view_"+v).classList.add("hidden"));
+  $("view_"+nome).classList.remove("hidden");
+
+  // limpar msg
+  if(nome==="login") $("statusLogin").textContent="";
+}
+
+/* Overlay */
+function loading(on, text){
+  const ov = $("overlay");
+  $("overlayText").textContent = text || "Processando...";
+  ov.classList.toggle("show", !!on);
+}
+
+/* Toast */
+let toastTimer=null;
+function toast(type,title,msg){
+  const t = $("toast");
+  t.className = "toast " + (type||"");
+  $("toastTitle").textContent = title||"";
+  $("toastMsg").textContent = msg||"";
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
 
 /* Ver senha */
@@ -644,7 +708,7 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* ✅ API (COM DEBUG QUANDO VOLTA HTML) */
+/* ✅ API (COM DETECTOR DE HTML) */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
 
@@ -652,22 +716,21 @@ async function api(action, ...args){
     method:"POST",
     headers:{ "Content-Type":"text/plain;charset=utf-8" },
     body: payload,
-    redirect: "follow"
+    redirect:"follow"
   });
 
   const txt = await r.text();
 
-  // ✅ Se vier HTML (Google pedindo login/permissão), trava e avisa claro
+  // se voltar HTML (permissão do Google) ele avisa direto
   if (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html")) {
     throw new Error(
-      "A API retornou HTML (provável permissão/implantação do Apps Script).\n" +
-      "No Apps Script: Deploy > Web app > Who has access: Anyone.\n" +
-      "Depois copie a NOVA URL /exec e cole no API_URL."
+      "A API retornou HTML (provável permissão/Deploy do Apps Script).\n" +
+      "Deploy > Web app > Who has access = Anyone.\n" +
+      "Depois cole a NOVA URL /exec no API_URL."
     );
   }
 
   if(!r.ok) throw new Error("HTTP "+r.status+" :: "+txt.slice(0,200));
-
   try{ return JSON.parse(txt); }
   catch(e){ throw new Error("Resposta não-JSON: "+txt.slice(0,200)); }
 }
@@ -801,7 +864,7 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
-/* ✅ AUTH (LOGIN ARRUMADO COM LOADING) */
+/* ✅ AUTH */
 async function entrar(){
   $("statusLogin").textContent="";
   const u = $("usuario").value.trim();
@@ -813,9 +876,10 @@ async function entrar(){
   const oldTxt = btn.textContent;
   btn.textContent = "Entrando...";
 
+  loading(true, "Validando login...");
+
   try{
     const res = await api("login", u, s);
-
     if(!res.ok){
       toast("danger","Login","Usuário ou senha inválidos.");
       return;
@@ -825,10 +889,8 @@ async function entrar(){
     USUARIO_LOGADO = res.usuario || u;
     PERMS = res.perms || PERMS;
 
-    $("loginBox").classList.add("hidden");
-    $("cadastro").classList.add("hidden");
-    $("recuperar").classList.add("hidden");
-    $("sistema").classList.remove("hidden");
+    // ✅ troca tela de verdade
+    trocarView("app");
 
     $("sideUser").textContent = USUARIO_LOGADO;
     $("sideNivel").textContent = NIVEL;
@@ -851,6 +913,7 @@ async function entrar(){
     $("statusLogin").textContent = "Erro: " + err.message;
     toast("danger","Erro",err.message);
   }finally{
+    loading(false);
     btn.disabled = false;
     btn.textContent = oldTxt;
   }
@@ -858,34 +921,44 @@ async function entrar(){
 
 async function cadastrar(){
   try{
+    loading(true, "Criando conta...");
     const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
     if(res.ok){
       toast("ok","Cadastro","Conta criada!");
-      showLogin("loginBox");
+      trocarView("login");
     }else{
       toast("danger","Cadastro",res.msg || "Erro");
     }
-  }catch(err){ toast("danger","Erro",err.message); }
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 async function recuperarSenha(){
   try{
+    loading(true, "Enviando email...");
     const res = await api("recuperar", $("rUser").value);
     toast(res.ok?"ok":"danger","Recuperar", res.ok ? "Email enviado!" : (res.msg || "Erro"));
-  }catch(err){ toast("danger","Erro",err.message); }
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 function sair(){
   NIVEL=""; USUARIO_LOGADO="";
-  $("sistema").classList.add("hidden");
-  showLogin("loginBox");
   $("senha").value="";
+  trocarView("login");
   toast("ok","Saiu","Você voltou para o login.");
 }
 
 /* IMPORTAÇÕES */
 async function importacaoTransferencia(){
   try{
+    loading(true, "Gerando TXT...");
     const rows=tableBody("transferencia").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
@@ -921,11 +994,16 @@ async function importacaoTransferencia(){
     if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_transferencia", out.join("\n"));
     toast("ok","Importação",`${out.length} linhas geradas.`);
-  }catch(err){ toast("danger","Erro",err.message); }
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 async function importacaoZeramento(){
   try{
+    loading(true, "Gerando TXT...");
     const rows=tableBody("zeramento").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
@@ -959,11 +1037,16 @@ async function importacaoZeramento(){
     if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_zeramento", out.join("\n"));
     toast("ok","Importação",`${out.length} linhas geradas.`);
-  }catch(err){ toast("danger","Erro",err.message); }
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 async function importacaoRequisicao(){
   try{
+    loading(true, "Gerando TXT...");
     const rows=tableBody("requisicao").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
@@ -1004,7 +1087,11 @@ async function importacaoRequisicao(){
     if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_requisicao", out.join("\n"));
     toast("ok","Importação",`${out.length} linhas geradas.`);
-  }catch(err){ toast("danger","Erro",err.message); }
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 /* ADMIN */
@@ -1035,7 +1122,7 @@ $("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 
 /* Inicial */
-showLogin("loginBox");
+trocarView("login");
 </script>
 
 </body>
