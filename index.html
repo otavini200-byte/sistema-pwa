@@ -4,7 +4,6 @@
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Sistema</title>
 
 <style>
@@ -48,7 +47,7 @@ body.lock{ overflow:hidden; }
 @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .login-card h2{ text-align:center; margin-bottom:20px; }
 .login-links{ text-align:center; margin-top:10px; font-size:13px; }
-.login-links span{ cursor:pointer; color:var(--secondary); margin:0 5px; }
+.login-links span{ cursor:pointer; color:var(--secondary); margin:0 5px; user-select:none;}
 .login-links span:hover{ opacity:.85; }
 
 /* INPUT/BUTTON */
@@ -286,12 +285,12 @@ button:hover{ opacity:.92; transform:translateY(-1px); }
 /* ========= COLE SUA URL /exec AQUI (COM ASPAS!) ========= */
 const API_URL = "https://script.google.com/macros/s/AKfycbw9QhuCIvuLHeEgtHUfIXHv7Cnj6CbGg2N9U8mt9JWkZbfauUhy2AZBxz25VGfN21r65Q/exec";
 
+/* ======== ESTADO ======== */
 const COLUNAS_FIXAS = 9;
 let NIVEL = "";
 let USUARIO_LOGADO = "";
 let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const codCache = new Map();
-
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
 /* ===== helpers ===== */
@@ -326,7 +325,6 @@ function voltarMenu(){
 }
 
 function setTema(t){ document.documentElement.classList.toggle("dark", t==="dark"); }
-
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 
 function normalizeQTD(str){
@@ -336,7 +334,7 @@ function normalizeQTD(str){
   return v;
 }
 function absQTDNumFromText(txt){
-  return Math.abs(normalizeQTD(txt)); // <-- garante positivo
+  return Math.abs(normalizeQTD(txt)); // garante positivo
 }
 function formatQtdTxtFromNum(n){
   if (Number.isInteger(n)) return String(n);
@@ -352,15 +350,35 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* ===== API ===== */
+/* ===== API COM DEBUG ===== */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
-  const r = await fetch(API_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"text/plain;charset=utf-8" },
-    body: payload
-  });
-  return await r.json();
+
+  let r;
+  try{
+    r = await fetch(API_URL, {
+      method:"POST",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: payload,
+      redirect: "follow"
+    });
+  }catch(err){
+    alert("Falha de rede (fetch):\n" + err);
+    throw err;
+  }
+
+  const txt = await r.text();
+  if(!r.ok){
+    alert("HTTP "+r.status+" "+r.statusText+"\n\nResposta:\n"+txt.slice(0,400));
+    throw new Error("HTTP "+r.status);
+  }
+
+  try{
+    return JSON.parse(txt);
+  }catch(e){
+    alert("Resposta não é JSON:\n" + txt.slice(0,400));
+    throw e;
+  }
 }
 
 /* ===== tabelas ===== */
@@ -378,7 +396,6 @@ function criarTabela(boxId, linhas=10, colunas=9){
     tbody.appendChild(tr);
   }
 }
-
 function limparTabela(boxId){ criarTabela(boxId, 10, COLUNAS_FIXAS); }
 
 function handlePaste(e){
@@ -488,9 +505,8 @@ async function getRequisitantePorUsuario(usuario){
 
 /* ===== auth ===== */
 async function entrar(){
-  // garante que URL está entre aspas (senão dá Unexpected token ':')
   if (!API_URL || API_URL.indexOf("http") !== 0) {
-    return alert("Cole a URL /exec em API_URL (com aspas).");
+    return alert("Cole sua URL /exec em API_URL (com aspas).");
   }
 
   const res = await api("login", $("usuario").value, $("senha").value);
@@ -554,7 +570,7 @@ async function importacaoTransferencia(){
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
 
-      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // <-- ABS
+      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // ABS
       if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
@@ -595,7 +611,7 @@ async function importacaoZeramento(){
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
 
-      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // <-- ABS
+      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // ABS
       if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
@@ -638,7 +654,7 @@ async function importacaoRequisicao(){
       const k6=(raw[4]||"").trim();
       const k7=(raw[5]||"").trim();
 
-      const qtdAbs = absQTDNumFromText(raw[6]||"0"); // <-- ABS
+      const qtdAbs = absQTDNumFromText(raw[6]||"0"); // ABS
       if(qtdAbs === 0) continue;
       const qtd = formatQtdTxtFromNum(qtdAbs);
 
@@ -669,7 +685,6 @@ async function adminRecarregar(){
   const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
   if(!res.ok) return;
 
-  // dropdown email
   const sel=$("admEmailUser");
   sel.innerHTML="";
   res.usuarios.forEach(u=>{
@@ -678,7 +693,6 @@ async function adminRecarregar(){
     sel.appendChild(op);
   });
 
-  // tabela permissões
   renderPermsTable(res.usuarios);
 }
 
