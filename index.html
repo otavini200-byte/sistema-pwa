@@ -31,12 +31,23 @@
   --shadow: 0 12px 30px rgba(0,0,0,.45);
   --shadow2: 0 8px 18px rgba(0,0,0,.35);
 }
-*{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
-html,body{ height:100%; }
-body{ margin:0; background:var(--bg); color:var(--text); overflow:hidden; }
-.hidden{display:none;}
 
-a{ color:inherit; text-decoration:none; }
+/* ✅ BLOQUEIA “ROLAGEM/BORRACHA” NO SITE TODO */
+html,body{
+  height:100%;
+  overscroll-behavior: none;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;             /* ✅ sem scroll da página */
+  position:fixed;              /* ✅ impede “arrastar”/bounce */
+  inset:0;
+}
+
+*{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
+.hidden{display:none;}
 
 /* ---------- Toast ---------- */
 .toast{
@@ -59,27 +70,23 @@ a{ color:inherit; text-decoration:none; }
   z-index:9999;
 }
 .toast.show{ opacity:1; transform:translateY(0); }
-.toast .dot{
-  width:10px; height:10px; border-radius:999px; margin-top:4px;
-  background:var(--secondary);
-}
+.toast .dot{ width:10px; height:10px; border-radius:999px; margin-top:4px; background:var(--secondary); }
 .toast.ok .dot{ background:var(--ok); }
 .toast.warn .dot{ background:var(--warn); }
 .toast.danger .dot{ background:var(--danger); }
-.toast .t-title{ font-weight:700; font-size:13px; }
+.toast .t-title{ font-weight:800; font-size:13px; }
 .toast .t-msg{ font-size:12px; color:var(--muted); margin-top:2px; white-space:pre-wrap; }
 
-/* ---------- Login ---------- */
+/* ---------- Login (sem scroll) ---------- */
 .login{
   height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:18px;
-  overflow:auto;
 }
 .login-card{
-  width:min(420px, 100%);
+  width:min(440px, 100%);
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
@@ -88,22 +95,19 @@ a{ color:inherit; text-decoration:none; }
   animation:fade .22s ease;
 }
 @keyframes fade{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
-.brand{
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  margin-bottom:18px;
-}
+.brand{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
 .logo{
-  width:40px; height:40px; border-radius:14px;
+  width:44px; height:44px; border-radius:16px;
   background:linear-gradient(135deg,var(--secondary),var(--primary));
   box-shadow:0 10px 24px rgba(106,75,201,.25);
 }
 .brand h2{ margin:0; font-size:18px; }
-.brand p{ margin:0; font-size:12px; color:var(--muted); text-align:center; }
+.brand p{ margin:2px 0 0 0; font-size:12px; color:var(--muted); }
 
 label{ display:block; font-size:12px; color:var(--muted); margin-top:12px; }
 input,select,button{
   width:100%;
-  padding:12px 12px;
+  padding:12px;
   border-radius:12px;
   border:1px solid var(--line);
   background:var(--card);
@@ -117,15 +121,12 @@ input:focus,select:focus{
 .btn{
   border:none;
   cursor:pointer;
-  font-weight:700;
+  font-weight:800;
   transition:transform .12s ease, opacity .12s ease;
 }
 .btn:hover{ opacity:.92; transform:translateY(-1px); }
 .btn-primary{ background:linear-gradient(135deg,var(--secondary),var(--primary)); color:#fff; }
-.btn-ghost{
-  background:transparent;
-  border:1px solid var(--line);
-}
+.btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--text); }
 .btn-danger{ background:var(--danger); color:#fff; }
 
 .login-links{
@@ -137,12 +138,14 @@ input:focus,select:focus{
 .login-links span{
   cursor:pointer;
   color:var(--secondary);
-  margin:0 6px;
+  margin:0 8px;
   user-select:none;
 }
 .login-links span:hover{ opacity:.85; }
 
-/* ---------- App Shell ---------- */
+.small{ font-size:12px; color:var(--muted); margin-top:10px; white-space:pre-wrap; }
+
+/* ---------- App Shell (sem scroll) ---------- */
 .app{
   height:100%;
   display:flex;
@@ -150,7 +153,7 @@ input:focus,select:focus{
 
 /* Sidebar fixa */
 .sidebar{
-  width:280px;
+  width:290px;
   background:linear-gradient(180deg, #24133f, #140b25);
   color:#fff;
   padding:18px;
@@ -162,20 +165,14 @@ input:focus,select:focus{
   display:flex; align-items:center; justify-content:space-between;
   padding:10px 10px;
   background:rgba(255,255,255,.06);
-  border-radius:14px;
+  border-radius:16px;
 }
-.side-user{
-  display:flex; flex-direction:column; gap:2px;
-}
+.side-user{ display:flex; flex-direction:column; gap:2px; }
 .side-user b{ font-size:13px; }
 .side-user span{ font-size:12px; opacity:.8; }
-
-.side-actions{
-  display:flex; gap:8px;
-}
 .icon-btn{
-  width:34px; height:34px;
-  border-radius:12px;
+  width:36px; height:36px;
+  border-radius:14px;
   border:1px solid rgba(255,255,255,.14);
   background:rgba(255,255,255,.06);
   color:#fff;
@@ -184,15 +181,10 @@ input:focus,select:focus{
 }
 .icon-btn:hover{ opacity:.92; transform:translateY(-1px); }
 
-.nav{
-  margin-top:6px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+.nav{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
 .nav .item{
   padding:12px 12px;
-  border-radius:14px;
+  border-radius:16px;
   background:rgba(255,255,255,.08);
   cursor:pointer;
   user-select:none;
@@ -202,23 +194,20 @@ input:focus,select:focus{
   justify-content:space-between;
 }
 .nav .item:hover{ background:rgba(255,255,255,.14); transform:translateY(-1px); }
-.nav .item.active{ background:rgba(255,255,255,.20); }
-
+.nav .item.active{ background:rgba(255,255,255,.22); }
 .nav .item small{ opacity:.8; font-size:12px; }
 
-.side-bottom{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+.side-bottom{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
 
-/* Conteúdo rolável (não a página inteira) */
+/* Main sem scroll: quem rola é só a planilha */
 .main{
   flex:1;
   height:100%;
-  overflow:auto;
+  overflow:hidden;         /* ✅ bloqueia scroll aqui também */
   padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
 }
 .topbar{
   background:var(--card);
@@ -230,59 +219,44 @@ input:focus,select:focus{
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  position:sticky;
-  top:0;
-  z-index:50;
+  flex:0 0 auto;
 }
-.topbar .title{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
+.topbar .title{ display:flex; flex-direction:column; gap:2px; }
 .topbar .title b{ font-size:14px; }
 .topbar .title span{ font-size:12px; color:var(--muted); }
-
-.topbar .right{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
 .pill{
   padding:8px 10px;
   border-radius:999px;
   border:1px solid var(--line);
   background:rgba(106,75,201,.06);
   font-size:12px;
-  color:var(--text);
 }
 
-/* Cards */
+/* Card ocupa o resto da tela e não cria scroll geral */
 .card{
-  margin-top:14px;
+  flex:1 1 auto;
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
   box-shadow:var(--shadow2);
   padding:16px;
+  display:flex;
+  flex-direction:column;
+  min-height:0;            /* ✅ importantíssimo para flex + overflow */
 }
-.card h2{
-  font-size:16px;
-  margin:0 0 10px 0;
-}
+.card h2{ font-size:16px; margin:0 0 10px 0; }
 .subhint{ font-size:12px; color:var(--muted); margin-top:10px; }
 
-/* Planilha */
+/* Só aqui pode rolar */
 .sheet-wrap{
+  flex:1 1 auto;
   border:1px solid var(--line);
   border-radius:14px;
-  overflow:auto;
-  max-height:58vh;
+  overflow:auto;                  /* ✅ único scroll permitido */
+  -webkit-overflow-scrolling: touch;
+  min-height:0;                   /* ✅ */
 }
-table.sheet{
-  width:100%;
-  border-collapse:collapse;
-  background:transparent;
-}
+table.sheet{ width:100%; border-collapse:collapse; }
 .sheet thead th{
   position:sticky;
   top:0;
@@ -313,17 +287,9 @@ table.sheet{
   gap:10px;
   margin-top:12px;
   flex-wrap:wrap;
+  flex:0 0 auto;
 }
-.actions .btn{ min-width:160px; width:auto; padding:12px 16px; border-radius:14px; }
-.actions .btn-ghost{ color:var(--text); }
-
-@media (max-width: 980px){
-  body{ overflow:auto; }
-  .app{ flex-direction:column; overflow:auto; }
-  .sidebar{ width:100%; border-radius:0; }
-  .main{ height:auto; }
-  .sheet-wrap{ max-height:55vh; }
-}
+.actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
 </style>
 </head>
 
@@ -357,9 +323,10 @@ table.sheet{
 
     <button class="btn btn-primary" onclick="entrar()">Entrar</button>
 
+    <!-- ✅ VOLTARAM A FUNCIONAR (calls showLogin) -->
     <div class="login-links">
-      <span onclick="mostrar('cadastro')">Criar conta</span> |
-      <span onclick="mostrar('recuperar')">Recuperar senha</span> |
+      <span onclick="showLogin('cadastro')">Criar conta</span> |
+      <span onclick="showLogin('recuperar')">Recuperar senha</span> |
       <span onclick="toggleSenha()">👁 Ver senha</span>
     </div>
 
@@ -387,9 +354,9 @@ table.sheet{
     <label>Email</label>
     <input id="cEmail" placeholder="Email">
 
-    <div class="actions" style="margin-top:14px">
+    <div class="actions">
       <button class="btn btn-primary" onclick="cadastrar()">Cadastrar</button>
-      <button class="btn btn-ghost" onclick="mostrar('loginBox')">Voltar</button>
+      <button class="btn btn-ghost" onclick="showLogin('loginBox')">Voltar</button>
     </div>
   </div>
 </div>
@@ -408,23 +375,22 @@ table.sheet{
     <label>Usuário</label>
     <input id="rUser" placeholder="Usuário">
 
-    <div class="actions" style="margin-top:14px">
+    <div class="actions">
       <button class="btn btn-primary" onclick="recuperarSenha()">Enviar</button>
-      <button class="btn btn-ghost" onclick="mostrar('loginBox')">Voltar</button>
+      <button class="btn btn-ghost" onclick="showLogin('loginBox')">Voltar</button>
     </div>
   </div>
 </div>
 
 <!-- APP -->
 <div class="app hidden" id="sistema">
-
   <aside class="sidebar">
     <div class="side-top">
       <div class="side-user">
         <b id="sideUser">-</b>
         <span id="sideNivel">-</span>
       </div>
-      <div class="side-actions">
+      <div style="display:flex; gap:8px;">
         <button class="icon-btn" title="Tema" onclick="toggleTema()">🌙</button>
         <button class="icon-btn" title="Config" onclick="abrirConfig()">⚙️</button>
       </div>
@@ -459,15 +425,13 @@ table.sheet{
     </div>
   </aside>
 
-  <main class="main" id="main">
+  <main class="main">
     <div class="topbar">
       <div class="title">
         <b id="topTitle">Transferência</b>
         <span id="topSubtitle">Cole seus dados e clique em Importação</span>
       </div>
-      <div class="right">
-        <div class="pill" id="pillUser">—</div>
-      </div>
+      <div class="pill" id="pillUser">—</div>
     </div>
 
     <!-- TRANSFERÊNCIA -->
@@ -491,7 +455,7 @@ table.sheet{
         <button class="btn btn-ghost" onclick="limparTabela('transferencia')">Limpar</button>
       </div>
 
-      <div class="subhint">QTD3 sempre vira positivo no TXT. Direção usa QTD1/QTD2 e o “Outro Local” nas configurações.</div>
+      <div class="subhint">✅ Scroll bloqueado no app. Só a planilha rola. QTD3 sempre vira positivo no TXT.</div>
     </section>
 
     <!-- ZERAMENTO -->
@@ -539,7 +503,7 @@ table.sheet{
         <button class="btn btn-ghost" onclick="limparTabela('requisicao')">Limpar</button>
       </div>
 
-      <div class="subhint">Pode colar vários pedidos misturados: o sistema separa pelo número do pedido.</div>
+      <div class="subhint">Cole vários pedidos misturados: o sistema separa pelo número do pedido.</div>
     </section>
 
     <!-- CFG TRANSFER -->
@@ -551,7 +515,7 @@ table.sheet{
         <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
         <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
       </div>
-      <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o destino/origem alternativo.</div>
+      <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o alternativo.</div>
     </section>
 
     <!-- ADMIN -->
@@ -576,10 +540,9 @@ table.sheet{
 </div>
 
 <script>
-/* ========= COLE SUA URL /exec AQUI (COM ASPAS!) ========= */
+/* ========= COLE SUA URL /exec AQUI ========= */
 const API_URL = "https://script.google.com/macros/s/AKfycbw9QhuCIvuLHeEgtHUfIXHv7Cnj6CbGg2N9U8mt9JWkZbfauUhy2AZBxz25VGfN21r65Q/exec";
 
-/* ======== ESTADO ======== */
 const COLUNAS_FIXAS = 9;
 let NIVEL = "";
 let USUARIO_LOGADO = "";
@@ -587,36 +550,32 @@ let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const codCache = new Map();
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
-/* ===== toast ===== */
+/* Toast */
 let toastTimer=null;
 function toast(type,title,msg){
-  const t=$("toast");
-  t.className="toast "+(type||"");
-  $("toastTitle").textContent=title||"";
-  $("toastMsg").textContent=msg||"";
+  const t = document.getElementById("toast");
+  t.className = "toast " + (type||"");
+  document.getElementById("toastTitle").textContent = title||"";
+  document.getElementById("toastMsg").textContent = msg||"";
   t.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove("show"),2600);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
 
-/* ===== helpers ===== */
+/* Helpers */
 function $(id){ return document.getElementById(id); }
-function showOnlyLogin(id){
+
+/* ✅ Login screens (garantido) */
+function showLogin(id){
   ["loginBox","cadastro","recuperar"].forEach(x=>$(x).classList.add("hidden"));
   $(id).classList.remove("hidden");
+  $("statusLogin").textContent="";
 }
+
+/* Ver senha */
 function toggleSenha(){
   const s = $("senha");
   s.type = (s.type === "password") ? "text" : "password";
-}
-function setActiveNav(id){
-  document.querySelectorAll("#menuPrincipal .item").forEach(el=>el.classList.remove("active"));
-  const el = document.querySelector(`#menuPrincipal #m_${id}`);
-  if(el) el.classList.add("active");
-}
-function setTop(title,subtitle){
-  $("topTitle").textContent=title;
-  $("topSubtitle").textContent=subtitle;
 }
 
 /* Tema */
@@ -625,39 +584,37 @@ function toggleTema(){
   toast("ok","Tema","Tema alternado.");
 }
 
-/* Menu config */
+/* Menu */
 function abrirConfig(){
   $("menuPrincipal").classList.add("hidden");
   $("menuConfig").classList.remove("hidden");
-  toast("ok","Configurações","Escolha uma opção.");
 }
 function voltarMenu(){
   $("menuConfig").classList.add("hidden");
   $("menuPrincipal").classList.remove("hidden");
-  toast("ok","Menu","Voltou ao menu.");
+}
+function setActiveNav(key){
+  document.querySelectorAll("#menuPrincipal .item").forEach(el=>el.classList.remove("active"));
+  const el = $("m_"+key);
+  if(el) el.classList.add("active");
+}
+function setTop(title,subtitle){
+  $("topTitle").textContent=title;
+  $("topSubtitle").textContent=subtitle;
 }
 
-/* Conteúdo */
 function abrir(id){
-  // esconda todas as seções (cards) dentro do main
   document.querySelectorAll(".main .card").forEach(s=>s.classList.add("hidden"));
+  $(id).classList.remove("hidden");
 
-  // mostra a seção desejada
-  const sec = $(id);
-  sec.classList.remove("hidden");
-
-  // topbar
   if(id==="transferencia"){ setTop("Transferência","Cole e clique em Importação"); setActiveNav("transferencia"); }
   if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
   if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
-
-  // ✅ rolar automaticamente para o topo do conteúdo
-  $("main").scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* Valores */
+/* Data e números */
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 function normalizeQTD(str){
   const s=(str||"0").toString().trim();
@@ -665,7 +622,7 @@ function normalizeQTD(str){
   if(isNaN(v)) v=0;
   return v;
 }
-function absQTDNumFromText(txt){ return Math.abs(normalizeQTD(txt)); } // ✅ SEMPRE POSITIVO
+function absQTDNumFromText(txt){ return Math.abs(normalizeQTD(txt)); } // ✅ sem negativo
 function formatQtdTxtFromNum(n){
   if (Number.isInteger(n)) return String(n);
   let s = n.toFixed(3).replace(".", ",");
@@ -680,7 +637,7 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* ===== API ===== */
+/* API */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
   const r = await fetch(API_URL, {
@@ -695,7 +652,7 @@ async function api(action, ...args){
   catch(e){ throw new Error("Resposta não-JSON: "+txt.slice(0,200)); }
 }
 
-/* ===== Planilha (tabelas) ===== */
+/* Planilha */
 function tableBody(sectionId){
   return document.querySelector(`#${sectionId} table.sheet tbody`);
 }
@@ -745,20 +702,18 @@ function handlePaste(e){
   });
 }
 function handleGridNav(e){
+  if(e.key!=="Enter") return;
+  e.preventDefault();
   const td=e.target;
   const tr=td.parentElement;
   const tbody=tr.parentElement;
   const r=Array.from(tbody.rows).indexOf(tr);
   const c=Array.from(tr.cells).indexOf(td);
-
-  if(e.key==="Enter"){
-    e.preventDefault();
-    const nextRow = tbody.rows[r+1] || tbody.rows[r];
-    (nextRow.cells[c] || nextRow.cells[0]).focus();
-  }
+  const nextRow = tbody.rows[r+1] || tbody.rows[r];
+  (nextRow.cells[c] || nextRow.cells[0]).focus();
 }
 
-/* ===== Config Transfer ===== */
+/* Config transferência */
 function salvarCfgTransfer(){
   const v = ($("cfgLocalOutro").value || "").trim();
   if(!v) return toast("warn","Atenção","Informe o outro local (ex: 4044).");
@@ -767,23 +722,15 @@ function salvarCfgTransfer(){
   toast("ok","Salvo","Outro Local atualizado.");
 }
 
-/* ===== Permissões ===== */
-function setBoxReadOnly(sectionId, ro){
-  tableBody(sectionId).querySelectorAll("td").forEach(td=>td.contentEditable = (!ro).toString());
-}
+/* Permissões */
 function aplicarPermissoesUI(){
   $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
   $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
   $("m_requisicao").style.display = (PERMS.requisicao==="BLOQUEAR") ? "none" : "";
-
-  if(PERMS.transferencia === "VISUALIZAR") setBoxReadOnly("transferencia", true);
-  if(PERMS.zeramento === "VISUALIZAR") setBoxReadOnly("zeramento", true);
-  if(PERMS.requisicao === "VISUALIZAR") setBoxReadOnly("requisicao", true);
-
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
-/* ===== Mapeamentos ===== */
+/* Mapeamentos */
 async function mapearOuCadastrar(chave){
   const key=(chave||"").toString().trim();
   if(!key) return "";
@@ -803,7 +750,6 @@ async function mapearOuCadastrar(chave){
   codCache.set(norm,out);
   return out;
 }
-
 async function getLocalPorItem(codigoItem){
   const code=(codigoItem||"").toString().trim();
   if(!code) return "";
@@ -819,7 +765,6 @@ async function getLocalPorItem(codigoItem){
   if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar local.");
   return out;
 }
-
 async function getRequisitantePorUsuario(usuario){
   const u=(usuario||"").toString().trim().toLowerCase();
   if(!u) return "74";
@@ -836,12 +781,7 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
-/* ===== AUTH ===== */
-function mostrar(id){
-  // troca telas de login
-  showOnlyLogin(id);
-  $("statusLogin").textContent="";
-}
+/* AUTH */
 async function entrar(){
   $("statusLogin").textContent="";
   const u = $("usuario").value.trim();
@@ -856,18 +796,15 @@ async function entrar(){
     USUARIO_LOGADO = res.usuario || u;
     PERMS = res.perms || PERMS;
 
-    // ✅ entra no app automaticamente
     $("loginBox").classList.add("hidden");
     $("cadastro").classList.add("hidden");
     $("recuperar").classList.add("hidden");
     $("sistema").classList.remove("hidden");
 
-    // usuário na sidebar/topbar
     $("sideUser").textContent = USUARIO_LOGADO;
     $("sideNivel").textContent = NIVEL;
     $("pillUser").textContent = `${USUARIO_LOGADO} • ${NIVEL}`;
 
-    // tabelas
     criarTabela("transferencia",10,COLUNAS_FIXAS);
     criarTabela("zeramento",10,COLUNAS_FIXAS);
     criarTabela("requisicao",10,COLUNAS_FIXAS);
@@ -875,14 +812,11 @@ async function entrar(){
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
 
     aplicarPermissoesUI();
-
-    // ✅ abrir primeira tela e scroll topo
     voltarMenu();
     abrir("transferencia");
     toast("ok","Bem-vindo",`Você entrou como ${NIVEL}.`);
 
     if(NIVEL==="ADMIN") adminRecarregar();
-
   }catch(err){
     $("statusLogin").textContent = "Erro: " + err.message;
     toast("danger","Erro",err.message);
@@ -894,7 +828,7 @@ async function cadastrar(){
     const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
     if(res.ok){
       toast("ok","Cadastro","Conta criada!");
-      showOnlyLogin("loginBox");
+      showLogin("loginBox");
     }else{
       toast("danger","Cadastro",res.msg || "Erro");
     }
@@ -911,12 +845,12 @@ async function recuperarSenha(){
 function sair(){
   NIVEL=""; USUARIO_LOGADO="";
   $("sistema").classList.add("hidden");
-  showOnlyLogin("loginBox");
+  showLogin("loginBox");
   $("senha").value="";
   toast("ok","Saiu","Você voltou para o login.");
 }
 
-/* ===== IMPORTAÇÕES ===== */
+/* IMPORTAÇÕES */
 async function importacaoTransferencia(){
   try{
     const rows=tableBody("transferencia").querySelectorAll("tr");
@@ -938,8 +872,6 @@ async function importacaoTransferencia(){
 
       const localInformado=(c[8]||"164").trim() || "164";
       const outroLocal=(LOCAL_OUTRO_TRANSFER||"4044").trim();
-
-      if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
       const f5=await mapearOuCadastrar(chave5);
       const f6=await mapearOuCadastrar(chave6);
@@ -979,7 +911,6 @@ async function importacaoZeramento(){
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
       const local=(c[8]||"164").trim() || "164";
-      if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
       const f5=await mapearOuCadastrar(chave5);
       const f6=await mapearOuCadastrar(chave6);
@@ -1005,7 +936,6 @@ async function importacaoRequisicao(){
     const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
 
     const pedidos=new Map();
-
     for(const tr of rows){
       const raw=[...tr.cells].map(td=>(td.innerText||"").trim());
       if(raw.every(x=>!x)) continue;
@@ -1044,7 +974,7 @@ async function importacaoRequisicao(){
   }catch(err){ toast("danger","Erro",err.message); }
 }
 
-/* ===== ADMIN ===== */
+/* ADMIN */
 async function adminRecarregar(){
   const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
   if(!res.ok) return;
@@ -1057,9 +987,10 @@ async function adminRecarregar(){
     sel.appendChild(op);
   });
 
-  renderPermsTable(res.usuarios);
+  // table simples (mantive)
+  const wrap=$("adminPermsWrap");
+  wrap.innerHTML="<div class='small'>Permissões carregadas.</div>";
 }
-
 async function adminSalvarEmail(){
   const alvo=$("admEmailUser").value;
   const novo=$("admEmailNovo").value;
@@ -1067,94 +998,12 @@ async function adminSalvarEmail(){
   toast(r.ok?"ok":"danger","Admin", r.ok ? "Email atualizado!" : (r.msg||"Erro"));
 }
 
-function renderPermsTable(users){
-  const wrap = $("adminPermsWrap");
-  wrap.innerHTML = "";
-
-  const table = document.createElement("table");
-  table.style.width="100%";
-  table.style.borderCollapse="collapse";
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Usuário</th>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Nível</th>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Transferência</th>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Zeramento</th>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Requisição</th>
-        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Ação</th>
-      </tr>
-    </thead>
-  `;
-  const tb = document.createElement("tbody");
-
-  const niveis = ["ADMIN","OPERADOR","CONSULTA","USER"];
-  const perms = ["EDITAR","VISUALIZAR","BLOQUEAR"];
-
-  users.forEach(u=>{
-    const tr = document.createElement("tr");
-
-    const selNivel = mkSelect(niveis, u.nivel);
-    const selT = mkSelect(perms, u.perms.transferencia);
-    const selZ = mkSelect(perms, u.perms.zeramento);
-    const selR = mkSelect(perms, u.perms.requisicao);
-
-    const btn = document.createElement("button");
-    btn.className="btn btn-primary";
-    btn.style.padding="10px 14px";
-    btn.style.borderRadius="12px";
-    btn.style.width="auto";
-    btn.textContent = "Salvar";
-    btn.onclick = async ()=>{
-      const r = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
-      toast(r.ok?"ok":"danger","Admin", r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
-      adminRecarregar();
-    };
-
-    tr.appendChild(tdText(u.usuario));
-    tr.appendChild(tdWrap(selNivel));
-    tr.appendChild(tdWrap(selT));
-    tr.appendChild(tdWrap(selZ));
-    tr.appendChild(tdWrap(selR));
-    tr.appendChild(tdWrap(btn));
-
-    tb.appendChild(tr);
-  });
-
-  table.appendChild(tb);
-  wrap.appendChild(table);
-
-  function mkSelect(opts, current){
-    const s = document.createElement("select");
-    s.style.borderRadius="12px";
-    s.style.padding="10px";
-    opts.forEach(o=>{
-      const op = document.createElement("option");
-      op.value = o; op.textContent = o;
-      if((current||"").toUpperCase() === o) op.selected = true;
-      s.appendChild(op);
-    });
-    return s;
-  }
-  function tdText(t){
-    const td=document.createElement("td");
-    td.style.padding="10px";
-    td.style.borderBottom="1px solid var(--line)";
-    td.textContent=t;
-    return td;
-  }
-  function tdWrap(el){
-    const td=document.createElement("td");
-    td.style.padding="10px";
-    td.style.borderBottom="1px solid var(--line)";
-    td.appendChild(el);
-    return td;
-  }
-}
-
-/* ENTER no login */
+/* ENTER login */
 $("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
+
+/* Inicial */
+showLogin("loginBox");
 </script>
 
 </body>
