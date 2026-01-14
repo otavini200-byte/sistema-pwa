@@ -10,79 +10,209 @@
 
   <style>
     :root{
-      --primary:#6a4bc9; --secondary:#2c1a4d;
-      --bg:#f2f4f8; --card:#fff; --text:#333;
-      --shadow: rgba(0,0,0,0.12); --line:#d7d7d7;
+      --primary:#6a4bc9;
+      --primary2:#2c1a4d;
+      --bg:#0b0b10;
+      --card:#12121a;
+      --card2:#171722;
+      --text:#f2f2f6;
+      --muted:rgba(242,242,246,.75);
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --shadow2: 0 12px 30px rgba(0,0,0,.32);
+      --ok:#27ae60;
+      --danger:#c0392b;
+      --warn:#f39c12;
     }
-    .dark{ --bg:#121212; --card:#1e1e1e; --text:#f1f1f1; --shadow: rgba(0,0,0,0.5); --line:#444; }
-    *{box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif;}
-    body{margin:0;background:var(--bg);color:var(--text);transition:all .25s;}
+
+    .light{
+      --bg:#f2f4f8;
+      --card:#ffffff;
+      --card2:#ffffff;
+      --text:#1f1f2a;
+      --muted:rgba(31,31,42,.70);
+      --line:rgba(0,0,0,.10);
+      --shadow: 0 16px 50px rgba(0,0,0,.12);
+      --shadow2: 0 10px 24px rgba(0,0,0,.10);
+    }
+
+    *{box-sizing:border-box;font-family:Segoe UI,system-ui,Arial,sans-serif;}
+    body{
+      margin:0; color:var(--text); background:radial-gradient(1200px 600px at 10% 10%, rgba(106,75,201,.25), transparent 60%),
+      radial-gradient(800px 600px at 90% 30%, rgba(44,26,77,.25), transparent 55%),
+      var(--bg);
+      transition:background .25s,color .25s;
+    }
     body.lock{overflow:hidden;}
 
-    input, select{
-      width:100%; padding:12px; margin-top:10px;
-      border-radius:10px; border:1px solid var(--line);
-      outline:none; background:var(--card); color:var(--text);
-    }
-    input:focus, select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(106,75,201,0.18);}
+    .fade-in{animation:fadeIn .22s ease-out both;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-    button{
-      width:100%; padding:12px; border-radius:10px;
-      border:none; background:var(--primary); color:#fff;
-      cursor:pointer; transition:transform .15s, opacity .15s; margin-top:6px;
+    /* Topbar */
+    .topbar{
+      position:sticky; top:0; z-index:3;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px;
+      background:linear-gradient(180deg, rgba(18,18,26,.92), rgba(18,18,26,.65));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
     }
-    button:hover{opacity:0.92;transform:translateY(-1px);}
-    .btn-danger{background:#c0392b;}
-    .row{display:flex;gap:10px;flex-wrap:wrap;}
-    .row > *{flex:1;min-width:160px;}
+    .light .topbar{
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+    }
+    .brand{
+      display:flex; gap:10px; align-items:center;
+      font-weight:700; letter-spacing:.2px;
+    }
+    .pill{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line); color:var(--muted);
+      background:rgba(255,255,255,.04);
+    }
+    .light .pill{ background:rgba(0,0,0,.03); }
 
-    .login{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+    /* Buttons / inputs */
+    input,select{
+      width:100%; padding:12px 12px; margin-top:10px;
+      border-radius:12px; border:1px solid var(--line);
+      outline:none; background:var(--card2); color:var(--text);
+      transition: box-shadow .15s, transform .12s, border-color .15s;
+    }
+    input:focus,select:focus{
+      border-color: rgba(106,75,201,.65);
+      box-shadow: 0 0 0 4px rgba(106,75,201,.18);
+    }
+
+    .btn{
+      width:100%; padding:12px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(135deg, var(--primary), #7b5df0);
+      color:#fff; cursor:pointer;
+      transition: transform .12s, filter .12s, box-shadow .12s;
+      box-shadow: 0 10px 26px rgba(106,75,201,.25);
+      margin-top:8px;
+      font-weight:650;
+    }
+    .btn:hover{filter:brightness(1.03);transform:translateY(-1px);}
+    .btn:active{transform:translateY(0px);filter:brightness(.98);}
+    .btn.secondary{
+      background:transparent;
+      border:1px solid var(--line);
+      box-shadow:none;
+      color:var(--text);
+    }
+    .btn.danger{
+      background:linear-gradient(135deg, var(--danger), #e74c3c);
+      box-shadow: 0 10px 26px rgba(231,76,60,.20);
+    }
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .row > *{flex:1; min-width:180px;}
+
+    /* Login */
+    .login{
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:22px;
+    }
     .login-card{
-      background:var(--card); padding:36px; width:390px;
-      border-radius:16px; box-shadow:0 14px 40px var(--shadow);
+      width:min(420px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:26px;
+      box-shadow:var(--shadow);
     }
-    .login-card h2{text-align:center;margin:0 0 18px 0;}
-    .login-links{text-align:center;margin-top:12px;font-size:13px;}
-    .login-links span{cursor:pointer;color:var(--secondary);margin:0 6px;}
-    .login-links span:hover{color:var(--primary);}
+    .light .login-card{
+      background:var(--card);
+    }
+    .login-card h2{margin:0 0 8px 0;}
+    .sub{color:var(--muted); font-size:13px; margin:0 0 12px 0;}
+    .login-links{margin-top:12px; text-align:center; font-size:13px; color:var(--muted);}
+    .login-links span{cursor:pointer; color:rgba(106,75,201,1); font-weight:650; margin:0 6px;}
+    .login-links span:hover{text-decoration:underline;}
 
+    /* Sistema layout */
     .hidden{display:none;}
-    .sistema{display:flex;min-height:100vh;}
+    .sistema{display:flex; min-height:100vh;}
     .sidebar{
-      width:270px;
-      background:linear-gradient(180deg,var(--primary),#1b0f30);
-      color:#fff; padding:18px; position:relative;
+      width:290px;
+      padding:16px;
+      border-right:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      backdrop-filter: blur(10px);
     }
-    .sidebar h3{text-align:center;margin:6px 0 14px 0;}
+    .light .sidebar{background:rgba(255,255,255,.75);}
+    .menu-title{color:var(--muted); font-size:12px; letter-spacing:.6px; margin:10px 8px 8px;}
     .menu div{
-      padding:12px; margin-bottom:10px;
-      background:rgba(255,255,255,.12);
-      border-radius:10px; text-align:center;
-      cursor:pointer; transition:all .15s; user-select:none;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      margin-bottom:10px;
+      cursor:pointer;
+      transition: transform .12s, background .12s, border-color .12s;
+      user-select:none;
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
     }
-    .menu div:hover{background:rgba(255,255,255,.22);}
-    .menu.inferior{position:absolute;bottom:18px;width:234px;}
+    .light .menu div{background:rgba(0,0,0,.03);}
+    .menu div:hover{transform:translateY(-1px); border-color:rgba(106,75,201,.35);}
+    .menu div small{color:var(--muted); font-weight:600;}
 
-    .conteudo{flex:1;padding:26px;}
+    .conteudo{flex:1; padding:18px;}
     .box{
-      background:var(--card); padding:22px; border-radius:16px;
-      box-shadow:0 10px 26px var(--shadow); max-width:1300px;
-      opacity:0; transform:translateY(10px); transition:all .22s;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow2);
+      max-width:1400px;
     }
-    .box.show{opacity:1;transform:translateY(0);}
+    .light .box{background:var(--card);}
+    .box h2{margin:0 0 12px 0;}
+    .hint{font-size:12px;color:var(--muted); margin-top:10px}
 
-    .tabela-container{border:1px solid var(--line);border-radius:12px;overflow:auto;min-height:260px;background:rgba(255,255,255,0.35);}
-    .dark .tabela-container{background:rgba(0,0,0,0.12);}
-    .tabela-colagem{width:100%;border-collapse:collapse;}
-    .tabela-colagem td{border:1px solid var(--line);padding:7px;font-size:13px;min-width:110px;}
-    .tabela-colagem td:focus{outline:none;background:rgba(106,75,201,0.10);}
+    /* Table */
+    .tabela-container{
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:auto;
+      min-height:300px;
+      background:rgba(0,0,0,.08);
+    }
+    .light .tabela-container{background:rgba(0,0,0,.02);}
+    .tabela-colagem{width:100%; border-collapse:collapse;}
+    .tabela-colagem td{
+      border:1px solid var(--line);
+      padding:8px;
+      font-size:13px;
+      min-width:120px;
+      background:transparent;
+    }
+    .tabela-colagem td:focus{
+      outline:none;
+      box-shadow: inset 0 0 0 2px rgba(106,75,201,.35);
+      background:rgba(106,75,201,.08);
+    }
 
-    .hint{font-size:12px;opacity:.78;margin-top:10px}
-    .small{font-size:12px;opacity:.85;margin-top:10px}
+    /* Admin */
+    .table-admin{width:100%; border-collapse:collapse; margin-top:12px;}
+    .table-admin th,.table-admin td{border:1px solid var(--line); padding:8px; font-size:13px;}
+    .table-admin th{background:rgba(106,75,201,.10); text-align:left;}
+    .tag{
+      display:inline-block;
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
 
-    .table-admin{width:100%;border-collapse:collapse;margin-top:10px;}
-    .table-admin th,.table-admin td{border:1px solid var(--line);padding:8px;font-size:13px;}
-    .table-admin th{background:rgba(106,75,201,0.10);text-align:left;}
+    /* Responsive */
+    @media (max-width: 980px){
+      .sistema{flex-direction:column;}
+      .sidebar{width:100%; border-right:none; border-bottom:1px solid var(--line);}
+    }
   </style>
 </head>
 
@@ -90,15 +220,16 @@
 
   <!-- LOGIN -->
   <div class="login" id="loginBox">
-    <div class="login-card">
-      <h2>🔐 Login</h2>
+    <div class="login-card fade-in">
+      <h2>🔐 Sistema</h2>
+      <p class="sub">Entre com seu usuário e senha</p>
       <input id="usuario" placeholder="Usuário">
       <input id="senha" type="password" placeholder="Senha">
-      <button onclick="entrar()">Entrar</button>
+      <button class="btn" onclick="entrar()">Entrar</button>
 
       <div class="login-links">
-        <span onclick="showOnlyLogin('cadastro')">Criar conta</span> |
-        <span onclick="showOnlyLogin('recuperar')">Recuperar senha</span> |
+        <span onclick="showLogin('cadastro')">Criar conta</span> |
+        <span onclick="showLogin('recuperar')">Recuperar senha</span> |
         <span onclick="toggleSenha()">👁 Ver senha</span>
       </div>
     </div>
@@ -106,154 +237,163 @@
 
   <!-- CADASTRO -->
   <div class="login hidden" id="cadastro">
-    <div class="login-card">
-      <h2>Criar conta</h2>
+    <div class="login-card fade-in">
+      <h2>✨ Criar conta</h2>
+      <p class="sub">Preencha os dados</p>
       <input id="cUser" placeholder="Usuário">
       <input id="cSenha" placeholder="Senha">
       <input id="cEmail" placeholder="Email">
-      <button onclick="cadastrar()">Cadastrar</button>
-      <button onclick="showOnlyLogin('loginBox')">Voltar</button>
+      <button class="btn" onclick="cadastrar()">Cadastrar</button>
+      <button class="btn secondary" onclick="showLogin('loginBox')">Voltar</button>
     </div>
   </div>
 
   <!-- RECUPERAR -->
   <div class="login hidden" id="recuperar">
-    <div class="login-card">
-      <h2>Recuperar senha</h2>
+    <div class="login-card fade-in">
+      <h2>📩 Recuperar senha</h2>
+      <p class="sub">Vamos enviar a senha para seu email</p>
       <input id="rUser" placeholder="Usuário">
-      <button onclick="recuperarSenha()">Enviar email</button>
-      <button onclick="showOnlyLogin('loginBox')">Voltar</button>
+      <button class="btn" onclick="recuperarSenha()">Enviar</button>
+      <button class="btn secondary" onclick="showLogin('loginBox')">Voltar</button>
     </div>
   </div>
 
   <!-- SISTEMA -->
-  <div class="sistema hidden" id="sistema">
-    <div class="sidebar">
-      <h3>Sistema</h3>
-
-      <div class="menu" id="menuPrincipal">
-        <div id="m_transferencia" onclick="abrir('transferencia')">📦 Transferência</div>
-        <div id="m_zeramento" onclick="abrir('zeramento')">🔁 Zeramento</div>
-        <div id="m_requisicao" onclick="abrir('requisicao')">📝 Requisição</div>
-      </div>
-
-      <div class="menu inferior" id="menuInferior">
-        <div onclick="openConfig()">⚙️ Configurações</div>
-      </div>
-
-      <div class="menu hidden" id="menuConfig">
-        <div onclick="openConta()">👤 Conta</div>
-        <div id="btnAdminMenu" class="hidden" onclick="openAdmin()">🛡️ Admin</div>
-        <div onclick="backMain()">⬅ Voltar</div>
-      </div>
-
-      <div class="menu hidden" id="menuConta">
-        <div onclick="abrir('cfgTransfer')">🔁 Local Transferência</div>
-        <div onclick="abrir('tema')">🌙 Tema</div>
-        <div onclick="logout()">🚪 Sair</div>
-        <div onclick="openConfig()">⬅ Voltar</div>
-      </div>
-
-      <div class="menu hidden" id="menuAdmin">
-        <div onclick="abrir('adminEmail')">✉️ Alterar Email</div>
-        <div onclick="abrir('adminPerms')">🧩 Permissões</div>
-        <div onclick="openConfig()">⬅ Voltar</div>
+  <div class="hidden" id="sistema">
+    <div class="topbar">
+      <div class="brand">⚡ Sistema <span class="pill" id="pillUser">—</span></div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span class="pill" id="pillNivel">—</span>
+        <button class="btn secondary" style="width:auto;margin:0;padding:10px 12px;" onclick="openConfig()">⚙️</button>
       </div>
     </div>
 
-    <div class="conteudo">
-      <div class="box hidden" id="transferencia">
-        <h2>📦 Transferência</h2>
-        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
-        <div class="row">
-          <button onclick="importacaoTransferencia()">Importação</button>
-          <button class="btn-danger" onclick="limparTabela('transferencia')">Limpar</button>
+    <div class="sistema">
+      <div class="sidebar">
+        <div class="menu-title">MENU</div>
+        <div class="menu" id="menuPrincipal">
+          <div id="m_transferencia" onclick="abrir('transferencia')">📦 Transferência <small>Importar</small></div>
+          <div id="m_zeramento" onclick="abrir('zeramento')">🔁 Zeramento <small>Importar</small></div>
+          <div id="m_requisicao" onclick="abrir('requisicao')">📝 Requisição <small>Importar</small></div>
         </div>
-        <div class="hint">9 colunas. QTD negativa vira positiva no TXT. Sentido DE/PARA usa QTD1/QTD2 + config.</div>
-      </div>
 
-      <div class="box hidden" id="zeramento">
-        <h2>🔁 Zeramento</h2>
-        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
-        <div class="row">
-          <button onclick="importacaoZeramento()">Importação</button>
-          <button class="btn-danger" onclick="limparTabela('zeramento')">Limpar</button>
-        </div>
-        <div class="hint">qtd2&gt;qtd1 → E/1905 • senão → S/5906. QTD negativa vira positiva.</div>
-      </div>
-
-      <div class="box hidden" id="requisicao">
-        <h2>📝 Requisição</h2>
-        <div class="tabela-container"><table class="tabela-colagem"><tbody></tbody></table></div>
-        <div class="row">
-          <button onclick="importacaoRequisicao()">Importação</button>
-          <button class="btn-danger" onclick="limparTabela('requisicao')">Limpar</button>
-        </div>
-        <div class="hint">Cole: Pedido | Cliente | CódigoItem | Chave5 | Chave6 | Chave7 | Qtd</div>
-      </div>
-
-      <div class="box hidden" id="cfgTransfer">
-        <h2>🔁 Local Transferência</h2>
-        <input id="cfgLocalOutro" placeholder="Outro local (ex: 4044)">
-        <button onclick="salvarCfgTransfer()">Salvar</button>
-        <div class="small">A coluna 9 é o “Local Informado”. Este campo é o “Outro Local”.</div>
-      </div>
-
-      <div class="box hidden" id="tema">
-        <h2>🌙 Tema</h2>
-        <div class="row">
-          <button onclick="setTema('light')">Claro</button>
-          <button onclick="setTema('dark')">Escuro</button>
+        <div class="menu-title">CONFIG</div>
+        <div class="menu" id="menuConfig">
+          <div onclick="abrir('cfgTransfer')">🔧 Local Transferência <small>De/Para</small></div>
+          <div onclick="abrir('tema')">🌗 Tema <small>Claro/Escuro</small></div>
+          <div id="btnAdminMenu" class="hidden" onclick="abrir('adminPerms')">🛡️ Admin <small>Permissões</small></div>
+          <div id="btnAdminEmail" class="hidden" onclick="abrir('adminEmail')">✉️ Admin <small>Email</small></div>
+          <div onclick="logout()">🚪 Sair <small>Logout</small></div>
         </div>
       </div>
 
-      <div class="box hidden" id="adminEmail">
-        <h2>✉️ Alterar Email (Admin)</h2>
-        <div class="row">
-          <select id="admEmailUser"></select>
-          <input id="admEmailNovo" placeholder="Novo email">
-        </div>
-        <div class="row">
-          <button onclick="adminSalvarEmail()">Salvar Email</button>
-          <button class="btn-danger" onclick="openConfig()">Voltar</button>
-        </div>
-      </div>
+      <div class="conteudo">
 
-      <div class="box hidden" id="adminPerms">
-        <h2>🧩 Permissões (Admin)</h2>
-        <div class="small">Nível + Permissões por área</div>
-        <div id="adminPermsWrap"></div>
-        <div class="row">
-          <button onclick="adminRecarregar()">Recarregar</button>
-          <button class="btn-danger" onclick="openConfig()">Voltar</button>
+        <div class="box hidden fade-in" id="transferencia">
+          <h2>📦 Transferência</h2>
+          <div class="tabela-container">
+            <table class="tabela-colagem"><tbody></tbody></table>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="importacaoTransferencia()">Importação</button>
+            <button class="btn danger" onclick="limparTabela('transferencia')">Limpar</button>
+          </div>
+          <div class="hint">QTD negativa vira positiva no TXT. QTD=0 não exporta. DE/PARA usa QTD1/QTD2 + “Outro Local”.</div>
         </div>
+
+        <div class="box hidden fade-in" id="zeramento">
+          <h2>🔁 Zeramento</h2>
+          <div class="tabela-container">
+            <table class="tabela-colagem"><tbody></tbody></table>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="importacaoZeramento()">Importação</button>
+            <button class="btn danger" onclick="limparTabela('zeramento')">Limpar</button>
+          </div>
+          <div class="hint">QTD negativa vira positiva no TXT. QTD=0 não exporta. Tipo: qtd2&gt;qtd1 → E/1905 senão S/5906.</div>
+        </div>
+
+        <div class="box hidden fade-in" id="requisicao">
+          <h2>📝 Requisição</h2>
+          <div class="tabela-container">
+            <table class="tabela-colagem"><tbody></tbody></table>
+          </div>
+          <div class="row">
+            <button class="btn" onclick="importacaoRequisicao()">Importação</button>
+            <button class="btn danger" onclick="limparTabela('requisicao')">Limpar</button>
+          </div>
+          <div class="hint">Cole: Pedido | Cliente | CódigoItem | Chave5 | Chave6 | Chave7 | Qtd — (QTD negativa vira positiva)</div>
+        </div>
+
+        <div class="box hidden fade-in" id="cfgTransfer">
+          <h2>🔧 Local Transferência</h2>
+          <span class="tag">Coluna 9 = Local informado</span>
+          <input id="cfgLocalOutro" placeholder="Outro local (ex: 4044)">
+          <button class="btn" onclick="salvarCfgTransfer()">Salvar</button>
+          <div class="hint">Se qtd1 &gt; qtd2 → Local informado → Outro local. Se qtd2 &gt; qtd1 → Outro local → Local informado.</div>
+        </div>
+
+        <div class="box hidden fade-in" id="tema">
+          <h2>🌗 Tema</h2>
+          <div class="row">
+            <button class="btn secondary" onclick="setTema('light')">☀️ Claro</button>
+            <button class="btn" onclick="setTema('dark')">🌙 Escuro</button>
+          </div>
+        </div>
+
+        <div class="box hidden fade-in" id="adminEmail">
+          <h2>✉️ Admin — Alterar Email</h2>
+          <div class="row">
+            <select id="admEmailUser"></select>
+            <input id="admEmailNovo" placeholder="Novo email">
+          </div>
+          <div class="row">
+            <button class="btn" onclick="adminSalvarEmail()">Salvar</button>
+            <button class="btn secondary" onclick="adminRecarregar()">Recarregar</button>
+          </div>
+        </div>
+
+        <div class="box hidden fade-in" id="adminPerms">
+          <h2>🛡️ Admin — Permissões</h2>
+          <div id="adminPermsWrap"></div>
+          <div class="hint">A planilha pode ter só 4 colunas; se tiver E/F/G, aqui vira controle fino.</div>
+          <div class="row">
+            <button class="btn secondary" onclick="adminRecarregar()">Recarregar</button>
+            <button class="btn secondary" onclick="abrir('transferencia')">Voltar</button>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiGDN3lceyAV-HMOOc2KK5y4KDyOaWHpoHUFeFk27frsdnaqqvLnaCp-j08EQbIEhg6FwHrv3v8SwgWseicJTYoyC4cY5bE12TTwjk6hUMjXq0R7i7R1JZQ7K-eVw93wsa0p_VFZ9_RjhD1C7vLZGuUbqEHm2WaFvBi6gvdMNeIuS2z6AXnOPlzWOAW4NwRsHCoGqj2Eq691UXwp8lYVeSacZipwjELt5KIc6-JwVc-WEGCdMdWrwLLXjSh3OKEa6XP9YBnEi6L4UBybHVo07QlwbDiQakqL5lJ1Oti&lib=McTwOPg6EjKgsOsf3ykd3XBrns8elDHiD";
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgYXXJe6aFBSWs4driFdDCn0LrqfQsqa4aMmCMCHKnAQp_nVhWDuVQlbc44beUSG8JFM7PpQ3X-zbj4WQdZ_He9ndHfSPovqKA7x52Osw8do8oT74cSS1cNj7eT8ErJBEXkxx6waJT6vsBRmlM8wA0zwduesHJLtunwnN2QfGkrIO1NIDSw-5_0FYViVePF5pAcn8DcUZDaJqftoyMBATHVOCqr571G8lVrR7TC61UL3HOOfyQZNfTlgetXTzzcubeVRBiGyi0980YBxYrbYWSyEObDLw&lib=McTwOPg6EjKgsOsf3ykd3XBrns8elDHiD";
 
-/* ===== PWA SW ===== */
+/* PWA SW */
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  navigator.serviceWorker.register("./sw.js").catch(function(){});
 }
 
+/* Helpers */
 function $(id){ return document.getElementById(id); }
-function showOnlyLogin(id){
-  ["loginBox","cadastro","recuperar"].forEach(x => $(x).classList.add("hidden"));
+
+function showLogin(id){
+  ["loginBox","cadastro","recuperar"].forEach(function(x){ $(x).classList.add("hidden"); });
   $(id).classList.remove("hidden");
 }
+
 function toggleSenha(){
-  const el = $("senha");
-  el.type = el.type === "password" ? "text" : "password";
+  var el = $("senha");
+  el.type = (el.type === "password") ? "text" : "password";
 }
 
-/* ===== API (CORS-safe) ===== */
-async function api(action, ...args){
-  const payload = JSON.stringify({ action, args });
-  const r = await fetch(API_URL, {
+async function api(action){
+  var args = Array.prototype.slice.call(arguments, 1);
+  var payload = JSON.stringify({ action: action, args: args });
+  var r = await fetch(API_URL, {
     method:"POST",
     headers:{ "Content-Type":"text/plain;charset=utf-8" },
     body: payload
@@ -261,197 +401,228 @@ async function api(action, ...args){
   return await r.json();
 }
 
-/* ===== Estado ===== */
-let NIVEL = "";
-let USUARIO_LOGADO = "";
-let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
-const COLUNAS_FIXAS = 9;
-const codCache = new Map();
+/* Estado */
+var NIVEL = "";
+var USUARIO_LOGADO = "";
+var PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+var COLUNAS_FIXAS = 9;
+var codCache = new Map();
 
-let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
-function salvarCfgTransfer(){
-  const v = ($("cfgLocalOutro").value || "").trim();
-  if(!v) return alert("Informe o outro local (ex: 4044).");
-  LOCAL_OUTRO_TRANSFER = v;
-  localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
-  alert("Salvo!");
-}
-function carregarCfgTransferUI(){
-  if($("cfgLocalOutro")) $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
+var LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
+
+/* UI */
+function abrir(id){
+  var boxes = document.querySelectorAll(".box");
+  boxes.forEach(function(b){ b.classList.add("hidden"); });
+  $(id).classList.remove("hidden");
 }
 
-/* ===== Menus ===== */
-function hideAllSideMenus(){
-  ["menuPrincipal","menuInferior","menuConfig","menuConta","menuAdmin"].forEach(id=>$(id).classList.add("hidden"));
+function setTema(t){
+  if(t === "light"){
+    document.documentElement.classList.add("light");
+  } else {
+    document.documentElement.classList.remove("light");
+  }
 }
-function openConfig(){ hideAllSideMenus(); $("menuConfig").classList.remove("hidden"); }
-function openConta(){ hideAllSideMenus(); $("menuConta").classList.remove("hidden"); }
-function openAdmin(){ hideAllSideMenus(); $("menuAdmin").classList.remove("hidden"); }
-function backMain(){ hideAllSideMenus(); $("menuPrincipal").classList.remove("hidden"); $("menuInferior").classList.remove("hidden"); }
 
-function abrir(boxId){
-  document.querySelectorAll(".box").forEach(b=>{ b.classList.remove("show"); b.classList.add("hidden"); });
-  const box = $(boxId);
-  box.classList.remove("hidden");
-  setTimeout(()=>box.classList.add("show"),10);
-}
-function setTema(t){ document.documentElement.classList.toggle("dark", t==="dark"); }
+/* Tabela estilo planilha */
+function criarTabela(boxId, linhas, colunas){
+  linhas = linhas || 10;
+  colunas = colunas || 9;
 
-/* ===== Tabelas ===== */
-function criarTabela(boxId, linhas=10, colunas=9){
-  const tbody = document.querySelector(`#${boxId} .tabela-colagem tbody`);
-  tbody.innerHTML="";
-  for(let i=0;i<linhas;i++){
-    const tr=document.createElement("tr");
-    for(let j=0;j<colunas;j++){
-      const td=document.createElement("td");
-      td.contentEditable="true";
+  var tbody = document.querySelector("#"+boxId+" .tabela-colagem tbody");
+  tbody.innerHTML = "";
+
+  for(var i=0;i<linhas;i++){
+    var tr = document.createElement("tr");
+    for(var j=0;j<colunas;j++){
+      var td = document.createElement("td");
+      td.contentEditable = "true";
       td.addEventListener("paste", handlePaste);
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
   }
 }
-function limparTabela(boxId){ criarTabela(boxId, 10, COLUNAS_FIXAS); }
+
+function limparTabela(boxId){
+  criarTabela(boxId, 10, COLUNAS_FIXAS);
+}
+
 function handlePaste(e){
   e.preventDefault();
-  const text=(e.clipboardData||window.clipboardData).getData("text");
-  const rows=text.split(/\r?\n/).filter(r=>r!=="");
-  const startCell=e.target, tr=startCell.parentElement, tbody=tr.parentElement;
-  const rowIndex=Array.from(tbody.rows).indexOf(tr);
-  const colIndex=Array.from(tr.cells).indexOf(startCell);
+  var text = (e.clipboardData || window.clipboardData).getData("text");
+  var rows = text.split(/\r?\n/).filter(function(r){ return r !== ""; });
 
-  rows.forEach((r,i)=>{
-    const cols=r.split(/\t/);
-    let targetRow=tbody.rows[rowIndex+i];
+  var startCell = e.target;
+  var tr = startCell.parentElement;
+  var tbody = tr.parentElement;
+
+  var rowIndex = Array.from(tbody.rows).indexOf(tr);
+  var colIndex = Array.from(tr.cells).indexOf(startCell);
+
+  rows.forEach(function(r, i){
+    var cols = r.split(/\t/);
+    var targetRow = tbody.rows[rowIndex + i];
     if(!targetRow){
-      targetRow=tbody.insertRow();
-      for(let k=0;k<COLUNAS_FIXAS;k++){
-        const td=targetRow.insertCell();
-        td.contentEditable="true";
+      targetRow = tbody.insertRow();
+      for(var k=0;k<COLUNAS_FIXAS;k++){
+        var td = targetRow.insertCell();
+        td.contentEditable = "true";
         td.addEventListener("paste", handlePaste);
       }
     }
-    cols.forEach((c,j)=>{
-      const td=targetRow.cells[colIndex+j];
-      if(td) td.innerText=c;
+    cols.forEach(function(c, j){
+      var td = targetRow.cells[colIndex + j];
+      if(td) td.innerText = c;
     });
   });
 }
 
-/* ===== Utils ===== */
-function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
+/* Valores */
+function dataHoje_ptBR(){
+  return new Date().toLocaleDateString("pt-BR");
+}
+
 function normalizeQTD(str){
-  const s=(str||"0").toString().trim();
-  let v=parseFloat(s.replace(/\./g,"").replace(",", "."));
-  if(isNaN(v)) v=0;
+  var s = String(str || "0").trim();
+  // aceita -5, 1.234,56, etc.
+  var v = parseFloat(s.replace(/\./g,"").replace(",", "."));
+  if (isNaN(v)) v = 0;
   return v;
 }
+
+// ABS garantido AQUI (mesmo que alguém chame errado)
 function absQTDNumFromText(txt){
   return Math.abs(normalizeQTD(txt));
 }
+
 function formatQtdTxtFromNum(n){
+  n = Math.abs(Number(n) || 0); // GARANTE POSITIVO
   if (Number.isInteger(n)) return String(n);
-  let s = n.toFixed(3).replace(".", ",");
+  var s = n.toFixed(3).replace(".", ",");
   s = s.replace(/0+$/,"").replace(/,$/,"");
   return s;
 }
-function baixarComoTXT(nome,texto){
-  const blob=new Blob([texto],{type:"text/plain"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download=nome+".txt";
+
+function baixarComoTXT(nome, texto){
+  var blob = new Blob([texto],{type:"text/plain"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = nome + ".txt";
   a.click();
 }
 
-/* ===== Permissões ===== */
-function setBoxReadOnly(boxId, ro){
-  document.querySelectorAll(`#${boxId} .tabela-colagem td`).forEach(td=>td.contentEditable = (!ro).toString());
+/* Config Transfer */
+function salvarCfgTransfer(){
+  var v = String($("cfgLocalOutro").value || "").trim();
+  if(!v) return alert("Informe o outro local (ex: 4044).");
+  LOCAL_OUTRO_TRANSFER = v;
+  localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
+  alert("Salvo!");
 }
-function aplicarPermissoesUI(){
-  $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
-  $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
-  $("m_requisicao").style.display = (PERMS.requisicao==="BLOQUEAR") ? "none" : "";
 
-  if(PERMS.transferencia === "VISUALIZAR") setBoxReadOnly("transferencia", true);
-  if(PERMS.zeramento === "VISUALIZAR") setBoxReadOnly("zeramento", true);
-  if(PERMS.requisicao === "VISUALIZAR") setBoxReadOnly("requisicao", true);
+function carregarCfgTransferUI(){
+  if($("cfgLocalOutro")) $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
+}
+
+/* Permissões */
+function aplicarPermissoesUI(){
+  $("m_transferencia").style.display = (PERMS.transferencia === "BLOQUEAR") ? "none" : "";
+  $("m_zeramento").style.display = (PERMS.zeramento === "BLOQUEAR") ? "none" : "";
+  $("m_requisicao").style.display = (PERMS.requisicao === "BLOQUEAR") ? "none" : "";
 
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
+  $("btnAdminEmail").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
-/* ===== Backend maps ===== */
+/* Backend helpers */
 async function mapearOuCadastrar(chave){
-  const key=(chave||"").toString().trim();
+  var key = String(chave || "").trim();
   if(!key) return "";
-  const norm=key.toLowerCase();
+  var norm = key.toLowerCase();
+
   if(codCache.has(norm)) return codCache.get(norm);
 
-  const res=await api("cod_get", key);
-  if(res.ok && res.found){ codCache.set(norm,res.value); return res.value; }
+  var res = await api("cod_get", key);
+  if(res.ok && res.found){
+    codCache.set(norm, res.value);
+    return res.value;
+  }
 
-  const saida=prompt(`CHAVE não cadastrada (COD A/B):\n"${key}"\nDigite o que deve sair no TXT:`);
-  if(saida===null) throw new Error("Cadastro cancelado: "+key);
-  const out=saida.toString().trim();
-  if(!out) throw new Error("Saída vazia: "+key);
+  var saida = prompt('CHAVE não cadastrada (COD A/B):\n"'+key+'"\nDigite o que deve sair no TXT:');
+  if(saida === null) throw new Error("Cadastro cancelado: " + key);
 
-  const saved=await api("cod_set", key, out);
+  var out = String(saida || "").trim();
+  if(!out) throw new Error("Saída vazia: " + key);
+
+  var saved = await api("cod_set", key, out);
   if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar COD");
 
-  codCache.set(norm,out);
+  codCache.set(norm, out);
   return out;
 }
 
 async function getLocalPorItem(codigoItem){
-  const code=(codigoItem||"").toString().trim();
+  var code = String(codigoItem || "").trim();
   if(!code) return "";
-  const res=await api("cod_get_local", code);
+
+  var res = await api("cod_get_local", code);
   if(res.ok && res.found) return res.value;
 
-  const local=prompt(`LOCAL não cadastrado para item "${code}" (COD D/E).\nDigite o LOCAL (ex: 164):`);
-  if(local===null) throw new Error("Cadastro de local cancelado.");
-  const out=local.toString().trim();
+  var local = prompt('LOCAL não cadastrado para item "'+code+'" (COD D/E).\nDigite o LOCAL (ex: 164):');
+  if(local === null) throw new Error("Cadastro de local cancelado.");
+
+  var out = String(local || "").trim();
   if(!out) throw new Error("LOCAL vazio.");
 
-  const saved=await api("cod_set_local", code, out);
+  var saved = await api("cod_set_local", code, out);
   if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar local.");
+
   return out;
 }
 
 async function getRequisitantePorUsuario(usuario){
-  const u=(usuario||"").toString().trim().toLowerCase();
+  var u = String(usuario || "").trim().toLowerCase();
   if(!u) return "74";
-  const res=await api("req_get", u);
+
+  var res = await api("req_get", u);
   if(res.ok && res.found) return res.value;
 
-  const req=prompt(`Requisitante não cadastrado para "${u}".\nDigite o valor (ex: 74):`);
-  if(req===null) throw new Error("Cadastro cancelado.");
-  const out=req.toString().trim();
+  var req = prompt('Requisitante não cadastrado para "'+u+'".\nDigite o valor (ex: 74):');
+  if(req === null) throw new Error("Cadastro cancelado.");
+
+  var out = String(req || "").trim();
   if(!out) throw new Error("Requisitante vazio.");
 
-  const saved=await api("req_set", u, out);
+  var saved = await api("req_set", u, out);
   if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar requisitante.");
+
   return out;
 }
 
-/* ===== Login/Cadastro/Recuperar ===== */
+/* Auth */
 async function entrar(){
-  if(API_URL.includes("SEU_DEPLOY")) return alert("Cole sua URL /exec em API_URL no index.html");
+  if(API_URL.indexOf(https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgYXXJe6aFBSWs4driFdDCn0LrqfQsqa4aMmCMCHKnAQp_nVhWDuVQlbc44beUSG8JFM7PpQ3X-zbj4WQdZ_He9ndHfSPovqKA7x52Osw8do8oT74cSS1cNj7eT8ErJBEXkxx6waJT6vsBRmlM8wA0zwduesHJLtunwnN2QfGkrIO1NIDSw-5_0FYViVePF5pAcn8DcUZDaJqftoyMBATHVOCqr571G8lVrR7TC61UL3HOOfyQZNfTlgetXTzzcubeVRBiGyi0980YBxYrbYWSyEObDLw&lib=McTwOPg6EjKgsOsf3ykd3XBrns8elDHiD) >= 0) return alert("Cole sua URL /exec em API_URL no index.html");
 
-  const u=$("usuario").value;
-  const s=$("senha").value;
+  var u = $("usuario").value;
+  var s = $("senha").value;
 
-  const res = await api("login", u, s);
+  var res = await api("login", u, s);
   if(!res.ok) return alert(res.msg || "Usuário ou senha inválidos");
 
-  NIVEL=res.nivel;
-  USUARIO_LOGADO=res.usuario;
-  PERMS=res.perms || PERMS;
+  NIVEL = res.nivel;
+  USUARIO_LOGADO = res.usuario;
+  PERMS = res.perms || PERMS;
+
+  $("pillUser").textContent = res.usuario;
+  $("pillNivel").textContent = res.nivel;
 
   document.body.classList.remove("lock");
   $("loginBox").classList.add("hidden");
   $("cadastro").classList.add("hidden");
   $("recuperar").classList.add("hidden");
+
   $("sistema").classList.remove("hidden");
 
   criarTabela("transferencia",10,COLUNAS_FIXAS);
@@ -460,219 +631,233 @@ async function entrar(){
 
   carregarCfgTransferUI();
   aplicarPermissoesUI();
-  backMain();
+  abrir("transferencia");
 
-  if(NIVEL==="ADMIN") await adminRecarregar();
+  if(NIVEL === "ADMIN") await adminRecarregar();
 }
 
 async function cadastrar(){
-  const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
+  var res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
   alert(res.ok ? "Conta criada!" : (res.msg || "Erro"));
-  if(res.ok) showOnlyLogin("loginBox");
+  if(res.ok) showLogin("loginBox");
 }
 
 async function recuperarSenha(){
-  const res = await api("recuperar", $("rUser").value);
+  var res = await api("recuperar", $("rUser").value);
   alert(res.ok ? "Email enviado!" : (res.msg || "Erro"));
 }
 
 function logout(){
-  NIVEL=""; USUARIO_LOGADO=""; PERMS={transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+  NIVEL = ""; USUARIO_LOGADO = "";
   $("sistema").classList.add("hidden");
   $("loginBox").classList.remove("hidden");
   document.body.classList.add("lock");
-  $("senha").value="";
-  backMain();
+  $("senha").value = "";
 }
 
-/* ===== Importações ===== */
+/* IMPORTAÇÃO: NEGATIVOS SEMPRE POSITIVOS + NÃO EXPORTA 0 */
 async function importacaoTransferencia(){
   try{
-    const rows=document.querySelectorAll("#transferencia .tabela-colagem tbody tr");
-    const hoje=dataHoje_ptBR();
-    const saida=[];
+    var rows = document.querySelectorAll("#transferencia .tabela-colagem tbody tr");
+    var hoje = dataHoje_ptBR();
+    var saida = [];
 
-    for(const tr of rows){
-      const c=[...tr.cells].map(td=>(td.innerText||"").trim());
-      while(c.length<9) c.push("");
+    for (var r=0; r<rows.length; r++){
+      var tr = rows[r];
+      var c = Array.from(tr.cells).map(function(td){ return String(td.innerText||"").trim(); });
+      while(c.length < 9) c.push("");
 
-      const codigo=c[0];
-      const chave5=c[2], chave6=c[3], chave7=c[4];
-      const qtd1=normalizeQTD(c[5]||"0");
-      const qtd2=normalizeQTD(c[6]||"0");
+      var codigo = c[0];
+      var chave5 = c[2], chave6 = c[3], chave7 = c[4];
 
-      const qtd3numAbs = absQTDNumFromText(c[7]||"0");
-      const qtd3txtAbs = formatQtdTxtFromNum(qtd3numAbs);
-      if(qtd3numAbs === 0) continue;
+      var qtd1 = normalizeQTD(c[5]||"0");
+      var qtd2 = normalizeQTD(c[6]||"0");
 
-      const localInformado=(c[8]||"164").toString().trim()||"164";
-      const outroLocal=(LOCAL_OUTRO_TRANSFER||"4044").trim();
+      var qtd3AbsNum = absQTDNumFromText(c[7]||"0");
+      if(qtd3AbsNum === 0) continue;
+
+      var qtd3Txt = formatQtdTxtFromNum(qtd3AbsNum);
+
+      var localInformado = (c[8]||"164").trim() || "164";
+      var outroLocal = String(LOCAL_OUTRO_TRANSFER || "4044").trim();
 
       if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
-      const f5=await mapearOuCadastrar(chave5);
-      const f6=await mapearOuCadastrar(chave6);
-      const f7=await mapearOuCadastrar(chave7);
+      var f5 = await mapearOuCadastrar(chave5);
+      var f6 = await mapearOuCadastrar(chave6);
+      var f7 = await mapearOuCadastrar(chave7);
 
-      let origem=localInformado, destino=outroLocal;
-      if(qtd2>qtd1){ origem=outroLocal; destino=localInformado; }
+      // DE/PARA (não é mais 4044 fixo)
+      var origem = localInformado, destino = outroLocal;
+      if(qtd2 > qtd1){ origem = outroLocal; destino = localInformado; }
 
-      const valor=(qtd3numAbs*0.01).toFixed(2).replace(".",",");
+      // valor sempre positivo
+      var valor = (qtd3AbsNum * 0.01).toFixed(2).replace(".", ",");
 
-      saida.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3txtAbs,"0,01",valor,"5949"].join("|"));
+      saida.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3Txt,"0,01",valor,"5949"].join("|"));
     }
 
-    if(!saida.length) return alert("Nada para importar (verifique QTD3).");
+    if(!saida.length) return alert("Nada para importar.");
     baixarComoTXT("importacao_transferencia", saida.join("\n"));
-
-  }catch(err){ alert("Erro: "+err.message); }
+  } catch(err){
+    alert("Erro: " + err.message);
+  }
 }
 
 async function importacaoZeramento(){
   try{
-    const rows=document.querySelectorAll("#zeramento .tabela-colagem tbody tr");
-    const hoje=dataHoje_ptBR();
-    const saida=[];
+    var rows = document.querySelectorAll("#zeramento .tabela-colagem tbody tr");
+    var hoje = dataHoje_ptBR();
+    var saida = [];
 
-    for(const tr of rows){
-      const c=[...tr.cells].map(td=>(td.innerText||"").trim());
-      while(c.length<9) c.push("");
+    for (var r=0; r<rows.length; r++){
+      var tr = rows[r];
+      var c = Array.from(tr.cells).map(function(td){ return String(td.innerText||"").trim(); });
+      while(c.length < 9) c.push("");
 
-      const codigo=c[0];
-      const chave5=c[2], chave6=c[3], chave7=c[4];
-      const qtd1=normalizeQTD(c[5]||"0");
-      const qtd2=normalizeQTD(c[6]||"0");
+      var codigo = c[0];
+      var chave5 = c[2], chave6 = c[3], chave7 = c[4];
 
-      const qtd3numAbs = absQTDNumFromText(c[7]||"0");
-      const qtd3txtAbs = formatQtdTxtFromNum(qtd3numAbs);
-      if(qtd3numAbs === 0) continue;
+      var qtd1 = normalizeQTD(c[5]||"0");
+      var qtd2 = normalizeQTD(c[6]||"0");
 
-      const local=(c[8]||"164").toString().trim()||"164";
+      var qtd3AbsNum = absQTDNumFromText(c[7]||"0");
+      if(qtd3AbsNum === 0) continue;
+      var qtd3Txt = formatQtdTxtFromNum(qtd3AbsNum);
+
+      var local = (c[8]||"164").trim() || "164";
 
       if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
-      const f5=await mapearOuCadastrar(chave5);
-      const f6=await mapearOuCadastrar(chave6);
-      const f7=await mapearOuCadastrar(chave7);
+      var f5 = await mapearOuCadastrar(chave5);
+      var f6 = await mapearOuCadastrar(chave6);
+      var f7 = await mapearOuCadastrar(chave7);
 
-      const tipo=(qtd2>qtd1)?"E":"S";
-      const final=(qtd2>qtd1)?"1905":"5906";
-      const valor=(qtd3numAbs*0.01).toFixed(2).replace(".",",");
+      var tipo = (qtd2 > qtd1) ? "E" : "S";
+      var final = (qtd2 > qtd1) ? "1905" : "5906";
 
-      saida.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3txtAbs,"0,01",valor,final].join("|"));
+      var valor = (qtd3AbsNum * 0.01).toFixed(2).replace(".", ",");
+
+      saida.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3Txt,"0,01",valor,final].join("|"));
     }
 
-    if(!saida.length) return alert("Nada para importar (verifique QTD3).");
+    if(!saida.length) return alert("Nada para importar.");
     baixarComoTXT("importacao_zeramento", saida.join("\n"));
-
-  }catch(err){ alert("Erro: "+err.message); }
+  } catch(err){
+    alert("Erro: " + err.message);
+  }
 }
 
 async function importacaoRequisicao(){
   try{
-    const rows=document.querySelectorAll("#requisicao .tabela-colagem tbody tr");
-    const hoje=dataHoje_ptBR();
-    const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
+    var rows = document.querySelectorAll("#requisicao .tabela-colagem tbody tr");
+    var hoje = dataHoje_ptBR();
+    var requisitante = await getRequisitantePorUsuario(USUARIO_LOGADO);
 
-    const pedidos=new Map();
+    var pedidos = new Map();
 
-    for(const tr of rows){
-      const raw=[...tr.cells].map(td=>(td.innerText||"").trim());
-      if(raw.every(x=>!x)) continue;
+    for (var r=0; r<rows.length; r++){
+      var tr = rows[r];
+      var raw = Array.from(tr.cells).map(function(td){ return String(td.innerText||"").trim(); });
+      if(raw.every(function(x){return !x;})) continue;
 
-      const pedido=(raw[0]||"").trim();
-      const cliente=(raw[1]||"").trim();
-      const codigo=(raw[2]||"").trim();
-      const k5=(raw[3]||"").trim();
-      const k6=(raw[4]||"").trim();
-      const k7=(raw[5]||"").trim();
+      var pedido = (raw[0]||"").trim();
+      var cliente = (raw[1]||"").trim();
+      var codigo = (raw[2]||"").trim();
+      var k5 = (raw[3]||"").trim();
+      var k6 = (raw[4]||"").trim();
+      var k7 = (raw[5]||"").trim();
 
-      const qtdNumAbs = absQTDNumFromText(raw[6] || "0");
-      const qtd = formatQtdTxtFromNum(qtdNumAbs);
-      if(qtdNumAbs === 0) continue;
+      var qtdAbsNum = absQTDNumFromText(raw[6]||"0");
+      if(qtdAbsNum === 0) continue;
+      var qtdTxt = formatQtdTxtFromNum(qtdAbsNum);
 
       if(!pedido || !codigo) continue;
 
-      if(!pedidos.has(pedido)) pedidos.set(pedido,{cliente,itens:[]});
-      else if(!pedidos.get(pedido).cliente && cliente) pedidos.get(pedido).cliente=cliente;
+      if(!pedidos.has(pedido)) pedidos.set(pedido, {cliente:cliente, itens:[]});
+      if(!pedidos.get(pedido).cliente && cliente) pedidos.get(pedido).cliente = cliente;
 
-      pedidos.get(pedido).itens.push({codigo,k5,k6,k7,qtd});
+      pedidos.get(pedido).itens.push({codigo:codigo, k5:k5, k6:k6, k7:k7, qtd:qtdTxt});
     }
 
-    const out=[];
-    for(const [pedido,obj] of pedidos.entries()){
-      out.push(["R",hoje,"1","1",requisitante,"27",`${pedido}  -  ${obj.cliente||""}`,pedido,"0","0"].join("|"));
-      for(const it of obj.itens){
-        const local=await getLocalPorItem(it.codigo);
+    var out = [];
+    pedidos.forEach(async function(){});
+    for (const [pedido, obj] of pedidos.entries()){
+      out.push(["R",hoje,"1","1",requisitante,"27",pedido+"  -  "+(obj.cliente||""),pedido,"0","0"].join("|"));
+      for (var i=0;i<obj.itens.length;i++){
+        var it = obj.itens[i];
+        var local = await getLocalPorItem(it.codigo);
         out.push(["I","P",it.codigo,it.k5||"",it.k6||"",it.k7||"",it.qtd,"3",local].join("|"));
       }
     }
 
     if(!out.length) return alert("Nada para importar.");
     baixarComoTXT("importacao_requisicao", out.join("\n"));
-
-  }catch(err){ alert("Erro: "+err.message); }
+  } catch(err){
+    alert("Erro: " + err.message);
+  }
 }
 
-/* ===== Admin ===== */
+/* Admin */
 async function adminRecarregar(){
-  const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
-  if(!res.ok) return alert(res.msg||"Erro ao listar usuários");
+  var res = await api("admin_listarUsuarios", USUARIO_LOGADO);
+  if(!res.ok) return alert(res.msg || "Erro ao listar usuários");
 
-  const sel=$("admEmailUser");
-  sel.innerHTML="";
-  res.usuarios.forEach(u=>{
-    const op=document.createElement("option");
-    op.value=u.usuario; op.textContent=u.usuario;
-    sel.appendChild(op);
-  });
+  var sel = $("admEmailUser");
+  if(sel){
+    sel.innerHTML = "";
+    res.usuarios.forEach(function(u){
+      var op = document.createElement("option");
+      op.value = u.usuario;
+      op.textContent = u.usuario + " ("+u.nivel+")";
+      sel.appendChild(op);
+    });
+  }
 
   renderPermsTable(res.usuarios);
 }
 
 async function adminSalvarEmail(){
-  const alvo=$("admEmailUser").value;
-  const novo=$("admEmailNovo").value;
-  const r=await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
-  alert(r.ok ? "Email atualizado!" : (r.msg||"Erro"));
+  var alvo = $("admEmailUser").value;
+  var novo = $("admEmailNovo").value;
+  var r = await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
+  alert(r.ok ? "Email atualizado!" : (r.msg || "Erro"));
 }
 
 function renderPermsTable(users){
-  const wrap = $("adminPermsWrap");
+  var wrap = $("adminPermsWrap");
+  if(!wrap) return;
   wrap.innerHTML = "";
 
-  const table = document.createElement("table");
+  var table = document.createElement("table");
   table.className = "table-admin";
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>Usuário</th>
-        <th>Nível</th>
-        <th>Transferência</th>
-        <th>Zeramento</th>
-        <th>Requisição</th>
-        <th>Ação</th>
-      </tr>
-    </thead>
-  `;
-  const tb = document.createElement("tbody");
 
-  const niveis = ["ADMIN","OPERADOR","CONSULTA","USER"];
-  const perms = ["EDITAR","VISUALIZAR","BLOQUEAR"];
+  table.innerHTML =
+    "<thead><tr>"+
+    "<th>Usuário</th><th>Nível</th><th>Transferência</th><th>Zeramento</th><th>Requisição</th><th>Ação</th>"+
+    "</tr></thead>";
 
-  users.forEach(u=>{
-    const tr = document.createElement("tr");
+  var tb = document.createElement("tbody");
 
-    const selNivel = mkSelect(niveis, u.nivel);
-    const selT = mkSelect(perms, u.perms.transferencia);
-    const selZ = mkSelect(perms, u.perms.zeramento);
-    const selR = mkSelect(perms, u.perms.requisicao);
+  var niveis = ["ADMIN","OPERADOR","CONSULTA","USER"];
+  var perms = ["EDITAR","VISUALIZAR","BLOQUEAR"];
 
-    const btn = document.createElement("button");
+  users.forEach(function(u){
+    var tr = document.createElement("tr");
+
+    var selNivel = mkSelect(niveis, u.nivel);
+    var selT = mkSelect(perms, u.perms.transferencia);
+    var selZ = mkSelect(perms, u.perms.zeramento);
+    var selR = mkSelect(perms, u.perms.requisicao);
+
+    var btn = document.createElement("button");
+    btn.className = "btn";
+    btn.style.margin = "0";
+    btn.style.padding = "10px 12px";
     btn.textContent = "Salvar";
-    btn.onclick = async ()=>{
-      const r = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
-      alert(r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
+    btn.onclick = async function(){
+      var resp = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
+      alert(resp.ok ? "Salvo!" : (resp.msg || "Erro"));
     };
 
     tr.appendChild(tdText(u.usuario));
@@ -688,22 +873,27 @@ function renderPermsTable(users){
   wrap.appendChild(table);
 
   function mkSelect(opts, current){
-    const s = document.createElement("select");
-    opts.forEach(o=>{
-      const op = document.createElement("option");
+    var s = document.createElement("select");
+    opts.forEach(function(o){
+      var op = document.createElement("option");
       op.value = o; op.textContent = o;
-      if((current||"").toUpperCase() === o) op.selected = true;
+      if(String(current||"").toUpperCase() === o) op.selected = true;
       s.appendChild(op);
     });
     return s;
   }
-  function tdText(t){ const td=document.createElement("td"); td.textContent=t; return td; }
-  function tdWrap(el){ const td=document.createElement("td"); td.appendChild(el); return td; }
+  function tdText(t){ var td=document.createElement("td"); td.textContent=t; return td; }
+  function tdWrap(el){ var td=document.createElement("td"); td.appendChild(el); return td; }
 }
 
-/* ===== Enter no login ===== */
-$("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
-$("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
+/* Config shortcut */
+function openConfig(){
+  abrir("cfgTransfer");
+}
+
+/* Enter no login */
+$("usuario").addEventListener("keyup", function(e){ if(e.key === "Enter") entrar(); });
+$("senha").addEventListener("keyup", function(e){ if(e.key === "Enter") entrar(); });
 
 </script>
 </body>
