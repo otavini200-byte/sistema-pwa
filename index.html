@@ -1,263 +1,176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sistema</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sistema PWA</title>
 
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <meta name="theme-color" content="#6a4bc9" />
+<style>
+:root{
+  --primary:#6a4bc9;
+  --bg:#f3f4f8;
+  --card:#fff;
+  --text:#333;
+}
+*{box-sizing:border-box;font-family:Segoe UI,Arial}
+body{margin:0;background:var(--bg);color:var(--text)}
+.hidden{display:none}
 
-  <style>
-    :root{
-      --primary:#6a4bc9;
-      --primary2:#2c1a4d;
-      --bg:#0b0b10;
-      --card:#12121a;
-      --card2:#171722;
-      --text:#f2f2f6;
-      --muted:rgba(242,242,246,.75);
-      --line:rgba(255,255,255,.10);
-      --shadow: 0 18px 60px rgba(0,0,0,.45);
-      --shadow2: 0 12px 30px rgba(0,0,0,.32);
-      --ok:#27ae60;
-      --danger:#c0392b;
-      --warn:#f39c12;
-    }
+.login{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.card{
+  width:380px;
+  background:var(--card);
+  padding:30px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.15);
+  animation:fade .4s ease;
+}
+@keyframes fade{from{opacity:0;transform:translateY(20px)}to{opacity:1}}
 
-    .light{
-      --bg:#f2f4f8;
-      --card:#ffffff;
-      --card2:#ffffff;
-      --text:#1f1f2a;
-      --muted:rgba(31,31,42,.70);
-      --line:rgba(0,0,0,.10);
-      --shadow: 0 16px 50px rgba(0,0,0,.12);
-      --shadow2: 0 10px 24px rgba(0,0,0,.10);
-    }
+h2{text-align:center;margin-bottom:20px}
 
-    *{box-sizing:border-box;font-family:Segoe UI,system-ui,Arial,sans-serif;}
-    body{
-      margin:0; color:var(--text); background:radial-gradient(1200px 600px at 10% 10%, rgba(106,75,201,.25), transparent 60%),
-      radial-gradient(800px 600px at 90% 30%, rgba(44,26,77,.25), transparent 55%),
-      var(--bg);
-      transition:background .25s,color .25s;
-    }
-    body.lock{overflow:hidden;}
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-top:10px;
+  font-size:14px;
+}
 
-    .fade-in{animation:fadeIn .22s ease-out both;}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+button{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:var(--primary);
+  color:#fff;
+  font-weight:bold;
+  margin-top:14px;
+  cursor:pointer;
+  transition:.2s;
+}
+button:hover{opacity:.9;transform:translateY(-1px)}
 
-    /* Topbar */
-    .topbar{
-      position:sticky; top:0; z-index:3;
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 18px;
-      background:linear-gradient(180deg, rgba(18,18,26,.92), rgba(18,18,26,.65));
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .light .topbar{
-      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
-    }
-    .brand{
-      display:flex; gap:10px; align-items:center;
-      font-weight:700; letter-spacing:.2px;
-    }
-    .pill{
-      font-size:12px; padding:6px 10px; border-radius:999px;
-      border:1px solid var(--line); color:var(--muted);
-      background:rgba(255,255,255,.04);
-    }
-    .light .pill{ background:rgba(0,0,0,.03); }
-
-    /* Buttons / inputs */
-    input,select{
-      width:100%; padding:12px 12px; margin-top:10px;
-      border-radius:12px; border:1px solid var(--line);
-      outline:none; background:var(--card2); color:var(--text);
-      transition: box-shadow .15s, transform .12s, border-color .15s;
-    }
-    input:focus,select:focus{
-      border-color: rgba(106,75,201,.65);
-      box-shadow: 0 0 0 4px rgba(106,75,201,.18);
-    }
-
-    .btn{
-      width:100%; padding:12px 14px; border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(135deg, var(--primary), #7b5df0);
-      color:#fff; cursor:pointer;
-      transition: transform .12s, filter .12s, box-shadow .12s;
-      box-shadow: 0 10px 26px rgba(106,75,201,.25);
-      margin-top:8px;
-      font-weight:650;
-    }
-    .btn:hover{filter:brightness(1.03);transform:translateY(-1px);}
-    .btn:active{transform:translateY(0px);filter:brightness(.98);}
-    .btn.secondary{
-      background:transparent;
-      border:1px solid var(--line);
-      box-shadow:none;
-      color:var(--text);
-    }
-    .btn.danger{
-      background:linear-gradient(135deg, var(--danger), #e74c3c);
-      box-shadow: 0 10px 26px rgba(231,76,60,.20);
-    }
-
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-    .row > *{flex:1; min-width:180px;}
-
-    /* Login */
-    .login{
-      min-height:100vh;
-      display:flex;align-items:center;justify-content:center;
-      padding:22px;
-    }
-    .login-card{
-      width:min(420px, 100%);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:26px;
-      box-shadow:var(--shadow);
-    }
-    .light .login-card{
-      background:var(--card);
-    }
-    .login-card h2{margin:0 0 8px 0;}
-    .sub{color:var(--muted); font-size:13px; margin:0 0 12px 0;}
-    .login-links{margin-top:12px; text-align:center; font-size:13px; color:var(--muted);}
-    .login-links span{cursor:pointer; color:rgba(106,75,201,1); font-weight:650; margin:0 6px;}
-    .login-links span:hover{text-decoration:underline;}
-
-    /* Sistema layout */
-    .hidden{display:none;}
-    .sistema{display:flex; min-height:100vh;}
-    .sidebar{
-      width:290px;
-      padding:16px;
-      border-right:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      backdrop-filter: blur(10px);
-    }
-    .light .sidebar{background:rgba(255,255,255,.75);}
-    .menu-title{color:var(--muted); font-size:12px; letter-spacing:.6px; margin:10px 8px 8px;}
-    .menu div{
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.03);
-      margin-bottom:10px;
-      cursor:pointer;
-      transition: transform .12s, background .12s, border-color .12s;
-      user-select:none;
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-    }
-    .light .menu div{background:rgba(0,0,0,.03);}
-    .menu div:hover{transform:translateY(-1px); border-color:rgba(106,75,201,.35);}
-    .menu div small{color:var(--muted); font-weight:600;}
-
-    .conteudo{flex:1; padding:18px;}
-    .box{
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:18px;
-      box-shadow:var(--shadow2);
-      max-width:1400px;
-    }
-    .light .box{background:var(--card);}
-    .box h2{margin:0 0 12px 0;}
-    .hint{font-size:12px;color:var(--muted); margin-top:10px}
-
-    /* Table */
-    .tabela-container{
-      border:1px solid var(--line);
-      border-radius:14px;
-      overflow:auto;
-      min-height:300px;
-      background:rgba(0,0,0,.08);
-    }
-    .light .tabela-container{background:rgba(0,0,0,.02);}
-    .tabela-colagem{width:100%; border-collapse:collapse;}
-    .tabela-colagem td{
-      border:1px solid var(--line);
-      padding:8px;
-      font-size:13px;
-      min-width:120px;
-      background:transparent;
-    }
-    .tabela-colagem td:focus{
-      outline:none;
-      box-shadow: inset 0 0 0 2px rgba(106,75,201,.35);
-      background:rgba(106,75,201,.08);
-    }
-
-    /* Admin */
-    .table-admin{width:100%; border-collapse:collapse; margin-top:12px;}
-    .table-admin th,.table-admin td{border:1px solid var(--line); padding:8px; font-size:13px;}
-    .table-admin th{background:rgba(106,75,201,.10); text-align:left;}
-    .tag{
-      display:inline-block;
-      font-size:12px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      color:var(--muted);
-    }
-
-    /* Responsive */
-    @media (max-width: 980px){
-      .sistema{flex-direction:column;}
-      .sidebar{width:100%; border-right:none; border-bottom:1px solid var(--line);}
-    }
-  </style>
+.links{
+  text-align:center;
+  margin-top:12px;
+  font-size:13px;
+}
+.links span{
+  cursor:pointer;
+  color:var(--primary);
+  margin:0 6px;
+}
+</style>
 </head>
 
-<body class="lock">
+<body>
 
-  <!-- LOGIN -->
-  <div class="login" id="loginBox">
-    <div class="login-card fade-in">
-      <h2>🔐 Sistema</h2>
-      <p class="sub">Entre com seu usuário e senha</p>
-      <input id="usuario" placeholder="Usuário">
-      <input id="senha" type="password" placeholder="Senha">
-      <button class="btn" onclick="entrar()">Entrar</button>
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+  <div class="card">
+    <h2>🔐 Login</h2>
+    <input id="usuario" placeholder="Usuário">
+    <input id="senha" type="password" placeholder="Senha">
+    <button onclick="entrar()">Entrar</button>
 
-      <div class="login-links">
-        <span onclick="showLogin('cadastro')">Criar conta</span> |
-        <span onclick="showLogin('recuperar')">Recuperar senha</span> |
-        <span onclick="toggleSenha()">👁 Ver senha</span>
-      </div>
+    <div class="links">
+      <span onclick="mostrarCadastro()">Criar conta</span> |
+      <span onclick="toggleSenha()">👁 Ver senha</span>
     </div>
   </div>
+</div>
 
-  <!-- CADASTRO -->
-  <div class="login hidden" id="cadastro">
-    <div class="login-card fade-in">
-      <h2>✨ Criar conta</h2>
-      <p class="sub">Preencha os dados</p>
-      <input id="cUser" placeholder="Usuário">
-      <input id="cSenha" placeholder="Senha">
-      <input id="cEmail" placeholder="Email">
-      <button class="btn" onclick="cadastrar()">Cadastrar</button>
-      <button class="btn secondary" onclick="showLogin('loginBox')">Voltar</button>
-    </div>
+<!-- CADASTRO -->
+<div class="login hidden" id="cadastroBox">
+  <div class="card">
+    <h2>📝 Cadastro</h2>
+    <input id="cUser" placeholder="Usuário">
+    <input id="cSenha" placeholder="Senha">
+    <input id="cEmail" placeholder="Email">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <button onclick="voltarLogin()">Voltar</button>
   </div>
+</div>
 
-  <!-- RECUPERAR -->
-  <div class="login hidden" id="recuperar">
-    <div class="login-card fade-in">
-      <h2>📩 Recuperar senha</h2>
-      <p class="sub">Vamos enviar a senha para seu email</p>
-      <input id="rUser" placeholder="Usuário">
-      <button class="btn" onclick="recuperarSenha()">Enviar</button>
-      <button class="btn secondary" onclick="showLogin('loginBox')">Voltar</button>
-    </div>
-  </div>
+<script>
+/* ========= URL DO APPS SCRIPT ========= */
+const API_URL = "COLE_AQUI_SUA_URL_EXEC";
+
+/* ========= FUNÇÕES VISUAIS ========= */
+function toggleSenha(){
+  const s = document.getElementById("senha");
+  s.type = s.type === "password" ? "text" : "password";
+}
+
+function mostrarCadastro(){
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("cadastroBox").classList.remove("hidden");
+}
+
+function voltarLogin(){
+  document.getElementById("cadastroBox").classList.add("hidden");
+  document.getElementById("loginBox").classList.remove("hidden");
+}
+
+/* ========= API ========= */
+async function api(action, ...args){
+  const r = await fetch(API_URL,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({action,args})
+  });
+  return r.json();
+}
+
+/* ========= LOGIN ========= */
+async function entrar(){
+  const u = usuario.value.trim();
+  const s = senha.value.trim();
+
+  if(!u || !s){
+    alert("Preencha usuário e senha");
+    return;
+  }
+
+  const res = await api("login", u, s);
+  if(!res.ok){
+    alert(res.msg || "Login inválido");
+    return;
+  }
+
+  alert("Login OK! Nível: " + res.nivel);
+}
+
+/* ========= CADASTRO ========= */
+async function cadastrar(){
+  const u = cUser.value.trim();
+  const s = cSenha.value.trim();
+  const e = cEmail.value.trim();
+
+  if(!u || !s || !e){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  const res = await api("cadastrar", u, s, e);
+  alert(res.ok ? "Conta criada!" : res.msg);
+  if(res.ok) voltarLogin();
+}
+
+/* ========= ENTER NO LOGIN ========= */
+usuario.addEventListener("keyup",e=>{if(e.key==="Enter")entrar()});
+senha.addEventListener("keyup",e=>{if(e.key==="Enter")entrar()});
+</script>
+
+</body>
+</html>
 
   <!-- SISTEMA -->
   <div class="hidden" id="sistema">
