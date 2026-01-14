@@ -125,6 +125,11 @@ input:focus,select:focus{
   transition:transform .12s ease, opacity .12s ease;
 }
 .btn:hover{ opacity:.92; transform:translateY(-1px); }
+.btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
 .btn-primary{ background:linear-gradient(135deg,var(--secondary),var(--primary)); color:#fff; }
 .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--text); }
 .btn-danger{ background:var(--danger); color:#fff; }
@@ -321,9 +326,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
     <label>Senha</label>
     <input id="senha" type="password" placeholder="Digite sua senha" autocomplete="current-password">
 
-    <button class="btn btn-primary" onclick="entrar()">Entrar</button>
+    <button id="btnEntrar" class="btn btn-primary" onclick="entrar()">Entrar</button>
 
-    <!-- ✅ VOLTARAM A FUNCIONAR (calls showLogin) -->
+    <!-- ✅ VOLTARAM A FUNCIONAR -->
     <div class="login-links">
       <span onclick="showLogin('cadastro')">Criar conta</span> |
       <span onclick="showLogin('recuperar')">Recuperar senha</span> |
@@ -541,7 +546,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbw9QhuCIvuLHeEgtHUfIXHv7Cnj6CbGg2N9U8mt9JWkZbfauUhy2AZBxz25VGfN21r65Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwVDN_9ngsTs9c7BnUVaY4j7Y8-xyOIRjezf647QCIMb-UHTRzBLirbtr6WHvInnast6w/exec";
 
 const COLUNAS_FIXAS = 9;
 let NIVEL = "";
@@ -602,7 +607,6 @@ function setTop(title,subtitle){
   $("topTitle").textContent=title;
   $("topSubtitle").textContent=subtitle;
 }
-
 function abrir(id){
   document.querySelectorAll(".main .card").forEach(s=>s.classList.add("hidden"));
   $(id).classList.remove("hidden");
@@ -637,17 +641,30 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* API */
+/* ✅ API (COM DEBUG QUANDO VOLTA HTML) */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
+
   const r = await fetch(API_URL, {
     method:"POST",
     headers:{ "Content-Type":"text/plain;charset=utf-8" },
     body: payload,
     redirect: "follow"
   });
+
   const txt = await r.text();
+
+  // ✅ Se vier HTML (Google pedindo login/permissão), trava e avisa claro
+  if (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html")) {
+    throw new Error(
+      "A API retornou HTML (provável permissão/implantação do Apps Script).\n" +
+      "No Apps Script: Deploy > Web app > Who has access: Anyone.\n" +
+      "Depois copie a NOVA URL /exec e cole no API_URL."
+    );
+  }
+
   if(!r.ok) throw new Error("HTTP "+r.status+" :: "+txt.slice(0,200));
+
   try{ return JSON.parse(txt); }
   catch(e){ throw new Error("Resposta não-JSON: "+txt.slice(0,200)); }
 }
@@ -781,16 +798,25 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
-/* AUTH */
+/* ✅ AUTH (LOGIN ARRUMADO COM LOADING) */
 async function entrar(){
   $("statusLogin").textContent="";
   const u = $("usuario").value.trim();
   const s = $("senha").value.trim();
   if(!u || !s) return toast("warn","Atenção","Preencha usuário e senha.");
 
+  const btn = $("btnEntrar");
+  btn.disabled = true;
+  const oldTxt = btn.textContent;
+  btn.textContent = "Entrando...";
+
   try{
     const res = await api("login", u, s);
-    if(!res.ok) return toast("danger","Login","Usuário ou senha inválidos.");
+
+    if(!res.ok){
+      toast("danger","Login","Usuário ou senha inválidos.");
+      return;
+    }
 
     NIVEL = (res.nivel || "").toUpperCase();
     USUARIO_LOGADO = res.usuario || u;
@@ -814,12 +840,16 @@ async function entrar(){
     aplicarPermissoesUI();
     voltarMenu();
     abrir("transferencia");
-    toast("ok","Bem-vindo",`Você entrou como ${NIVEL}.`);
 
+    toast("ok","Bem-vindo",`Você entrou como ${NIVEL}.`);
     if(NIVEL==="ADMIN") adminRecarregar();
+
   }catch(err){
     $("statusLogin").textContent = "Erro: " + err.message;
     toast("danger","Erro",err.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = oldTxt;
   }
 }
 
@@ -987,7 +1017,6 @@ async function adminRecarregar(){
     sel.appendChild(op);
   });
 
-  // table simples (mantive)
   const wrap=$("adminPermsWrap");
   wrap.innerHTML="<div class='small'>Permissões carregadas.</div>";
 }
