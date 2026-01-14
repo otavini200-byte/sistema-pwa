@@ -78,6 +78,11 @@
     .tabela-colagem td:focus{outline:none;background:rgba(106,75,201,0.10);}
 
     .hint{font-size:12px;opacity:.78;margin-top:10px}
+    .small{font-size:12px;opacity:.85;margin-top:10px}
+
+    .table-admin{width:100%;border-collapse:collapse;margin-top:10px;}
+    .table-admin th,.table-admin td{border:1px solid var(--line);padding:8px;font-size:13px;}
+    .table-admin th{background:rgba(106,75,201,0.10);text-align:left;}
   </style>
 </head>
 
@@ -143,7 +148,7 @@
       </div>
 
       <div class="menu hidden" id="menuConta">
-        <div onclick="abrir('senhaBox')">🔑 Alterar senha</div>
+        <div onclick="abrir('cfgTransfer')">🔁 Local Transferência</div>
         <div onclick="abrir('tema')">🌙 Tema</div>
         <div onclick="logout()">🚪 Sair</div>
         <div onclick="openConfig()">⬅ Voltar</div>
@@ -164,6 +169,7 @@
           <button onclick="importacaoTransferencia()">Importação</button>
           <button class="btn-danger" onclick="limparTabela('transferencia')">Limpar</button>
         </div>
+        <div class="hint">9 colunas. QTD negativa vira positiva no TXT. Sentido DE/PARA usa QTD1/QTD2 + config.</div>
       </div>
 
       <div class="box hidden" id="zeramento">
@@ -173,6 +179,7 @@
           <button onclick="importacaoZeramento()">Importação</button>
           <button class="btn-danger" onclick="limparTabela('zeramento')">Limpar</button>
         </div>
+        <div class="hint">qtd2&gt;qtd1 → E/1905 • senão → S/5906. QTD negativa vira positiva.</div>
       </div>
 
       <div class="box hidden" id="requisicao">
@@ -185,19 +192,19 @@
         <div class="hint">Cole: Pedido | Cliente | CódigoItem | Chave5 | Chave6 | Chave7 | Qtd</div>
       </div>
 
+      <div class="box hidden" id="cfgTransfer">
+        <h2>🔁 Local Transferência</h2>
+        <input id="cfgLocalOutro" placeholder="Outro local (ex: 4044)">
+        <button onclick="salvarCfgTransfer()">Salvar</button>
+        <div class="small">A coluna 9 é o “Local Informado”. Este campo é o “Outro Local”.</div>
+      </div>
+
       <div class="box hidden" id="tema">
         <h2>🌙 Tema</h2>
         <div class="row">
           <button onclick="setTema('light')">Claro</button>
           <button onclick="setTema('dark')">Escuro</button>
         </div>
-      </div>
-
-      <div class="box hidden" id="senhaBox">
-        <h2>🔑 Alterar senha</h2>
-        <input id="novaSenha" placeholder="Nova senha">
-        <input id="confirmaSenha" placeholder="Confirmar senha">
-        <button onclick="alert('Backend de senha ainda não implementado.')">Salvar</button>
       </div>
 
       <div class="box hidden" id="adminEmail">
@@ -214,6 +221,7 @@
 
       <div class="box hidden" id="adminPerms">
         <h2>🧩 Permissões (Admin)</h2>
+        <div class="small">Nível + Permissões por área</div>
         <div id="adminPermsWrap"></div>
         <div class="row">
           <button onclick="adminRecarregar()">Recarregar</button>
@@ -225,14 +233,7 @@
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbwRkUUhHHU3ymcRaEyhnLki-mXuqUnOV3a3-cFa2NVm4q74c0Wd-MGdqvdQHxfx2sokFg/exec";
-
-/* ===== Debug: se der erro, aparece ===== */
-window.addEventListener("error", function(e){
-  var msg = (e && e.message) ? e.message : String(e);
-  alert("Erro no JS: " + msg);
-});
-
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiGDN3lceyAV-HMOOc2KK5y4KDyOaWHpoHUFeFk27frsdnaqqvLnaCp-j08EQbIEhg6FwHrv3v8SwgWseicJTYoyC4cY5bE12TTwjk6hUMjXq0R7i7R1JZQ7K-eVw93wsa0p_VFZ9_RjhD1C7vLZGuUbqEHm2WaFvBi6gvdMNeIuS2z6AXnOPlzWOAW4NwRsHCoGqj2Eq691UXwp8lYVeSacZipwjELt5KIc6-JwVc-WEGCdMdWrwLLXjSh3OKEa6XP9YBnEi6L4UBybHVo07QlwbDiQakqL5lJ1Oti&lib=McTwOPg6EjKgsOsf3ykd3XBrns8elDHiD";
 
 /* ===== PWA SW ===== */
 if ("serviceWorker" in navigator) {
@@ -266,6 +267,18 @@ let USUARIO_LOGADO = "";
 let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const COLUNAS_FIXAS = 9;
 const codCache = new Map();
+
+let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
+function salvarCfgTransfer(){
+  const v = ($("cfgLocalOutro").value || "").trim();
+  if(!v) return alert("Informe o outro local (ex: 4044).");
+  LOCAL_OUTRO_TRANSFER = v;
+  localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
+  alert("Salvo!");
+}
+function carregarCfgTransferUI(){
+  if($("cfgLocalOutro")) $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
+}
 
 /* ===== Menus ===== */
 function hideAllSideMenus(){
@@ -334,6 +347,15 @@ function normalizeQTD(str){
   if(isNaN(v)) v=0;
   return v;
 }
+function absQTDNumFromText(txt){
+  return Math.abs(normalizeQTD(txt));
+}
+function formatQtdTxtFromNum(n){
+  if (Number.isInteger(n)) return String(n);
+  let s = n.toFixed(3).replace(".", ",");
+  s = s.replace(/0+$/,"").replace(/,$/,"");
+  return s;
+}
 function baixarComoTXT(nome,texto){
   const blob=new Blob([texto],{type:"text/plain"});
   const a=document.createElement("a");
@@ -343,66 +365,22 @@ function baixarComoTXT(nome,texto){
 }
 
 /* ===== Permissões ===== */
+function setBoxReadOnly(boxId, ro){
+  document.querySelectorAll(`#${boxId} .tabela-colagem td`).forEach(td=>td.contentEditable = (!ro).toString());
+}
 function aplicarPermissoesUI(){
   $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
   $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
   $("m_requisicao").style.display = (PERMS.requisicao==="BLOQUEAR") ? "none" : "";
+
+  if(PERMS.transferencia === "VISUALIZAR") setBoxReadOnly("transferencia", true);
+  if(PERMS.zeramento === "VISUALIZAR") setBoxReadOnly("zeramento", true);
+  if(PERMS.requisicao === "VISUALIZAR") setBoxReadOnly("requisicao", true);
+
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
-/* ===== Login/Cadastro/Recuperar ===== */
-async function entrar(){
-  if(API_URL.includes("COLE_AQUI")) return alert("Cole sua URL /exec em API_URL no index.html");
-
-  const u=$("usuario").value;
-  const s=$("senha").value;
-
-  const res = await api("login", u, s);
-  if(!res.ok) return alert("Usuário ou senha inválidos");
-
-  NIVEL=res.nivel;
-  USUARIO_LOGADO=res.usuario;
-  PERMS=res.perms || PERMS;
-
-  document.body.classList.remove("lock");
-  $("loginBox").classList.add("hidden");
-  $("cadastro").classList.add("hidden");
-  $("recuperar").classList.add("hidden");
-  $("sistema").classList.remove("hidden");
-
-  criarTabela("transferencia",10,COLUNAS_FIXAS);
-  criarTabela("zeramento",10,COLUNAS_FIXAS);
-  criarTabela("requisicao",10,COLUNAS_FIXAS);
-
-  aplicarPermissoesUI();
-  backMain();
-
-  if(NIVEL==="ADMIN") await adminRecarregar();
-}
-
-async function cadastrar(){
-  const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
-  alert(res.ok ? "Conta criada!" : (res.msg || "Erro"));
-  if(res.ok) showOnlyLogin("loginBox");
-}
-
-async function recuperarSenha(){
-  const res = await api("recuperar", $("rUser").value);
-  alert(res.ok ? "Email enviado!" : (res.msg || "Erro"));
-}
-
-function logout(){
-  NIVEL=""; USUARIO_LOGADO=""; PERMS={transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
-  $("sistema").classList.add("hidden");
-  $("loginBox").classList.remove("hidden");
-  document.body.classList.add("lock");
-  $("senha").value="";
-  backMain();
-}
-
-/* ===== Transferência/Zeramento/Requisição =====
-   (mantém chamadas pro seu backend atual)
-*/
+/* ===== Backend maps ===== */
 async function mapearOuCadastrar(chave){
   const key=(chave||"").toString().trim();
   if(!key) return "";
@@ -456,35 +434,97 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
+/* ===== Login/Cadastro/Recuperar ===== */
+async function entrar(){
+  if(API_URL.includes("SEU_DEPLOY")) return alert("Cole sua URL /exec em API_URL no index.html");
+
+  const u=$("usuario").value;
+  const s=$("senha").value;
+
+  const res = await api("login", u, s);
+  if(!res.ok) return alert(res.msg || "Usuário ou senha inválidos");
+
+  NIVEL=res.nivel;
+  USUARIO_LOGADO=res.usuario;
+  PERMS=res.perms || PERMS;
+
+  document.body.classList.remove("lock");
+  $("loginBox").classList.add("hidden");
+  $("cadastro").classList.add("hidden");
+  $("recuperar").classList.add("hidden");
+  $("sistema").classList.remove("hidden");
+
+  criarTabela("transferencia",10,COLUNAS_FIXAS);
+  criarTabela("zeramento",10,COLUNAS_FIXAS);
+  criarTabela("requisicao",10,COLUNAS_FIXAS);
+
+  carregarCfgTransferUI();
+  aplicarPermissoesUI();
+  backMain();
+
+  if(NIVEL==="ADMIN") await adminRecarregar();
+}
+
+async function cadastrar(){
+  const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
+  alert(res.ok ? "Conta criada!" : (res.msg || "Erro"));
+  if(res.ok) showOnlyLogin("loginBox");
+}
+
+async function recuperarSenha(){
+  const res = await api("recuperar", $("rUser").value);
+  alert(res.ok ? "Email enviado!" : (res.msg || "Erro"));
+}
+
+function logout(){
+  NIVEL=""; USUARIO_LOGADO=""; PERMS={transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+  $("sistema").classList.add("hidden");
+  $("loginBox").classList.remove("hidden");
+  document.body.classList.add("lock");
+  $("senha").value="";
+  backMain();
+}
+
+/* ===== Importações ===== */
 async function importacaoTransferencia(){
   try{
     const rows=document.querySelectorAll("#transferencia .tabela-colagem tbody tr");
     const hoje=dataHoje_ptBR();
     const saida=[];
+
     for(const tr of rows){
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
       while(c.length<9) c.push("");
+
       const codigo=c[0];
       const chave5=c[2], chave6=c[3], chave7=c[4];
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
-      const qtd3num=normalizeQTD(c[7]||"0");
-      const qtd3txt=(c[7]||"0").toString().trim()||"0";
-      const local=(c[8]||"164").toString().trim()||"164";
-      if(!codigo && qtd1===0 && qtd2===0 && qtd3num===0 && !chave5 && !chave6 && !chave7) continue;
+
+      const qtd3numAbs = absQTDNumFromText(c[7]||"0");
+      const qtd3txtAbs = formatQtdTxtFromNum(qtd3numAbs);
+      if(qtd3numAbs === 0) continue;
+
+      const localInformado=(c[8]||"164").toString().trim()||"164";
+      const outroLocal=(LOCAL_OUTRO_TRANSFER||"4044").trim();
+
+      if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
       const f5=await mapearOuCadastrar(chave5);
       const f6=await mapearOuCadastrar(chave6);
       const f7=await mapearOuCadastrar(chave7);
 
-      let origem=local, destino="4044";
-      if(qtd2>qtd1){ origem="4044"; destino=local; }
+      let origem=localInformado, destino=outroLocal;
+      if(qtd2>qtd1){ origem=outroLocal; destino=localInformado; }
 
-      const valor=(qtd3num*0.01).toFixed(2).replace(".",",");
-      saida.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3txt,"0,01",valor,"5949"].join("|"));
+      const valor=(qtd3numAbs*0.01).toFixed(2).replace(".",",");
+
+      saida.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3txtAbs,"0,01",valor,"5949"].join("|"));
     }
-    if(!saida.length) return alert("Nada para importar.");
+
+    if(!saida.length) return alert("Nada para importar (verifique QTD3).");
     baixarComoTXT("importacao_transferencia", saida.join("\n"));
+
   }catch(err){ alert("Erro: "+err.message); }
 }
 
@@ -493,17 +533,23 @@ async function importacaoZeramento(){
     const rows=document.querySelectorAll("#zeramento .tabela-colagem tbody tr");
     const hoje=dataHoje_ptBR();
     const saida=[];
+
     for(const tr of rows){
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
       while(c.length<9) c.push("");
+
       const codigo=c[0];
       const chave5=c[2], chave6=c[3], chave7=c[4];
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
-      const qtd3num=normalizeQTD(c[7]||"0");
-      const qtd3txt=(c[7]||"0").toString().trim()||"0";
+
+      const qtd3numAbs = absQTDNumFromText(c[7]||"0");
+      const qtd3txtAbs = formatQtdTxtFromNum(qtd3numAbs);
+      if(qtd3numAbs === 0) continue;
+
       const local=(c[8]||"164").toString().trim()||"164";
-      if(!codigo && qtd1===0 && qtd2===0 && qtd3num===0 && !chave5 && !chave6 && !chave7) continue;
+
+      if(!codigo && !chave5 && !chave6 && !chave7 && qtd1===0 && qtd2===0) continue;
 
       const f5=await mapearOuCadastrar(chave5);
       const f6=await mapearOuCadastrar(chave6);
@@ -511,12 +557,14 @@ async function importacaoZeramento(){
 
       const tipo=(qtd2>qtd1)?"E":"S";
       const final=(qtd2>qtd1)?"1905":"5906";
-      const valor=(qtd3num*0.01).toFixed(2).replace(".",",");
+      const valor=(qtd3numAbs*0.01).toFixed(2).replace(".",",");
 
-      saida.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3txt,"0,01",valor,final].join("|"));
+      saida.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3txtAbs,"0,01",valor,final].join("|"));
     }
-    if(!saida.length) return alert("Nada para importar.");
+
+    if(!saida.length) return alert("Nada para importar (verifique QTD3).");
     baixarComoTXT("importacao_zeramento", saida.join("\n"));
+
   }catch(err){ alert("Erro: "+err.message); }
 }
 
@@ -527,16 +575,22 @@ async function importacaoRequisicao(){
     const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
 
     const pedidos=new Map();
+
     for(const tr of rows){
       const raw=[...tr.cells].map(td=>(td.innerText||"").trim());
       if(raw.every(x=>!x)) continue;
+
       const pedido=(raw[0]||"").trim();
       const cliente=(raw[1]||"").trim();
       const codigo=(raw[2]||"").trim();
       const k5=(raw[3]||"").trim();
       const k6=(raw[4]||"").trim();
       const k7=(raw[5]||"").trim();
-      const qtd=(raw[6]||"0").toString().trim()||"0";
+
+      const qtdNumAbs = absQTDNumFromText(raw[6] || "0");
+      const qtd = formatQtdTxtFromNum(qtdNumAbs);
+      if(qtdNumAbs === 0) continue;
+
       if(!pedido || !codigo) continue;
 
       if(!pedidos.has(pedido)) pedidos.set(pedido,{cliente,itens:[]});
@@ -556,6 +610,7 @@ async function importacaoRequisicao(){
 
     if(!out.length) return alert("Nada para importar.");
     baixarComoTXT("importacao_requisicao", out.join("\n"));
+
   }catch(err){ alert("Erro: "+err.message); }
 }
 
@@ -563,6 +618,7 @@ async function importacaoRequisicao(){
 async function adminRecarregar(){
   const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
   if(!res.ok) return alert(res.msg||"Erro ao listar usuários");
+
   const sel=$("admEmailUser");
   sel.innerHTML="";
   res.usuarios.forEach(u=>{
@@ -570,7 +626,8 @@ async function adminRecarregar(){
     op.value=u.usuario; op.textContent=u.usuario;
     sel.appendChild(op);
   });
-  // se quiser, mantemos a tabela completa depois (já te mando quando pedir)
+
+  renderPermsTable(res.usuarios);
 }
 
 async function adminSalvarEmail(){
@@ -580,10 +637,74 @@ async function adminSalvarEmail(){
   alert(r.ok ? "Email atualizado!" : (r.msg||"Erro"));
 }
 
+function renderPermsTable(users){
+  const wrap = $("adminPermsWrap");
+  wrap.innerHTML = "";
+
+  const table = document.createElement("table");
+  table.className = "table-admin";
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Nível</th>
+        <th>Transferência</th>
+        <th>Zeramento</th>
+        <th>Requisição</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+  `;
+  const tb = document.createElement("tbody");
+
+  const niveis = ["ADMIN","OPERADOR","CONSULTA","USER"];
+  const perms = ["EDITAR","VISUALIZAR","BLOQUEAR"];
+
+  users.forEach(u=>{
+    const tr = document.createElement("tr");
+
+    const selNivel = mkSelect(niveis, u.nivel);
+    const selT = mkSelect(perms, u.perms.transferencia);
+    const selZ = mkSelect(perms, u.perms.zeramento);
+    const selR = mkSelect(perms, u.perms.requisicao);
+
+    const btn = document.createElement("button");
+    btn.textContent = "Salvar";
+    btn.onclick = async ()=>{
+      const r = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
+      alert(r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
+    };
+
+    tr.appendChild(tdText(u.usuario));
+    tr.appendChild(tdWrap(selNivel));
+    tr.appendChild(tdWrap(selT));
+    tr.appendChild(tdWrap(selZ));
+    tr.appendChild(tdWrap(selR));
+    tr.appendChild(tdWrap(btn));
+    tb.appendChild(tr);
+  });
+
+  table.appendChild(tb);
+  wrap.appendChild(table);
+
+  function mkSelect(opts, current){
+    const s = document.createElement("select");
+    opts.forEach(o=>{
+      const op = document.createElement("option");
+      op.value = o; op.textContent = o;
+      if((current||"").toUpperCase() === o) op.selected = true;
+      s.appendChild(op);
+    });
+    return s;
+  }
+  function tdText(t){ const td=document.createElement("td"); td.textContent=t; return td; }
+  function tdWrap(el){ const td=document.createElement("td"); td.appendChild(el); return td; }
+}
+
 /* ===== Enter no login ===== */
 $("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
-</script>
 
+</script>
 </body>
 </html>
