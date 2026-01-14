@@ -10,147 +10,352 @@
 :root{
   --primary:#2c1a4d;
   --secondary:#6a4bc9;
-  --bg:#f2f4f8;
+  --bg:#f3f5fb;
   --card:#ffffff;
-  --text:#333;
-  --line:#d7d7d7;
-  --shadow: rgba(0,0,0,.12);
+  --text:#1f2430;
+  --muted:#667085;
+  --line:#e5e7ee;
+  --shadow: 0 10px 30px rgba(16,24,40,.10);
+  --shadow2: 0 6px 18px rgba(16,24,40,.08);
+  --ok:#12b76a;
+  --warn:#f79009;
+  --danger:#f04438;
+  --radius:16px;
 }
 .dark{
-  --bg:#121212;
-  --card:#1e1e1e;
-  --text:#f1f1f1;
-  --line:#444;
-  --shadow: rgba(0,0,0,.5);
+  --bg:#0f1116;
+  --card:#171a22;
+  --text:#f3f4f6;
+  --muted:#a7afbd;
+  --line:#2a2f3a;
+  --shadow: 0 12px 30px rgba(0,0,0,.45);
+  --shadow2: 0 8px 18px rgba(0,0,0,.35);
 }
-*{ box-sizing:border-box; font-family:Segoe UI,Arial,sans-serif; }
-body{ margin:0; background:var(--bg); color:var(--text); }
-body.lock{ overflow:hidden; }
+*{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
+html,body{ height:100%; }
+body{ margin:0; background:var(--bg); color:var(--text); overflow:hidden; }
 .hidden{display:none;}
 
-/* LOGIN */
+a{ color:inherit; text-decoration:none; }
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  background:var(--card);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow2);
+  padding:12px 14px;
+  border-radius:14px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  max-width:min(420px, calc(100vw - 32px));
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  transition:all .18s ease;
+  z-index:9999;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+.toast .dot{
+  width:10px; height:10px; border-radius:999px; margin-top:4px;
+  background:var(--secondary);
+}
+.toast.ok .dot{ background:var(--ok); }
+.toast.warn .dot{ background:var(--warn); }
+.toast.danger .dot{ background:var(--danger); }
+.toast .t-title{ font-weight:700; font-size:13px; }
+.toast .t-msg{ font-size:12px; color:var(--muted); margin-top:2px; white-space:pre-wrap; }
+
+/* ---------- Login ---------- */
 .login{
-  min-height:100vh;
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:18px;
+  overflow:auto;
 }
 .login-card{
+  width:min(420px, 100%);
   background:var(--card);
-  padding:35px;
-  width:380px;
-  border-radius:14px;
-  box-shadow:0 10px 30px var(--shadow);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:28px;
   animation:fade .22s ease;
 }
-@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.login-card h2{ text-align:center; margin-bottom:20px; }
-.login-links{ text-align:center; margin-top:10px; font-size:13px; }
-.login-links span{ cursor:pointer; color:var(--secondary); margin:0 5px; user-select:none; }
-.login-links span:hover{ opacity:.85; }
+@keyframes fade{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+.brand{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  margin-bottom:18px;
+}
+.logo{
+  width:40px; height:40px; border-radius:14px;
+  background:linear-gradient(135deg,var(--secondary),var(--primary));
+  box-shadow:0 10px 24px rgba(106,75,201,.25);
+}
+.brand h2{ margin:0; font-size:18px; }
+.brand p{ margin:0; font-size:12px; color:var(--muted); text-align:center; }
 
-/* INPUT/BUTTON */
+label{ display:block; font-size:12px; color:var(--muted); margin-top:12px; }
 input,select,button{
   width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:10px;
+  padding:12px 12px;
+  border-radius:12px;
   border:1px solid var(--line);
   background:var(--card);
   color:var(--text);
+  outline:none;
 }
-button{
-  background:var(--primary);
-  color:#fff;
+input:focus,select:focus{
+  border-color:rgba(106,75,201,.55);
+  box-shadow:0 0 0 4px rgba(106,75,201,.12);
+}
+.btn{
   border:none;
+  cursor:pointer;
+  font-weight:700;
+  transition:transform .12s ease, opacity .12s ease;
+}
+.btn:hover{ opacity:.92; transform:translateY(-1px); }
+.btn-primary{ background:linear-gradient(135deg,var(--secondary),var(--primary)); color:#fff; }
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--line);
+}
+.btn-danger{ background:var(--danger); color:#fff; }
+
+.login-links{
+  text-align:center;
+  margin-top:12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.login-links span{
+  cursor:pointer;
+  color:var(--secondary);
+  margin:0 6px;
+  user-select:none;
+}
+.login-links span:hover{ opacity:.85; }
+
+/* ---------- App Shell ---------- */
+.app{
+  height:100%;
+  display:flex;
+}
+
+/* Sidebar fixa */
+.sidebar{
+  width:280px;
+  background:linear-gradient(180deg, #24133f, #140b25);
+  color:#fff;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.side-top{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 10px;
+  background:rgba(255,255,255,.06);
+  border-radius:14px;
+}
+.side-user{
+  display:flex; flex-direction:column; gap:2px;
+}
+.side-user b{ font-size:13px; }
+.side-user span{ font-size:12px; opacity:.8; }
+
+.side-actions{
+  display:flex; gap:8px;
+}
+.icon-btn{
+  width:34px; height:34px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  color:#fff;
   cursor:pointer;
   transition:transform .12s ease, opacity .12s ease;
 }
-button:hover{ opacity:.92; transform:translateY(-1px); }
-.btn-danger{ background:#c0392b; }
+.icon-btn:hover{ opacity:.92; transform:translateY(-1px); }
 
-/* SISTEMA */
-.sistema{ display:flex; min-height:100vh; }
-.sidebar{
-  width:260px;
-  background:linear-gradient(180deg,var(--primary),#1b0f30);
-  color:#fff;
-  padding:20px;
-  position:relative;
+.nav{
+  margin-top:6px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
-.sidebar h3{ text-align:center; margin-bottom:20px; }
-.menu div{
-  padding:12px;
-  margin-bottom:10px;
-  background:rgba(255,255,255,.12);
-  border-radius:10px;
-  text-align:center;
+.nav .item{
+  padding:12px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
   cursor:pointer;
   user-select:none;
-  transition:background .12s ease, transform .12s ease;
+  transition:transform .12s ease, background .12s ease;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 }
-.menu div:hover{ background:rgba(255,255,255,.22); transform:translateY(-1px); }
-.menu.inferior{ position:absolute; bottom:20px; width:220px; }
+.nav .item:hover{ background:rgba(255,255,255,.14); transform:translateY(-1px); }
+.nav .item.active{ background:rgba(255,255,255,.20); }
 
-.conteudo{ flex:1; padding:30px; }
-.box{
-  background:var(--card);
-  padding:25px;
-  border-radius:14px;
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
-  max-width:1200px;
-  opacity:0;
-  transform:translateY(10px);
-  transition:all .18s ease;
+.nav .item small{ opacity:.8; font-size:12px; }
+
+.side-bottom{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
-.box.show{ opacity:1; transform:translateY(0); }
 
-/* TABELA PLANILHA */
-.tabela-container{
-  border:1px solid var(--line);
-  border-radius:12px;
+/* Conteúdo rolável (não a página inteira) */
+.main{
+  flex:1;
+  height:100%;
   overflow:auto;
-  min-height:260px;
-  background:rgba(255,255,255,.35);
+  padding:18px;
 }
-.dark .tabela-container{ background:rgba(0,0,0,.12); }
-.tabela-colagem{ width:100%; border-collapse:collapse; }
-.tabela-colagem td{
+.topbar{
+  background:var(--card);
   border:1px solid var(--line);
-  padding:7px;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow2);
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.topbar .title{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.topbar .title b{ font-size:14px; }
+.topbar .title span{ font-size:12px; color:var(--muted); }
+
+.topbar .right{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.pill{
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(106,75,201,.06);
+  font-size:12px;
+  color:var(--text);
+}
+
+/* Cards */
+.card{
+  margin-top:14px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow2);
+  padding:16px;
+}
+.card h2{
+  font-size:16px;
+  margin:0 0 10px 0;
+}
+.subhint{ font-size:12px; color:var(--muted); margin-top:10px; }
+
+/* Planilha */
+.sheet-wrap{
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:auto;
+  max-height:58vh;
+}
+table.sheet{
+  width:100%;
+  border-collapse:collapse;
+  background:transparent;
+}
+.sheet thead th{
+  position:sticky;
+  top:0;
+  background:linear-gradient(180deg, rgba(106,75,201,.10), rgba(106,75,201,.06));
+  border-bottom:1px solid var(--line);
+  padding:10px;
+  font-size:12px;
+  text-align:left;
+  z-index:2;
+}
+.sheet td{
+  border-top:1px solid var(--line);
+  border-right:1px solid var(--line);
+  padding:8px;
+  min-width:130px;
   font-size:13px;
-  min-width:120px;
+  vertical-align:top;
 }
-.tabela-colagem td:focus{
+.sheet td:last-child{ border-right:none; }
+.sheet td:focus{
   outline:none;
-  background:rgba(106,75,201,0.10);
+  background:rgba(106,75,201,.10);
+  box-shadow: inset 0 0 0 2px rgba(106,75,201,.22);
 }
 
-.row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
-.row > *{ flex:1; min-width:160px; }
-.hint{ font-size:12px; opacity:.78; margin-top:10px; }
-.small{ font-size:12px; opacity:.85; margin-top:10px; white-space:pre-wrap; }
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.actions .btn{ min-width:160px; width:auto; padding:12px 16px; border-radius:14px; }
+.actions .btn-ghost{ color:var(--text); }
 
-/* ADMIN TABLE */
-.table-admin{ width:100%; border-collapse:collapse; margin-top:12px; }
-.table-admin th,.table-admin td{ border:1px solid var(--line); padding:8px; font-size:13px; }
-.table-admin th{ background:rgba(106,75,201,0.10); text-align:left; }
-.badge{
-  display:inline-block; padding:4px 10px; border-radius:999px;
-  background:rgba(106,75,201,0.12); color:var(--text); font-size:12px;
+@media (max-width: 980px){
+  body{ overflow:auto; }
+  .app{ flex-direction:column; overflow:auto; }
+  .sidebar{ width:100%; border-radius:0; }
+  .main{ height:auto; }
+  .sheet-wrap{ max-height:55vh; }
 }
 </style>
 </head>
 
-<body class="lock">
+<body>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+  <div class="dot"></div>
+  <div>
+    <div class="t-title" id="toastTitle">Aviso</div>
+    <div class="t-msg" id="toastMsg"></div>
+  </div>
+</div>
 
 <!-- LOGIN -->
 <div class="login" id="loginBox">
   <div class="login-card">
-    <h2>🔐 Login</h2>
-    <input id="usuario" placeholder="Usuário">
-    <input id="senha" type="password" placeholder="Senha">
-    <button onclick="entrar()">Entrar</button>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h2>Sistema</h2>
+        <p>Login e importação de arquivos</p>
+      </div>
+    </div>
+
+    <label>Usuário</label>
+    <input id="usuario" placeholder="Digite seu usuário" autocomplete="username">
+
+    <label>Senha</label>
+    <input id="senha" type="password" placeholder="Digite sua senha" autocomplete="current-password">
+
+    <button class="btn btn-primary" onclick="entrar()">Entrar</button>
 
     <div class="login-links">
       <span onclick="mostrar('cadastro')">Criar conta</span> |
@@ -165,136 +370,209 @@ button:hover{ opacity:.92; transform:translateY(-1px); }
 <!-- CADASTRO -->
 <div class="login hidden" id="cadastro">
   <div class="login-card">
-    <h2>Criar conta</h2>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h2>Criar conta</h2>
+        <p>Cadastro rápido</p>
+      </div>
+    </div>
+
+    <label>Usuário</label>
     <input id="cUser" placeholder="Usuário">
+
+    <label>Senha</label>
     <input id="cSenha" placeholder="Senha">
+
+    <label>Email</label>
     <input id="cEmail" placeholder="Email">
-    <button onclick="cadastrar()">Cadastrar</button>
-    <button onclick="mostrar('loginBox')">Voltar</button>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn btn-primary" onclick="cadastrar()">Cadastrar</button>
+      <button class="btn btn-ghost" onclick="mostrar('loginBox')">Voltar</button>
+    </div>
   </div>
 </div>
 
 <!-- RECUPERAR -->
 <div class="login hidden" id="recuperar">
   <div class="login-card">
-    <h2>Recuperar senha</h2>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h2>Recuperar senha</h2>
+        <p>Envia por email</p>
+      </div>
+    </div>
+
+    <label>Usuário</label>
     <input id="rUser" placeholder="Usuário">
-    <button onclick="recuperarSenha()">Enviar email</button>
-    <button onclick="mostrar('loginBox')">Voltar</button>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn btn-primary" onclick="recuperarSenha()">Enviar</button>
+      <button class="btn btn-ghost" onclick="mostrar('loginBox')">Voltar</button>
+    </div>
   </div>
 </div>
 
-<!-- SISTEMA -->
-<div class="sistema hidden" id="sistema">
+<!-- APP -->
+<div class="app hidden" id="sistema">
 
-  <div class="sidebar">
-    <h3>Sistema</h3>
-
-    <div class="menu" id="menuPrincipal">
-      <div id="m_transferencia" onclick="abrir('transferencia')">📦 Transferência</div>
-      <div id="m_zeramento" onclick="abrir('zeramento')">🔁 Zeramento</div>
-      <div id="m_requisicao" onclick="abrir('requisicao')">📝 Requisição</div>
-    </div>
-
-    <div class="menu inferior" id="menuInferior">
-      <div onclick="abrirConfig()">⚙️ Configurações</div>
-    </div>
-
-    <div class="menu hidden" id="menuConfig">
-      <div onclick="abrir('cfgTransfer')">🔁 Transferência (Locais)</div>
-      <div onclick="abrir('tema')">🌙 Tema</div>
-      <div id="btnAdminMenu" class="hidden" onclick="abrir('adminPerms')">🛡️ Admin</div>
-      <div onclick="sair()">🚪 Sair</div>
-      <div onclick="voltarMenu()">⬅ Voltar</div>
-    </div>
-  </div>
-
-  <div class="conteudo">
-
-    <div class="box hidden" id="transferencia">
-      <h2>📦 Transferência <span class="badge" id="badgeUser"></span></h2>
-      <div class="tabela-container">
-        <table class="tabela-colagem"><tbody></tbody></table>
+  <aside class="sidebar">
+    <div class="side-top">
+      <div class="side-user">
+        <b id="sideUser">-</b>
+        <span id="sideNivel">-</span>
       </div>
-      <div class="row">
-        <button onclick="importacaoTransferencia()">Importação</button>
-        <button class="btn-danger" onclick="limparTabela('transferencia')">Limpar</button>
-      </div>
-      <div class="hint">
-        Colunas (9): 1 Código | 2 Descrição | 3 Chave5 | 4 Chave6 | 5 Chave7 | 6 QTD1 | 7 QTD2 | 8 QTD3 | 9 Local
+      <div class="side-actions">
+        <button class="icon-btn" title="Tema" onclick="toggleTema()">🌙</button>
+        <button class="icon-btn" title="Config" onclick="abrirConfig()">⚙️</button>
       </div>
     </div>
 
-    <div class="box hidden" id="zeramento">
+    <div class="nav" id="menuPrincipal">
+      <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
+        <span>📦 Transferência</span><small>Editar</small>
+      </div>
+      <div id="m_zeramento" class="item" onclick="abrir('zeramento')">
+        <span>🔁 Zeramento</span><small>Editar</small>
+      </div>
+      <div id="m_requisicao" class="item" onclick="abrir('requisicao')">
+        <span>📝 Requisição</span><small>Editar</small>
+      </div>
+    </div>
+
+    <div class="nav hidden" id="menuConfig">
+      <div class="item" onclick="abrir('cfgTransfer')">
+        <span>🔁 Transferência (Locais)</span><small>Config</small>
+      </div>
+      <div id="btnAdminMenu" class="item hidden" onclick="abrir('adminPerms')">
+        <span>🛡️ Admin</span><small>Controle</small>
+      </div>
+      <div class="item" onclick="voltarMenu()">
+        <span>⬅ Voltar</span><small>Menu</small>
+      </div>
+    </div>
+
+    <div class="side-bottom">
+      <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="topbar">
+      <div class="title">
+        <b id="topTitle">Transferência</b>
+        <span id="topSubtitle">Cole seus dados e clique em Importação</span>
+      </div>
+      <div class="right">
+        <div class="pill" id="pillUser">—</div>
+      </div>
+    </div>
+
+    <!-- TRANSFERÊNCIA -->
+    <section class="card hidden" id="transferencia">
+      <h2>📦 Transferência</h2>
+
+      <div class="sheet-wrap">
+        <table class="sheet">
+          <thead>
+            <tr>
+              <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+              <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="importacaoTransferencia()">Importação</button>
+        <button class="btn btn-ghost" onclick="limparTabela('transferencia')">Limpar</button>
+      </div>
+
+      <div class="subhint">QTD3 sempre vira positivo no TXT. Direção usa QTD1/QTD2 e o “Outro Local” nas configurações.</div>
+    </section>
+
+    <!-- ZERAMENTO -->
+    <section class="card hidden" id="zeramento">
       <h2>🔁 Zeramento</h2>
-      <div class="tabela-container">
-        <table class="tabela-colagem"><tbody></tbody></table>
-      </div>
-      <div class="row">
-        <button onclick="importacaoZeramento()">Importação</button>
-        <button class="btn-danger" onclick="limparTabela('zeramento')">Limpar</button>
-      </div>
-      <div class="hint">
-        Usa QTD1/QTD2 para decidir: qtd2&gt;qtd1 → "E" e final 1905, senão "S" e final 5906. QTD3 sempre ABS.
-      </div>
-    </div>
 
-    <div class="box hidden" id="requisicao">
+      <div class="sheet-wrap">
+        <table class="sheet">
+          <thead>
+            <tr>
+              <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+              <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="importacaoZeramento()">Importação</button>
+        <button class="btn btn-ghost" onclick="limparTabela('zeramento')">Limpar</button>
+      </div>
+
+      <div class="subhint">qtd2&gt;qtd1 → “E” e final 1905, senão “S” e final 5906. QTD3 sempre positivo.</div>
+    </section>
+
+    <!-- REQUISIÇÃO -->
+    <section class="card hidden" id="requisicao">
       <h2>📝 Requisição</h2>
-      <div class="tabela-container">
-        <table class="tabela-colagem"><tbody></tbody></table>
-      </div>
-      <div class="row">
-        <button onclick="importacaoRequisicao()">Importação</button>
-        <button class="btn-danger" onclick="limparTabela('requisicao')">Limpar</button>
-      </div>
-      <div class="hint">
-        Cole: Pedido | Cliente | CódigoItem | Chave5 | Chave6 | Chave7 | Quantidade (as demais colunas podem ficar vazias)
-      </div>
-    </div>
 
-    <div class="box hidden" id="cfgTransfer">
+      <div class="sheet-wrap">
+        <table class="sheet">
+          <thead>
+            <tr>
+              <th>Pedido</th><th>Cliente</th><th>Código Item</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
+              <th>Qtd</th><th>(vazio)</th><th>(vazio)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="importacaoRequisicao()">Importação</button>
+        <button class="btn btn-ghost" onclick="limparTabela('requisicao')">Limpar</button>
+      </div>
+
+      <div class="subhint">Pode colar vários pedidos misturados: o sistema separa pelo número do pedido.</div>
+    </section>
+
+    <!-- CFG TRANSFER -->
+    <section class="card hidden" id="cfgTransfer">
       <h2>🔁 Transferência (Locais)</h2>
-      <input id="cfgLocalOutro" placeholder="Outro Local (ex: 4044)">
-      <button onclick="salvarCfgTransfer()">Salvar</button>
-      <div class="small">
-- Coluna 9 é o Local Informado.
-- Este campo é o Outro Local.
-- Se QTD2 &gt; QTD1, inverte origem/destino.
+      <label>Outro Local (ex: 4044)</label>
+      <input id="cfgLocalOutro" placeholder="4044">
+      <div class="actions">
+        <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
+        <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
       </div>
-    </div>
+      <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o destino/origem alternativo.</div>
+    </section>
 
-    <div class="box hidden" id="tema">
-      <h2>🌙 Tema</h2>
-      <div class="row">
-        <button onclick="setTema('light')">Claro</button>
-        <button onclick="setTema('dark')">Escuro</button>
-      </div>
-    </div>
-
-    <div class="box hidden" id="adminPerms">
+    <!-- ADMIN -->
+    <section class="card hidden" id="adminPerms">
       <h2>🛡️ Admin</h2>
 
-      <h3 style="margin:8px 0 0 0">✉️ Alterar Email</h3>
-      <div class="row">
-        <select id="admEmailUser"></select>
+      <h3 style="margin:10px 0 0 0; font-size:14px;">✉️ Alterar Email</h3>
+      <div class="actions" style="gap:10px">
+        <select id="admEmailUser" style="min-width:220px"></select>
         <input id="admEmailNovo" placeholder="Novo email">
       </div>
-      <div class="row">
-        <button onclick="adminSalvarEmail()">Salvar Email</button>
-        <button class="btn-danger" onclick="adminRecarregar()">Recarregar</button>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="adminSalvarEmail()">Salvar Email</button>
+        <button class="btn btn-ghost" onclick="adminRecarregar()">Recarregar</button>
       </div>
 
-      <h3 style="margin:18px 0 0 0">🧩 Permissões</h3>
+      <h3 style="margin:16px 0 0 0; font-size:14px;">🧩 Permissões</h3>
       <div id="adminPermsWrap"></div>
+    </section>
 
-      <div class="row">
-        <button class="btn-danger" onclick="voltarMenu()">Voltar</button>
-      </div>
-      <div class="hint">Somente ADMIN vê esta tela.</div>
-    </div>
-
-  </div>
+  </main>
 </div>
 
 <script>
@@ -309,36 +587,78 @@ let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const codCache = new Map();
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
+/* ===== toast ===== */
+let toastTimer=null;
+function toast(type,title,msg){
+  const t=$("toast");
+  t.className="toast "+(type||"");
+  $("toastTitle").textContent=title||"";
+  $("toastMsg").textContent=msg||"";
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),2600);
+}
+
 /* ===== helpers ===== */
 function $(id){ return document.getElementById(id); }
-
-function mostrar(id){
-  document.querySelectorAll(".login").forEach(d=>d.classList.add("hidden"));
+function showOnlyLogin(id){
+  ["loginBox","cadastro","recuperar"].forEach(x=>$(x).classList.add("hidden"));
   $(id).classList.remove("hidden");
 }
 function toggleSenha(){
   const s = $("senha");
   s.type = (s.type === "password") ? "text" : "password";
 }
-function abrir(id){
-  document.querySelectorAll(".box").forEach(b=>{ b.classList.add("hidden"); b.classList.remove("show"); });
-  const box = $(id);
-  box.classList.remove("hidden");
-  setTimeout(()=>box.classList.add("show"),10);
+function setActiveNav(id){
+  document.querySelectorAll("#menuPrincipal .item").forEach(el=>el.classList.remove("active"));
+  const el = document.querySelector(`#menuPrincipal #m_${id}`);
+  if(el) el.classList.add("active");
 }
+function setTop(title,subtitle){
+  $("topTitle").textContent=title;
+  $("topSubtitle").textContent=subtitle;
+}
+
+/* Tema */
+function toggleTema(){
+  document.documentElement.classList.toggle("dark");
+  toast("ok","Tema","Tema alternado.");
+}
+
+/* Menu config */
 function abrirConfig(){
   $("menuPrincipal").classList.add("hidden");
-  $("menuInferior").classList.add("hidden");
   $("menuConfig").classList.remove("hidden");
+  toast("ok","Configurações","Escolha uma opção.");
 }
 function voltarMenu(){
   $("menuConfig").classList.add("hidden");
   $("menuPrincipal").classList.remove("hidden");
-  $("menuInferior").classList.remove("hidden");
+  toast("ok","Menu","Voltou ao menu.");
 }
-function setTema(t){ document.documentElement.classList.toggle("dark", t==="dark"); }
-function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 
+/* Conteúdo */
+function abrir(id){
+  // esconda todas as seções (cards) dentro do main
+  document.querySelectorAll(".main .card").forEach(s=>s.classList.add("hidden"));
+
+  // mostra a seção desejada
+  const sec = $(id);
+  sec.classList.remove("hidden");
+
+  // topbar
+  if(id==="transferencia"){ setTop("Transferência","Cole e clique em Importação"); setActiveNav("transferencia"); }
+  if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
+  if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao"); }
+  if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
+  if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
+
+  // ✅ rolar automaticamente para o topo do conteúdo
+  $("main").scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* Valores */
+function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 function normalizeQTD(str){
   const s=(str||"0").toString().trim();
   let v=parseFloat(s.replace(/\./g,"").replace(",", "."));
@@ -375,9 +695,12 @@ async function api(action, ...args){
   catch(e){ throw new Error("Resposta não-JSON: "+txt.slice(0,200)); }
 }
 
-/* ===== tabelas “planilha” + colar do Excel ===== */
-function criarTabela(boxId, linhas=10, colunas=9){
-  const tbody = document.querySelector(`#${boxId} .tabela-colagem tbody`);
+/* ===== Planilha (tabelas) ===== */
+function tableBody(sectionId){
+  return document.querySelector(`#${sectionId} table.sheet tbody`);
+}
+function criarTabela(sectionId, linhas=10, colunas=9){
+  const tbody = tableBody(sectionId);
   tbody.innerHTML="";
   for(let i=0;i<linhas;i++){
     const tr=document.createElement("tr");
@@ -385,13 +708,16 @@ function criarTabela(boxId, linhas=10, colunas=9){
       const td=document.createElement("td");
       td.contentEditable="true";
       td.addEventListener("paste", handlePaste);
+      td.addEventListener("keydown", handleGridNav);
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
   }
 }
-function limparTabela(boxId){ criarTabela(boxId, 10, COLUNAS_FIXAS); }
-
+function limparTabela(sectionId){
+  criarTabela(sectionId,10,COLUNAS_FIXAS);
+  toast("ok","Limpar","Tabela limpa.");
+}
 function handlePaste(e){
   e.preventDefault();
   const text=(e.clipboardData||window.clipboardData).getData("text");
@@ -409,6 +735,7 @@ function handlePaste(e){
         const td=targetRow.insertCell();
         td.contentEditable="true";
         td.addEventListener("paste", handlePaste);
+        td.addEventListener("keydown", handleGridNav);
       }
     }
     cols.forEach((c,j)=>{
@@ -417,19 +744,32 @@ function handlePaste(e){
     });
   });
 }
+function handleGridNav(e){
+  const td=e.target;
+  const tr=td.parentElement;
+  const tbody=tr.parentElement;
+  const r=Array.from(tbody.rows).indexOf(tr);
+  const c=Array.from(tr.cells).indexOf(td);
 
-/* ===== config transferência ===== */
-function salvarCfgTransfer(){
-  const v = ($("cfgLocalOutro").value || "").trim();
-  if(!v) return alert("Informe o outro local (ex: 4044).");
-  LOCAL_OUTRO_TRANSFER = v;
-  localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
-  alert("Salvo!");
+  if(e.key==="Enter"){
+    e.preventDefault();
+    const nextRow = tbody.rows[r+1] || tbody.rows[r];
+    (nextRow.cells[c] || nextRow.cells[0]).focus();
+  }
 }
 
-/* ===== permissões ===== */
-function setBoxReadOnly(boxId, ro){
-  document.querySelectorAll(`#${boxId} .tabela-colagem td`).forEach(td=>td.contentEditable = (!ro).toString());
+/* ===== Config Transfer ===== */
+function salvarCfgTransfer(){
+  const v = ($("cfgLocalOutro").value || "").trim();
+  if(!v) return toast("warn","Atenção","Informe o outro local (ex: 4044).");
+  LOCAL_OUTRO_TRANSFER = v;
+  localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
+  toast("ok","Salvo","Outro Local atualizado.");
+}
+
+/* ===== Permissões ===== */
+function setBoxReadOnly(sectionId, ro){
+  tableBody(sectionId).querySelectorAll("td").forEach(td=>td.contentEditable = (!ro).toString());
 }
 function aplicarPermissoesUI(){
   $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
@@ -443,7 +783,7 @@ function aplicarPermissoesUI(){
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
-/* ===== mapeamentos COD (A/B e D/E) + REQUISITANTE ===== */
+/* ===== Mapeamentos ===== */
 async function mapearOuCadastrar(chave){
   const key=(chave||"").toString().trim();
   if(!key) return "";
@@ -497,29 +837,37 @@ async function getRequisitantePorUsuario(usuario){
 }
 
 /* ===== AUTH ===== */
+function mostrar(id){
+  // troca telas de login
+  showOnlyLogin(id);
+  $("statusLogin").textContent="";
+}
 async function entrar(){
   $("statusLogin").textContent="";
   const u = $("usuario").value.trim();
   const s = $("senha").value.trim();
-  if(!u || !s) return alert("Preencha usuário e senha.");
+  if(!u || !s) return toast("warn","Atenção","Preencha usuário e senha.");
 
   try{
     const res = await api("login", u, s);
-    if(!res.ok) return alert(res.msg || "Usuário ou senha inválidos");
+    if(!res.ok) return toast("danger","Login","Usuário ou senha inválidos.");
 
     NIVEL = (res.nivel || "").toUpperCase();
     USUARIO_LOGADO = res.usuario || u;
     PERMS = res.perms || PERMS;
 
-    // ✅ troca de tela garantida
-    document.body.classList.remove("lock");
+    // ✅ entra no app automaticamente
     $("loginBox").classList.add("hidden");
     $("cadastro").classList.add("hidden");
     $("recuperar").classList.add("hidden");
     $("sistema").classList.remove("hidden");
 
-    $("badgeUser").textContent = `${USUARIO_LOGADO} • ${NIVEL}`;
+    // usuário na sidebar/topbar
+    $("sideUser").textContent = USUARIO_LOGADO;
+    $("sideNivel").textContent = NIVEL;
+    $("pillUser").textContent = `${USUARIO_LOGADO} • ${NIVEL}`;
 
+    // tabelas
     criarTabela("transferencia",10,COLUNAS_FIXAS);
     criarTabela("zeramento",10,COLUNAS_FIXAS);
     criarTabela("requisicao",10,COLUNAS_FIXAS);
@@ -527,44 +875,51 @@ async function entrar(){
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
 
     aplicarPermissoesUI();
+
+    // ✅ abrir primeira tela e scroll topo
     voltarMenu();
     abrir("transferencia");
+    toast("ok","Bem-vindo",`Você entrou como ${NIVEL}.`);
 
     if(NIVEL==="ADMIN") adminRecarregar();
+
   }catch(err){
     $("statusLogin").textContent = "Erro: " + err.message;
-    alert(err.message);
+    toast("danger","Erro",err.message);
   }
 }
 
 async function cadastrar(){
   try{
     const res = await api("cadastrar", $("cUser").value, $("cSenha").value, $("cEmail").value);
-    alert(res.ok ? "Conta criada!" : (res.msg || "Erro"));
-    if(res.ok) mostrar("loginBox");
-  }catch(err){ alert(err.message); }
+    if(res.ok){
+      toast("ok","Cadastro","Conta criada!");
+      showOnlyLogin("loginBox");
+    }else{
+      toast("danger","Cadastro",res.msg || "Erro");
+    }
+  }catch(err){ toast("danger","Erro",err.message); }
 }
 
 async function recuperarSenha(){
   try{
     const res = await api("recuperar", $("rUser").value);
-    alert(res.ok ? "Email enviado!" : (res.msg || "Erro"));
-  }catch(err){ alert(err.message); }
+    toast(res.ok?"ok":"danger","Recuperar", res.ok ? "Email enviado!" : (res.msg || "Erro"));
+  }catch(err){ toast("danger","Erro",err.message); }
 }
 
 function sair(){
   NIVEL=""; USUARIO_LOGADO="";
   $("sistema").classList.add("hidden");
-  $("loginBox").classList.remove("hidden");
-  document.body.classList.add("lock");
+  showOnlyLogin("loginBox");
   $("senha").value="";
-  $("statusLogin").textContent="";
+  toast("ok","Saiu","Você voltou para o login.");
 }
 
-/* ===== IMPORTAÇÕES (SEM NEGATIVOS) ===== */
+/* ===== IMPORTAÇÕES ===== */
 async function importacaoTransferencia(){
   try{
-    const rows=document.querySelectorAll("#transferencia tbody tr");
+    const rows=tableBody("transferencia").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
 
@@ -577,7 +932,7 @@ async function importacaoTransferencia(){
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
 
-      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // ✅ ABS
+      const qtd3Abs = absQTDNumFromText(c[7]||"0");
       if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
@@ -590,7 +945,6 @@ async function importacaoTransferencia(){
       const f6=await mapearOuCadastrar(chave6);
       const f7=await mapearOuCadastrar(chave7);
 
-      // direção
       let origem=localInformado, destino=outroLocal;
       if(qtd2>qtd1){ origem=outroLocal; destino=localInformado; }
 
@@ -599,14 +953,15 @@ async function importacaoTransferencia(){
       out.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3Txt,"0,01",valor,"5949"].join("|"));
     }
 
-    if(!out.length) return alert("Nada para importar.");
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_transferencia", out.join("\n"));
-  }catch(err){ alert("Erro: "+err.message); }
+    toast("ok","Importação",`${out.length} linhas geradas.`);
+  }catch(err){ toast("danger","Erro",err.message); }
 }
 
 async function importacaoZeramento(){
   try{
-    const rows=document.querySelectorAll("#zeramento tbody tr");
+    const rows=tableBody("zeramento").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
 
@@ -619,7 +974,7 @@ async function importacaoZeramento(){
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
 
-      const qtd3Abs = absQTDNumFromText(c[7]||"0"); // ✅ ABS
+      const qtd3Abs = absQTDNumFromText(c[7]||"0");
       if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
@@ -630,7 +985,6 @@ async function importacaoZeramento(){
       const f6=await mapearOuCadastrar(chave6);
       const f7=await mapearOuCadastrar(chave7);
 
-      // ✅ inversão final que você pediu: qtd2>qtd1 → E/1905, senão S/5906
       const tipo=(qtd2>qtd1)?"E":"S";
       const final=(qtd2>qtd1)?"1905":"5906";
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
@@ -638,14 +992,15 @@ async function importacaoZeramento(){
       out.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3Txt,"0,01",valor,final].join("|"));
     }
 
-    if(!out.length) return alert("Nada para importar.");
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_zeramento", out.join("\n"));
-  }catch(err){ alert("Erro: "+err.message); }
+    toast("ok","Importação",`${out.length} linhas geradas.`);
+  }catch(err){ toast("danger","Erro",err.message); }
 }
 
 async function importacaoRequisicao(){
   try{
-    const rows=document.querySelectorAll("#requisicao tbody tr");
+    const rows=tableBody("requisicao").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
 
@@ -662,7 +1017,7 @@ async function importacaoRequisicao(){
       const k6=(raw[4]||"").trim();
       const k7=(raw[5]||"").trim();
 
-      const qtdAbs = absQTDNumFromText(raw[6]||"0"); // ✅ ABS
+      const qtdAbs = absQTDNumFromText(raw[6]||"0");
       if(qtdAbs === 0) continue;
       const qtd = formatQtdTxtFromNum(qtdAbs);
 
@@ -683,9 +1038,10 @@ async function importacaoRequisicao(){
       }
     }
 
-    if(!out.length) return alert("Nada para importar.");
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_requisicao", out.join("\n"));
-  }catch(err){ alert("Erro: "+err.message); }
+    toast("ok","Importação",`${out.length} linhas geradas.`);
+  }catch(err){ toast("danger","Erro",err.message); }
 }
 
 /* ===== ADMIN ===== */
@@ -708,7 +1064,7 @@ async function adminSalvarEmail(){
   const alvo=$("admEmailUser").value;
   const novo=$("admEmailNovo").value;
   const r=await api("admin_alterarEmail", USUARIO_LOGADO, alvo, novo);
-  alert(r.ok ? "Email atualizado!" : (r.msg||"Erro"));
+  toast(r.ok?"ok":"danger","Admin", r.ok ? "Email atualizado!" : (r.msg||"Erro"));
 }
 
 function renderPermsTable(users){
@@ -716,16 +1072,17 @@ function renderPermsTable(users){
   wrap.innerHTML = "";
 
   const table = document.createElement("table");
-  table.className = "table-admin";
+  table.style.width="100%";
+  table.style.borderCollapse="collapse";
   table.innerHTML = `
     <thead>
       <tr>
-        <th>Usuário</th>
-        <th>Nível</th>
-        <th>Transferência</th>
-        <th>Zeramento</th>
-        <th>Requisição</th>
-        <th>Ação</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Usuário</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Nível</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Transferência</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Zeramento</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Requisição</th>
+        <th style="text-align:left;padding:10px;border-bottom:1px solid var(--line);">Ação</th>
       </tr>
     </thead>
   `;
@@ -743,10 +1100,14 @@ function renderPermsTable(users){
     const selR = mkSelect(perms, u.perms.requisicao);
 
     const btn = document.createElement("button");
+    btn.className="btn btn-primary";
+    btn.style.padding="10px 14px";
+    btn.style.borderRadius="12px";
+    btn.style.width="auto";
     btn.textContent = "Salvar";
     btn.onclick = async ()=>{
       const r = await api("admin_salvarPermissoes", USUARIO_LOGADO, u.usuario, selNivel.value, selT.value, selZ.value, selR.value);
-      alert(r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
+      toast(r.ok?"ok":"danger","Admin", r.ok ? "Permissões salvas!" : (r.msg || "Erro"));
       adminRecarregar();
     };
 
@@ -756,6 +1117,7 @@ function renderPermsTable(users){
     tr.appendChild(tdWrap(selZ));
     tr.appendChild(tdWrap(selR));
     tr.appendChild(tdWrap(btn));
+
     tb.appendChild(tr);
   });
 
@@ -764,6 +1126,8 @@ function renderPermsTable(users){
 
   function mkSelect(opts, current){
     const s = document.createElement("select");
+    s.style.borderRadius="12px";
+    s.style.padding="10px";
     opts.forEach(o=>{
       const op = document.createElement("option");
       op.value = o; op.textContent = o;
@@ -772,11 +1136,23 @@ function renderPermsTable(users){
     });
     return s;
   }
-  function tdText(t){ const td=document.createElement("td"); td.textContent=t; return td; }
-  function tdWrap(el){ const td=document.createElement("td"); td.appendChild(el); return td; }
+  function tdText(t){
+    const td=document.createElement("td");
+    td.style.padding="10px";
+    td.style.borderBottom="1px solid var(--line)";
+    td.textContent=t;
+    return td;
+  }
+  function tdWrap(el){
+    const td=document.createElement("td");
+    td.style.padding="10px";
+    td.style.borderBottom="1px solid var(--line)";
+    td.appendChild(el);
+    return td;
+  }
 }
 
-/* ===== ENTER no login ===== */
+/* ENTER no login */
 $("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 </script>
