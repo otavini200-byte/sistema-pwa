@@ -418,7 +418,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
     <input id="cUser" placeholder="Usuário">
 
     <label>Senha</label>
-    <input id="cSenha" placeholder="Senha">
+    <input id="cSenha" type="password" placeholder="Senha">
 
     <label>Email</label>
     <input id="cEmail" placeholder="Email">
@@ -480,6 +480,12 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div class="item" onclick="abrir('cfgTransfer')">
           <span>🔁 Transferência (Locais)</span><small>Config</small>
         </div>
+
+        <!-- ✅ NOVO: MUDAR SENHA -->
+        <div class="item" onclick="abrir('cfgSenha')">
+          <span>🔑 Mudar senha</span><small>Conta</small>
+        </div>
+
         <div id="btnAdminMenu" class="item hidden" onclick="abrir('adminPerms')">
           <span>🛡️ Admin</span><small>Controle</small>
         </div>
@@ -511,7 +517,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
             <thead>
               <tr>
                 <th>Código</th><th>Descrição</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
-                <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th>
+                <th>QTD1</th><th>QTD2</th><th>QTD3</th><th>Local</th><th>Destino</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -583,7 +589,28 @@ table.sheet{ width:100%; border-collapse:collapse; }
           <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
           <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
         </div>
-        <div class="subhint">Coluna “Local” é o local informado. “Outro Local” é o alternativo.</div>
+        <div class="subhint">Coluna “Local” é o local informado. “Destino” (10ª coluna) pode mudar por linha. Se ficar vazio, usa “Outro Local”.</div>
+      </section>
+
+      <!-- ✅ CFG SENHA -->
+      <section class="card hidden" id="cfgSenha">
+        <h2>🔑 Mudar senha</h2>
+
+        <label>Senha atual</label>
+        <input id="senhaAtual" type="password" placeholder="Senha atual">
+
+        <label>Nova senha</label>
+        <input id="senhaNova" type="password" placeholder="Nova senha">
+
+        <label>Confirmar nova senha</label>
+        <input id="senhaNova2" type="password" placeholder="Confirmar nova senha">
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="salvarSenha()">Salvar</button>
+          <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
+        </div>
+
+        <div class="subhint">Use uma senha que você não compartilha.</div>
       </section>
 
       <!-- ADMIN -->
@@ -610,10 +637,12 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 <script>
 /* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbyF8PwcyNzj_wSX0zKFAqZlb2MvHp-FoBk2tPX6WKraSg8U86zTz-9Z5yu5c7pIpMi9uA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxNRaMRmncSG-nxthGWCz8F1vXRfgLhzETX1sALXc6jb53jbS8UIv8bBvOVeaP_6I3V8w/exec";
 
 /* Estado */
-const COLUNAS_FIXAS = 9;
+const COL_DEFAULT = 9;
+const COL_TRANSFER = 10;
+
 let NIVEL = "";
 let USUARIO_LOGADO = "";
 let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
@@ -703,6 +732,7 @@ function abrir(id){
   if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
   if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
+  if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
 }
 
@@ -746,7 +776,6 @@ async function api(action, ...args){
     throw new Error("Sem conexão com a API. Verifique internet ou URL /exec.");
   }
 
-  // se voltar HTML (permissão do Google), corta
   if (txt && (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html"))){
     throw new Error("API retornou HTML (Deploy/Permissão). Publique como Web App: Anyone e use a URL /exec.");
   }
@@ -782,7 +811,8 @@ function criarTabela(sectionId, linhas=10, colunas=9){
   }
 }
 function limparTabela(sectionId){
-  criarTabela(sectionId,10,COLUNAS_FIXAS);
+  const cols = (sectionId === "transferencia") ? COL_TRANSFER : COL_DEFAULT;
+  criarTabela(sectionId,10,cols);
   toast("ok","Limpar","Tabela limpa.");
 }
 function handlePaste(e){
@@ -793,12 +823,15 @@ function handlePaste(e){
   const rowIndex=Array.from(tbody.rows).indexOf(tr);
   const colIndex=Array.from(tr.cells).indexOf(startCell);
 
+  const table = tbody.closest("table");
+  const colCount = table ? table.querySelectorAll("thead th").length : COL_DEFAULT;
+
   rows.forEach((r,i)=>{
     const cols=r.split(/\t/);
     let targetRow=tbody.rows[rowIndex+i];
     if(!targetRow){
       targetRow=tbody.insertRow();
-      for(let k=0;k<COLUNAS_FIXAS;k++){
+      for(let k=0;k<colCount;k++){
         const td=targetRow.insertCell();
         td.contentEditable="true";
         td.addEventListener("paste", handlePaste);
@@ -830,6 +863,36 @@ function salvarCfgTransfer(){
   LOCAL_OUTRO_TRANSFER = v;
   localStorage.setItem("LOCAL_OUTRO_TRANSFER", v);
   toast("ok","Salvo","Outro Local atualizado.");
+}
+
+/* ✅ Mudar senha */
+async function salvarSenha(){
+  const atual = ($("senhaAtual").value || "").trim();
+  const nova  = ($("senhaNova").value || "").trim();
+  const nova2 = ($("senhaNova2").value || "").trim();
+
+  if(!atual || !nova || !nova2) return toast("warn","Atenção","Preencha todos os campos.");
+  if(nova !== nova2) return toast("warn","Atenção","A nova senha não confere.");
+  if(nova.length < 3) return toast("warn","Atenção","Nova senha muito curta.");
+
+  try{
+    loading(true, "Atualizando senha...");
+    const r = await api("alterarSenha", USUARIO_LOGADO, atual, nova);
+    if(r.ok){
+      $("senhaAtual").value="";
+      $("senhaNova").value="";
+      $("senhaNova2").value="";
+      toast("ok","Senha","Senha atualizada!");
+      voltarMenu();
+      abrir("transferencia");
+    }else{
+      toast("danger","Senha", r.msg || "Erro ao alterar.");
+    }
+  }catch(err){
+    toast("danger","Erro", err.message);
+  }finally{
+    loading(false);
+  }
 }
 
 /* Permissões UI */
@@ -921,9 +984,9 @@ async function entrar(){
     $("sideNivel").textContent = NIVEL;
     $("pillUser").textContent = `${USUARIO_LOGADO} • ${NIVEL}`;
 
-    criarTabela("transferencia",10,COLUNAS_FIXAS);
-    criarTabela("zeramento",10,COLUNAS_FIXAS);
-    criarTabela("requisicao",10,COLUNAS_FIXAS);
+    criarTabela("transferencia",10,COL_TRANSFER);
+    criarTabela("zeramento",10,COL_DEFAULT);
+    criarTabela("requisicao",10,COL_DEFAULT);
 
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
 
@@ -992,7 +1055,7 @@ async function importacaoTransferencia(){
 
     for(const tr of rows){
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
-      while(c.length<9) c.push("");
+      while(c.length<COL_TRANSFER) c.push("");
 
       const codigo=c[0];
       const chave5=c[2], chave6=c[3], chave7=c[4];
@@ -1004,14 +1067,17 @@ async function importacaoTransferencia(){
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
       const localInformado=(c[8]||"164").trim() || "164";
-      const outroLocal=(LOCAL_OUTRO_TRANSFER||"4044").trim();
+
+      // ✅ 10ª coluna (Destino por linha). Se vazio, cai no config.
+      let destinoLinha = (c[9] || "").trim();
+      if(!destinoLinha) destinoLinha = (LOCAL_OUTRO_TRANSFER||"4044").trim();
 
       const f5=await mapearOuCadastrar(chave5);
       const f6=await mapearOuCadastrar(chave6);
       const f7=await mapearOuCadastrar(chave7);
 
-      let origem=localInformado, destino=outroLocal;
-      if(qtd2>qtd1){ origem=outroLocal; destino=localInformado; }
+      let origem=localInformado, destino=destinoLinha;
+      if(qtd2>qtd1){ origem=destinoLinha; destino=localInformado; }
 
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
 
@@ -1037,7 +1103,7 @@ async function importacaoZeramento(){
 
     for(const tr of rows){
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
-      while(c.length<9) c.push("");
+      while(c.length<COL_DEFAULT) c.push("");
 
       const codigo=c[0];
       const chave5=c[2], chave6=c[3], chave7=c[4];
@@ -1121,11 +1187,11 @@ async function importacaoRequisicao(){
   }
 }
 
-/* ADMIN (mantido simples) */
+/* ADMIN */
 async function adminRecarregar(){
   try{
     const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
-    if(!res.ok) return;
+    if(!res.ok) return toast("danger","Admin", res.msg || "Sem permissão");
 
     const sel=$("admEmailUser");
     sel.innerHTML="";
@@ -1135,11 +1201,118 @@ async function adminRecarregar(){
       sel.appendChild(op);
     });
 
-    $("adminPermsWrap").innerHTML="<div class='subhint'>Permissões carregadas.</div>";
+    const wrap = $("adminPermsWrap");
+    wrap.innerHTML = "";
+
+    const niveis = ["USER","CONSULTA","ADMIN"];
+    const permsOps = ["EDITAR","VISUALIZAR","BLOQUEAR"];
+
+    res.usuarios.forEach(u=>{
+      const box = document.createElement("div");
+      box.style.border = "1px solid var(--line)";
+      box.style.borderRadius = "14px";
+      box.style.padding = "12px";
+      box.style.marginTop = "10px";
+      box.style.background = "rgba(106,75,201,.04)";
+
+      const title = document.createElement("div");
+      title.innerHTML = `<b>${u.usuario}</b> <span style="color:var(--muted); font-size:12px;">(${u.nivel})</span>`;
+      box.appendChild(title);
+
+      const row1 = document.createElement("div");
+      row1.className = "actions";
+      row1.style.marginTop = "10px";
+      row1.style.gap = "10px";
+
+      const selNivel = document.createElement("select");
+      niveis.forEach(n=>{
+        const op=document.createElement("option");
+        op.value=n; op.textContent=n;
+        if((u.nivel||"USER").toUpperCase()===n) op.selected=true;
+        selNivel.appendChild(op);
+      });
+      row1.appendChild(selNivel);
+      box.appendChild(row1);
+
+      const row2 = document.createElement("div");
+      row2.className = "actions";
+      row2.style.gap = "10px";
+
+      function makePermSelect(label, val){
+        const wrapSel = document.createElement("div");
+        wrapSel.style.minWidth = "160px";
+
+        const lb = document.createElement("div");
+        lb.style.fontSize = "12px";
+        lb.style.color = "var(--muted)";
+        lb.style.marginBottom = "6px";
+        lb.textContent = label;
+
+        const sel = document.createElement("select");
+        permsOps.forEach(p=>{
+          const op=document.createElement("option");
+          op.value=p; op.textContent=p;
+          if(String(val||"EDITAR").toUpperCase()===p) op.selected=true;
+          sel.appendChild(op);
+        });
+
+        wrapSel.appendChild(lb);
+        wrapSel.appendChild(sel);
+        return {wrapSel, sel};
+      }
+
+      const pT = makePermSelect("Transferência", u.perms?.transferencia);
+      const pZ = makePermSelect("Zeramento", u.perms?.zeramento);
+      const pR = makePermSelect("Requisição", u.perms?.requisicao);
+
+      row2.appendChild(pT.wrapSel);
+      row2.appendChild(pZ.wrapSel);
+      row2.appendChild(pR.wrapSel);
+      box.appendChild(row2);
+
+      const row3 = document.createElement("div");
+      row3.className = "actions";
+
+      const btnSalvar = document.createElement("button");
+      btnSalvar.className = "btn btn-primary";
+      btnSalvar.style.width = "auto";
+      btnSalvar.textContent = "Salvar permissões";
+      btnSalvar.onclick = async () => {
+        try{
+          loading(true, "Salvando permissões...");
+          const r = await api(
+            "admin_salvarPermissoes",
+            USUARIO_LOGADO,
+            u.usuario,
+            selNivel.value,
+            pT.sel.value,
+            pZ.sel.value,
+            pR.sel.value
+          );
+          toast(r.ok ? "ok" : "danger", "Admin", r.ok ? "Salvo!" : (r.msg || "Erro"));
+          if(r.ok) adminRecarregar();
+        }catch(err){
+          toast("danger","Erro", err.message);
+        }finally{
+          loading(false);
+        }
+      };
+
+      row3.appendChild(btnSalvar);
+      box.appendChild(row3);
+
+      wrap.appendChild(box);
+    });
+
+    if(!res.usuarios.length){
+      wrap.innerHTML = `<div class="subhint">Nenhum usuário encontrado.</div>`;
+    }
+
   }catch(err){
     toast("danger","Erro",err.message);
   }
 }
+
 async function adminSalvarEmail(){
   try{
     const alvo=$("admEmailUser").value;
