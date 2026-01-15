@@ -32,10 +32,8 @@
   --shadow2: 0 8px 18px rgba(0,0,0,.35);
 }
 
-/* ✅ BLINDA O HIDDEN (não buga com display:flex) */
 .hidden{ display:none !important; }
 
-/* ✅ BLOQUEIA “ROLAGEM/BORRACHA” NO SITE TODO */
 html,body{ height:100%; overscroll-behavior:none; }
 body{
   margin:0;
@@ -48,11 +46,9 @@ body{
 
 *{ box-sizing:border-box; font-family:Segoe UI,Inter,Arial,sans-serif; }
 
-/* views */
 .view{ height:100%; width:100%; animation:fade .18s ease; }
 @keyframes fade{ from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-/* Toast */
 .toast{
   position:fixed; right:16px; bottom:16px;
   background:var(--card);
@@ -75,7 +71,6 @@ body{
 .toast .t-title{ font-weight:800; font-size:13px; }
 .toast .t-msg{ font-size:12px; color:var(--muted); margin-top:2px; white-space:pre-wrap; }
 
-/* Overlay */
 .overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.25);
@@ -103,7 +98,6 @@ body{
 @keyframes spin{ to{ transform:rotate(360deg);} }
 .loading-text{ font-size:12px; color:var(--muted); }
 
-/* Auth */
 .auth{
   height:100%;
   display:flex;
@@ -168,7 +162,6 @@ input:focus,select:focus{
 }
 .login-links span:hover{ opacity:.85; }
 
-/* ✅ Painel de erro (não explode layout) */
 .small{ margin-top:10px; display:none; }
 .small.show{ display:block; }
 .errBox{
@@ -212,7 +205,6 @@ input:focus,select:focus{
 }
 .errDetails.show{ display:block; }
 
-/* App shell */
 .app{ height:100%; display:flex; }
 .sidebar{
   width:290px;
@@ -257,6 +249,13 @@ input:focus,select:focus{
 .nav .item:hover{ background:rgba(255,255,255,.14); transform:translateY(-1px); }
 .nav .item.active{ background:rgba(255,255,255,.22); }
 .nav .item small{ opacity:.8; font-size:12px; }
+
+/* ✅ item bloqueado (sem mudar layout) */
+.nav .item.disabled{
+  opacity:.55;
+  pointer-events:none;
+  filter:saturate(.8);
+}
 
 .side-bottom{ margin-top:auto; display:flex; flex-direction:column; gap:10px; }
 
@@ -310,7 +309,7 @@ input:focus,select:focus{
   flex:1 1 auto;
   border:1px solid var(--line);
   border-radius:14px;
-  overflow:auto;                 /* ✅ único scroll permitido */
+  overflow:auto;
   -webkit-overflow-scrolling: touch;
   min-height:0;
 }
@@ -351,7 +350,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 <body>
 
-<!-- Toast -->
 <div id="toast" class="toast">
   <div class="dot"></div>
   <div>
@@ -360,7 +358,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
   </div>
 </div>
 
-<!-- Overlay loading -->
 <div id="overlay" class="overlay">
   <div class="loading-box">
     <div class="spinner"></div>
@@ -368,7 +365,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
   </div>
 </div>
 
-<!-- VIEWS -->
 <div id="view_login" class="view auth">
   <div class="login-card">
     <div class="brand">
@@ -481,7 +477,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
           <span>🔁 Transferência (Locais)</span><small>Config</small>
         </div>
 
-        <!-- ✅ NOVO: MUDAR SENHA -->
         <div class="item" onclick="abrir('cfgSenha')">
           <span>🔑 Mudar senha</span><small>Conta</small>
         </div>
@@ -495,7 +490,11 @@ table.sheet{ width:100%; border-collapse:collapse; }
       </div>
 
       <div class="side-bottom">
-        <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
+        <!-- ✅ Sair + versão ao lado (v2.1) -->
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
+          <span id="appVersion" style="opacity:.85; font-size:12px;">v2.1</span>
+        </div>
       </div>
     </aside>
 
@@ -508,7 +507,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div class="pill" id="pillUser">—</div>
       </div>
 
-      <!-- TRANSFERÊNCIA -->
       <section class="card hidden" id="transferencia">
         <h2>📦 Transferência</h2>
 
@@ -529,10 +527,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
           <button class="btn btn-ghost" onclick="limparTabela('transferencia')">Limpar</button>
         </div>
 
-        <div class="subhint">✅ Sem scroll no app. Só a planilha rola. QTD3 vira sempre positivo no TXT.</div>
+        <div class="subhint">✅ QTD3 vira sempre positivo no TXT. “Destino” (10ª coluna) muda por linha.</div>
       </section>
 
-      <!-- ZERAMENTO -->
       <section class="card hidden" id="zeramento">
         <h2>🔁 Zeramento</h2>
 
@@ -556,7 +553,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div class="subhint">qtd2&gt;qtd1 → “E” e final 1905, senão “S” e final 5906. QTD3 sempre positivo.</div>
       </section>
 
-      <!-- REQUISIÇÃO -->
       <section class="card hidden" id="requisicao">
         <h2>📝 Requisição</h2>
 
@@ -580,7 +576,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div class="subhint">Cole vários pedidos misturados: o sistema separa pelo número do pedido.</div>
       </section>
 
-      <!-- CFG TRANSFER -->
       <section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
         <label>Outro Local (ex: 4044)</label>
@@ -589,10 +584,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
           <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
           <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
         </div>
-        <div class="subhint">Coluna “Local” é o local informado. “Destino” (10ª coluna) pode mudar por linha. Se ficar vazio, usa “Outro Local”.</div>
+        <div class="subhint">Se “Destino” (10ª coluna) estiver vazio, usa “Outro Local”.</div>
       </section>
 
-      <!-- ✅ CFG SENHA -->
       <section class="card hidden" id="cfgSenha">
         <h2>🔑 Mudar senha</h2>
 
@@ -613,7 +607,6 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div class="subhint">Use uma senha que você não compartilha.</div>
       </section>
 
-      <!-- ADMIN -->
       <section class="card hidden" id="adminPerms">
         <h2>🛡️ Admin</h2>
 
@@ -636,10 +629,9 @@ table.sheet{ width:100%; border-collapse:collapse; }
 </div>
 
 <script>
-/* ========= COLE SUA URL /exec AQUI ========= */
-const API_URL = "https://script.google.com/macros/s/AKfycbxNRaMRmncSG-nxthGWCz8F1vXRfgLhzETX1sALXc6jb53jbS8UIv8bBvOVeaP_6I3V8w/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyiObVaS-xAX4mUJbjJp91BSChlP1e2QlXyU1dklIxGSXj9DyltRgsfr-9p5srLphvQBw/exec";
+const APP_VERSION = "2.1";
 
-/* Estado */
 const COL_DEFAULT = 9;
 const COL_TRANSFER = 10;
 
@@ -649,23 +641,22 @@ let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
 const codCache = new Map();
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
-/* Helpers */
+let ADMIN_USERS = [];
+let ADMIN_SELECTED = "";
+
 function $(id){ return document.getElementById(id); }
 
-/* Views */
 function trocarView(nome){
   ["login","cadastro","recuperar","app"].forEach(v => $("view_"+v).classList.add("hidden"));
   $("view_"+nome).classList.remove("hidden");
   limparErro();
 }
 
-/* Overlay */
 function loading(on, text){
   $("overlayText").textContent = text || "Processando...";
   $("overlay").classList.toggle("show", !!on);
 }
 
-/* Toast */
 let toastTimer=null;
 function toast(type,title,msg){
   const t = $("toast");
@@ -677,7 +668,6 @@ function toast(type,title,msg){
   toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
 
-/* Erros limpos */
 function mostrarErro(msgCurta, detalhes=""){
   $("statusLogin").classList.add("show");
   $("errMsg").textContent = msgCurta || "Ocorreu um erro.";
@@ -694,19 +684,16 @@ function toggleErrDetails(){
   $("errDetails").classList.toggle("show");
 }
 
-/* Ver senha */
 function toggleSenha(){
   const s = $("senha");
   s.type = (s.type === "password") ? "text" : "password";
 }
 
-/* Tema */
 function toggleTema(){
   document.documentElement.classList.toggle("dark");
   toast("ok","Tema","Tema alternado.");
 }
 
-/* Menu */
 function abrirConfig(){
   $("menuPrincipal").classList.add("hidden");
   $("menuConfig").classList.remove("hidden");
@@ -736,7 +723,6 @@ function abrir(id){
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
 }
 
-/* Números */
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
 function normalizeQTD(str){
   const s=(str||"0").toString().trim();
@@ -759,7 +745,6 @@ function baixarComoTXT(nome,texto){
   a.click();
 }
 
-/* ✅ API blindada (não exibe HTML gigante) */
 async function api(action, ...args){
   const payload = JSON.stringify({ action, args });
 
@@ -791,7 +776,6 @@ async function api(action, ...args){
   }
 }
 
-/* Planilha */
 function tableBody(sectionId){
   return document.querySelector(`#${sectionId} table.sheet tbody`);
 }
@@ -856,7 +840,6 @@ function handleGridNav(e){
   (nextRow.cells[c] || nextRow.cells[0]).focus();
 }
 
-/* Config transferência */
 function salvarCfgTransfer(){
   const v = ($("cfgLocalOutro").value || "").trim();
   if(!v) return toast("warn","Atenção","Informe o outro local (ex: 4044).");
@@ -865,7 +848,6 @@ function salvarCfgTransfer(){
   toast("ok","Salvo","Outro Local atualizado.");
 }
 
-/* ✅ Mudar senha */
 async function salvarSenha(){
   const atual = ($("senhaAtual").value || "").trim();
   const nova  = ($("senhaNova").value || "").trim();
@@ -895,15 +877,33 @@ async function salvarSenha(){
   }
 }
 
-/* Permissões UI */
+/* ✅ Menu com cadeado quando bloqueado */
 function aplicarPermissoesUI(){
-  $("m_transferencia").style.display = (PERMS.transferencia==="BLOQUEAR") ? "none" : "";
-  $("m_zeramento").style.display = (PERMS.zeramento==="BLOQUEAR") ? "none" : "";
-  $("m_requisicao").style.display = (PERMS.requisicao==="BLOQUEAR") ? "none" : "";
+  function setItem(id, perm, nome){
+    const el = $(id);
+    if(!el) return;
+
+    const small = el.querySelector("small");
+    const span = el.querySelector("span");
+
+    if(perm === "BLOQUEAR"){
+      el.classList.add("disabled");
+      if(span) span.textContent = `🔒 ${nome}`;
+      if(small) small.textContent = "Bloqueado";
+    }else{
+      el.classList.remove("disabled");
+      if(span) span.textContent = nome;
+      if(small) small.textContent = (perm === "VISUALIZAR") ? "Visualizar" : "Editar";
+    }
+  }
+
+  setItem("m_transferencia", PERMS.transferencia, "📦 Transferência");
+  setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento");
+  setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisição");
+
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
-/* Mapeamentos */
 async function mapearOuCadastrar(chave){
   const key=(chave||"").toString().trim();
   if(!key) return "";
@@ -954,7 +954,6 @@ async function getRequisitantePorUsuario(usuario){
   return out;
 }
 
-/* AUTH */
 async function entrar(){
   limparErro();
   const u = $("usuario").value.trim();
@@ -970,7 +969,9 @@ async function entrar(){
   try{
     const res = await api("login", u, s);
     if(!res.ok){
-      toast("danger","Login","Usuário ou senha inválidos.");
+      const msg = (res.msg || "Usuário ou senha inválidos.");
+      toast("danger","Login", msg);
+      mostrarErro("Falha no login.", msg);
       return;
     }
 
@@ -983,6 +984,7 @@ async function entrar(){
     $("sideUser").textContent = USUARIO_LOGADO;
     $("sideNivel").textContent = NIVEL;
     $("pillUser").textContent = `${USUARIO_LOGADO} • ${NIVEL}`;
+    $("appVersion").textContent = "v" + APP_VERSION;
 
     criarTabela("transferencia",10,COL_TRANSFER);
     criarTabela("zeramento",10,COL_DEFAULT);
@@ -1068,7 +1070,7 @@ async function importacaoTransferencia(){
 
       const localInformado=(c[8]||"164").trim() || "164";
 
-      // ✅ 10ª coluna (Destino por linha). Se vazio, cai no config.
+      // ✅ 10ª coluna destino por linha; fallback config
       let destinoLinha = (c[9] || "").trim();
       if(!destinoLinha) destinoLinha = (LOCAL_OUTRO_TRANSFER||"4044").trim();
 
@@ -1190,127 +1192,192 @@ async function importacaoRequisicao(){
 /* ADMIN */
 async function adminRecarregar(){
   try{
-    const res=await api("admin_listarUsuarios", USUARIO_LOGADO);
+    const res = await api("admin_listarUsuarios", USUARIO_LOGADO);
     if(!res.ok) return toast("danger","Admin", res.msg || "Sem permissão");
 
-    const sel=$("admEmailUser");
-    sel.innerHTML="";
-    res.usuarios.forEach(u=>{
+    ADMIN_USERS = Array.isArray(res.usuarios) ? res.usuarios : [];
+
+    // select de email (mantido)
+    const selEmail = $("admEmailUser");
+    selEmail.innerHTML="";
+    ADMIN_USERS.forEach(u=>{
       const op=document.createElement("option");
-      op.value=u.usuario; op.textContent=u.usuario;
+      op.value=u.usuario;
+
+      const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
+        || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
+            && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
+            && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+
+      op.textContent = isBlocked ? `🔒 ${u.usuario}` : u.usuario;
+      selEmail.appendChild(op);
+    });
+
+    renderAdminPermEditor();
+
+  }catch(err){
+    toast("danger","Erro", err.message);
+  }
+}
+
+function renderAdminPermEditor(){
+  const wrap = $("adminPermsWrap");
+  wrap.innerHTML = "";
+
+  if(!ADMIN_USERS.length){
+    wrap.innerHTML = `<div class="subhint">Nenhum usuário encontrado.</div>`;
+    return;
+  }
+
+  const rowTop = document.createElement("div");
+  rowTop.className = "actions";
+  rowTop.style.gap = "10px";
+
+  const selUser = document.createElement("select");
+  selUser.style.minWidth = "240px";
+
+  ADMIN_USERS.forEach(u=>{
+    const op = document.createElement("option");
+    op.value = u.usuario;
+
+    const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
+      || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
+          && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
+          && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+
+    op.textContent = isBlocked ? `🔒 ${u.usuario}` : u.usuario;
+    selUser.appendChild(op);
+  });
+
+  if(ADMIN_SELECTED){
+    selUser.value = ADMIN_SELECTED;
+  } else {
+    ADMIN_SELECTED = ADMIN_USERS[0].usuario;
+    selUser.value = ADMIN_SELECTED;
+  }
+
+  selUser.onchange = () => {
+    ADMIN_SELECTED = selUser.value;
+    renderAdminPermForm();
+  };
+
+  rowTop.appendChild(selUser);
+  wrap.appendChild(rowTop);
+
+  const formBox = document.createElement("div");
+  formBox.id = "adminPermForm";
+  formBox.style.marginTop = "10px";
+  wrap.appendChild(formBox);
+
+  renderAdminPermForm();
+}
+
+function renderAdminPermForm(){
+  const form = document.getElementById("adminPermForm");
+  if(!form) return;
+
+  const u = ADMIN_USERS.find(x => String(x.usuario) === String(ADMIN_SELECTED)) || ADMIN_USERS[0];
+
+  const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
+    || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
+        && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
+        && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+
+  form.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.innerHTML = `<b>${isBlocked ? "🔒 " : ""}${u.usuario}</b> <span style="color:var(--muted); font-size:12px;">(${u.nivel})</span>`;
+  form.appendChild(header);
+
+  const rowNivel = document.createElement("div");
+  rowNivel.className = "actions";
+  rowNivel.style.gap = "10px";
+
+  const selNivel = document.createElement("select");
+  ["USER","CONSULTA","ADMIN","BLOQUEADO"].forEach(n=>{
+    const op=document.createElement("option");
+    op.value=n;
+    op.textContent=n;
+    if(String(u.nivel||"USER").toUpperCase()===n) op.selected=true;
+    selNivel.appendChild(op);
+  });
+
+  rowNivel.appendChild(selNivel);
+  form.appendChild(rowNivel);
+
+  function makePermSelect(label, val){
+    const wrapSel = document.createElement("div");
+    wrapSel.style.minWidth = "160px";
+
+    const lb = document.createElement("div");
+    lb.style.fontSize = "12px";
+    lb.style.color = "var(--muted)";
+    lb.style.marginBottom = "6px";
+    lb.textContent = label;
+
+    const sel = document.createElement("select");
+    ["EDITAR","VISUALIZAR","BLOQUEAR"].forEach(p=>{
+      const op=document.createElement("option");
+      op.value=p; op.textContent=p;
+      if(String(val||"EDITAR").toUpperCase()===p) op.selected=true;
       sel.appendChild(op);
     });
 
-    const wrap = $("adminPermsWrap");
-    wrap.innerHTML = "";
-
-    const niveis = ["USER","CONSULTA","ADMIN"];
-    const permsOps = ["EDITAR","VISUALIZAR","BLOQUEAR"];
-
-    res.usuarios.forEach(u=>{
-      const box = document.createElement("div");
-      box.style.border = "1px solid var(--line)";
-      box.style.borderRadius = "14px";
-      box.style.padding = "12px";
-      box.style.marginTop = "10px";
-      box.style.background = "rgba(106,75,201,.04)";
-
-      const title = document.createElement("div");
-      title.innerHTML = `<b>${u.usuario}</b> <span style="color:var(--muted); font-size:12px;">(${u.nivel})</span>`;
-      box.appendChild(title);
-
-      const row1 = document.createElement("div");
-      row1.className = "actions";
-      row1.style.marginTop = "10px";
-      row1.style.gap = "10px";
-
-      const selNivel = document.createElement("select");
-      niveis.forEach(n=>{
-        const op=document.createElement("option");
-        op.value=n; op.textContent=n;
-        if((u.nivel||"USER").toUpperCase()===n) op.selected=true;
-        selNivel.appendChild(op);
-      });
-      row1.appendChild(selNivel);
-      box.appendChild(row1);
-
-      const row2 = document.createElement("div");
-      row2.className = "actions";
-      row2.style.gap = "10px";
-
-      function makePermSelect(label, val){
-        const wrapSel = document.createElement("div");
-        wrapSel.style.minWidth = "160px";
-
-        const lb = document.createElement("div");
-        lb.style.fontSize = "12px";
-        lb.style.color = "var(--muted)";
-        lb.style.marginBottom = "6px";
-        lb.textContent = label;
-
-        const sel = document.createElement("select");
-        permsOps.forEach(p=>{
-          const op=document.createElement("option");
-          op.value=p; op.textContent=p;
-          if(String(val||"EDITAR").toUpperCase()===p) op.selected=true;
-          sel.appendChild(op);
-        });
-
-        wrapSel.appendChild(lb);
-        wrapSel.appendChild(sel);
-        return {wrapSel, sel};
-      }
-
-      const pT = makePermSelect("Transferência", u.perms?.transferencia);
-      const pZ = makePermSelect("Zeramento", u.perms?.zeramento);
-      const pR = makePermSelect("Requisição", u.perms?.requisicao);
-
-      row2.appendChild(pT.wrapSel);
-      row2.appendChild(pZ.wrapSel);
-      row2.appendChild(pR.wrapSel);
-      box.appendChild(row2);
-
-      const row3 = document.createElement("div");
-      row3.className = "actions";
-
-      const btnSalvar = document.createElement("button");
-      btnSalvar.className = "btn btn-primary";
-      btnSalvar.style.width = "auto";
-      btnSalvar.textContent = "Salvar permissões";
-      btnSalvar.onclick = async () => {
-        try{
-          loading(true, "Salvando permissões...");
-          const r = await api(
-            "admin_salvarPermissoes",
-            USUARIO_LOGADO,
-            u.usuario,
-            selNivel.value,
-            pT.sel.value,
-            pZ.sel.value,
-            pR.sel.value
-          );
-          toast(r.ok ? "ok" : "danger", "Admin", r.ok ? "Salvo!" : (r.msg || "Erro"));
-          if(r.ok) adminRecarregar();
-        }catch(err){
-          toast("danger","Erro", err.message);
-        }finally{
-          loading(false);
-        }
-      };
-
-      row3.appendChild(btnSalvar);
-      box.appendChild(row3);
-
-      wrap.appendChild(box);
-    });
-
-    if(!res.usuarios.length){
-      wrap.innerHTML = `<div class="subhint">Nenhum usuário encontrado.</div>`;
-    }
-
-  }catch(err){
-    toast("danger","Erro",err.message);
+    wrapSel.appendChild(lb);
+    wrapSel.appendChild(sel);
+    return {wrapSel, sel};
   }
+
+  const rowPerm = document.createElement("div");
+  rowPerm.className = "actions";
+  rowPerm.style.gap = "10px";
+
+  const pT = makePermSelect("Transferência", u.perms?.transferencia);
+  const pZ = makePermSelect("Zeramento",     u.perms?.zeramento);
+  const pR = makePermSelect("Requisição",    u.perms?.requisicao);
+
+  rowPerm.appendChild(pT.wrapSel);
+  rowPerm.appendChild(pZ.wrapSel);
+  rowPerm.appendChild(pR.wrapSel);
+
+  form.appendChild(rowPerm);
+
+  const rowBtn = document.createElement("div");
+  rowBtn.className = "actions";
+
+  const btnSalvar = document.createElement("button");
+  btnSalvar.className = "btn btn-primary";
+  btnSalvar.style.width = "auto";
+  btnSalvar.textContent = "Salvar";
+
+  btnSalvar.onclick = async () => {
+    try{
+      loading(true, "Salvando permissões...");
+      const r = await api(
+        "admin_salvarPermissoes",
+        USUARIO_LOGADO,
+        u.usuario,
+        selNivel.value,
+        pT.sel.value,
+        pZ.sel.value,
+        pR.sel.value
+      );
+      toast(r.ok ? "ok" : "danger", "Admin", r.ok ? "Salvo!" : (r.msg || "Erro"));
+      if(r.ok) await adminRecarregar();
+    }catch(err){
+      toast("danger","Erro", err.message);
+    }finally{
+      loading(false);
+    }
+  };
+
+  rowBtn.appendChild(btnSalvar);
+  form.appendChild(rowBtn);
+
+  const hint = document.createElement("div");
+  hint.className = "subhint";
+  hint.textContent = "Dica: selecione NIVEL = BLOQUEADO para impedir o login (cadeado).";
+  form.appendChild(hint);
 }
 
 async function adminSalvarEmail(){
@@ -1324,11 +1391,10 @@ async function adminSalvarEmail(){
   }
 }
 
-/* ENTER login */
 $("usuario").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 
-/* Inicial */
+$("appVersion").textContent = "v" + APP_VERSION;
 trocarView("login");
 </script>
 </body>
