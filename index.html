@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <link rel="manifest" href="./manifest.json">
+ <link rel="manifest" href="/sistema-pwa/manifest.json">
 <meta name="theme-color" content="#2c1a4d">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="/sistema-pwa/icons/icon-192.png">
+<link rel="icon" href="/sistema-pwa/icons/icon-192.png">
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1401,8 +1402,9 @@ $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("appVersion").textContent = "v" + APP_VERSION;
 trocarView("login");
 
-  if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
+// ✅ PWA (GitHub Pages em /sistema-pwa/)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sistema-pwa/sw.js").catch(console.log);
 }
 
 </script>
