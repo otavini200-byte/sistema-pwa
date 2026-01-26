@@ -699,7 +699,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyiObVaS-xAX4mUJbjJp91BSChlP1e2QlXyU1dklIxGSXj9DyltRgsfr-9p5srLphvQBw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbztsAvRCZV_5Nx5bbcOagmMdu27Bs4hbZO12upvwdOTvYuJIDKIt7Xpb0IuShVIHIYV7A/exec";
 const APP_VERSION = "3.0";
 
 let LAST_VIEW_ID = "transferencia";
@@ -733,7 +733,7 @@ const COL_TRANSFER = 10;
 
 let NIVEL = "";
 let USUARIO_LOGADO = "";
-let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR"};
+let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR", aba164:"EDITAR"};
 const codCache = new Map();
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
@@ -1194,9 +1194,9 @@ function aplicarPermissoesUI(){
   setItem("m_transferencia", PERMS.transferencia, "📦 Transferência");
   setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento");
   setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisição");
+  setItem("m_aba164",        PERMS.aba164,       "📌 164 (Conferência)");
   // ✅ Aba 164 segue a mesma permissão da Requisição (EDITAR/VISUALIZAR/BLOQUEAR)
-  setItem("m_aba164",        PERMS.requisicao,    "📌 164 (Conferência)");
-
+  
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
@@ -1506,7 +1506,8 @@ async function adminRecarregar(){
       const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
         || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
             && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
-            && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+            && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR"
+            && String(u.perms?.aba164||"").toUpperCase()==="BLOQUEAR");
 
       op.textContent = isBlocked ? `🔒 ${u.usuario}` : u.usuario;
       selEmail.appendChild(op);
@@ -1542,7 +1543,8 @@ function renderAdminPermEditor(){
     const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
       || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
           && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
-          && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+          && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR"
+            && String(u.perms?.aba164||"").toUpperCase()==="BLOQUEAR");
 
     op.textContent = isBlocked ? `🔒 ${u.usuario}` : u.usuario;
     selUser.appendChild(op);
@@ -1580,7 +1582,8 @@ function renderAdminPermForm(){
   const isBlocked = (String(u.nivel||"").toUpperCase()==="BLOQUEADO")
     || (String(u.perms?.transferencia||"").toUpperCase()==="BLOQUEAR"
         && String(u.perms?.zeramento||"").toUpperCase()==="BLOQUEAR"
-        && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR");
+        && String(u.perms?.requisicao||"").toUpperCase()==="BLOQUEAR"
+            && String(u.perms?.aba164||"").toUpperCase()==="BLOQUEAR");
 
   form.innerHTML = "";
 
@@ -1635,10 +1638,13 @@ function renderAdminPermForm(){
   const pZ = makePermSelect("Zeramento",     u.perms?.zeramento);
   const pR = makePermSelect("Requisição",    u.perms?.requisicao);
 
+
+  const p164 = makePermSelect("164 (Conferência)", u.perms?.aba164);
   rowPerm.appendChild(pT.wrapSel);
   rowPerm.appendChild(pZ.wrapSel);
   rowPerm.appendChild(pR.wrapSel);
 
+  rowPerm.appendChild(p164.wrapSel);
   form.appendChild(rowPerm);
 
   const rowBtn = document.createElement("div");
@@ -1659,7 +1665,8 @@ function renderAdminPermForm(){
         selNivel.value,
         pT.sel.value,
         pZ.sel.value,
-        pR.sel.value
+        pR.sel.value,
+        p164.sel.value
       );
       toast(r.ok ? "ok" : "danger", "Admin", r.ok ? "Salvo!" : (r.msg || "Erro"));
       if(r.ok) await adminRecarregar();
