@@ -475,6 +475,11 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div id="m_requisicao" class="item" onclick="abrir('requisicao')">
           <span>📝 Requisição</span><small>Editar</small>
         </div>
+
+        <div id="m_aba164" class="item" onclick="abrir('aba164')">
+          <span>📌 164 (Conferência)</span><small>Comparar</small>
+        </div>
+
       </div>
 
       <div class="nav hidden" id="menuConfig">
@@ -555,7 +560,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
           <button class="btn btn-ghost" onclick="limparTabela('zeramento')">Limpar</button>
         </div>
 
-        <div class="subhint"✅ Cole e importe.</div>
+        <div class="subhint">✅ Cole e importe.</div>
       </section>
 
       <section class="card hidden" id="requisicao">
@@ -580,6 +585,66 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
         <div class="subhint">✅ Cole vários pedidos que o sistema separa pelo número do pedido e importe.</div>
       </section>
+      
+      
+      <section class="card hidden" id="aba164" style="overflow:hidden;">
+        <h2>📌 164 (Conferência)</h2>
+
+        <div class="subhint">
+          Cole as 2 planilhas abaixo (cada uma pode ter um formato diferente). O sistema soma itens iguais (por Código + Grades) e faz A − B.
+          Se não sobrar nada, o 164 está certo.
+        </div>
+
+        <div id="wrap164Inputs" style="display:block;">
+          <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha A</h3>
+          <div class="sheet-wrap" style="flex:0 0 auto; max-height:150px;">
+            <table class="sheet" id="tbl164A">
+              <thead>
+                <tr>
+                  <th>Código Local</th><th>Código Produto</th><th>Nome do Produto</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Qtde Estoque</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha B</h3>
+          <div class="sheet-wrap" style="flex:0 0 auto; max-height:150px;">
+            <table class="sheet" id="tbl164B">
+              <thead>
+                <tr>
+                  <th>Código Prod/Serv</th><th>Nome Prod/Serv</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Un. Med.</th><th>Quant. Liberada</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="comparar164()">Comparar (A − B)</button>
+          <button class="btn btn-ghost" onclick="limpar164()">Limpar</button>
+          <button class="btn btn-ghost" onclick="toggleInputs164()">Mostrar mais</button>
+</div>
+
+        <div id="sobras164" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column;">
+          <div class="subhint" id="res164Hint">—</div>
+
+          <h3 style="margin:10px 0 8px 0; font-size:14px;">Sobras (A − B)</h3>
+          <div class="sheet-wrap" style="flex:1 1 auto; min-height:180px;">
+            <table class="sheet" id="tbl164Res">
+              <thead>
+                <tr><th>Item</th><th>Quantidade</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+
+
 
       <section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
@@ -635,7 +700,33 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyiObVaS-xAX4mUJbjJp91BSChlP1e2QlXyU1dklIxGSXj9DyltRgsfr-9p5srLphvQBw/exec";
-const APP_VERSION = "2.1";
+const APP_VERSION = "3.0";
+
+let LAST_VIEW_ID = "transferencia";
+
+let MOV_ORIGEM = ""; // "M1" (Matriz) ou "M3" (Filial)
+
+async function escolherMovOrigemSePreciso(){
+  if (MOV_ORIGEM) return MOV_ORIGEM;
+
+  // 1 = Matriz (M1) | 3 = Filial (M3)
+  let v = "";
+  while(v !== "1" && v !== "3"){
+    v = prompt("Origem do movimento:\n\nDigite 1 para Matriz (M1)\nDigite 3 para Filial (M3)", "1");
+    if(v === null) throw new Error("Seleção de origem cancelada.");
+    v = String(v).trim();
+  }
+
+  MOV_ORIGEM = (v === "1") ? "M1" : "M3";
+  toast("ok","Origem", MOV_ORIGEM === "M1" ? "Matriz selecionada (M1)" : "Filial selecionada (M3)");
+  return MOV_ORIGEM;
+}
+
+function resetMovOrigem(){
+  MOV_ORIGEM = "";
+  toast("ok","Origem","Seleção de origem resetada.");
+}
+
 
 const COL_DEFAULT = 9;
 const COL_TRANSFER = 10;
@@ -717,12 +808,14 @@ function setTop(title,subtitle){
   $("topSubtitle").textContent=subtitle;
 }
 function abrir(id){
+  if(id !== "aba164"){ LAST_VIEW_ID = id; }
   document.querySelectorAll(".main .card").forEach(s=>s.classList.add("hidden"));
   $(id).classList.remove("hidden");
 
   if(id==="transferencia"){ setTop("Transferência","Cole e clique em Importação"); setActiveNav("transferencia"); }
   if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
   if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao"); }
+  if(id==="aba164"){ setTop("164 (Conferência)","Cole as planilhas e compare A − B"); setActiveNav("aba164"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
@@ -804,6 +897,202 @@ function limparTabela(sectionId){
   criarTabela(sectionId,10,cols);
   toast("ok","Limpar","Tabela limpa.");
 }
+
+/* ✅ ABA 164 (Conferência) */
+function criarTabelaCustom(tbodyEl, linhas=12, colunas=8){
+  tbodyEl.innerHTML="";
+  for(let i=0;i<linhas;i++){
+    const tr=document.createElement("tr");
+    for(let j=0;j<colunas;j++){
+      const td=document.createElement("td");
+      td.contentEditable="true";
+      td.addEventListener("paste", handlePaste);
+      td.addEventListener("keydown", handleGridNav);
+      tr.appendChild(td);
+    }
+    tbodyEl.appendChild(tr);
+  }
+}
+
+function init164(){
+  const a = document.querySelector("#tbl164A tbody");
+  const b = document.querySelector("#tbl164B tbody");
+  const r = document.querySelector("#tbl164Res tbody");
+  if(a) criarTabelaCustom(a, 12, 7);
+  if(b) criarTabelaCustom(b, 12, 7);
+  if(r) r.innerHTML="";
+  const hint = document.getElementById("res164Hint");
+  if(hint) hint.textContent = "—";
+}
+
+function limpar164(){
+  init164();
+  const wrap = document.getElementById("wrap164Inputs");
+  if(wrap) wrap.style.display = "block";
+  toast("ok","164","Tabelas limpas.");
+}
+
+function toggleInputs164(){
+  const wrap = document.getElementById("wrap164Inputs");
+  if(!wrap) return;
+  const showing = wrap.style.display !== "none";
+  wrap.style.display = showing ? "none" : "block";
+  // quando mostrar, sobe um pouco para facilitar colar
+  if(!showing){
+    wrap.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+}
+
+function mapFrom164Table(tbody, kind){
+  // kind: "A" ou "B"
+  const map = new Map(); // key -> soma
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+
+  const norm = (s)=> (s||"").toString().trim();
+  const lower = (s)=> norm(s).toLowerCase();
+
+  // defaults (caso a planilha seja colada sem cabeçalho)
+  let cols = (kind === "A")
+    ? { code: 1, g1: 3, g2: 4, g3: 5, qty: 6 }
+    : { code: 0, g1: 2, g2: 3, g3: 4, qty: 6 };
+
+  function detectFromHeader(cells){
+    const found = {};
+    cells.forEach((c, i)=>{
+      const h = lower(c.innerText);
+
+      // code
+      if(h.includes("código produto") || h.includes("codigo produto")) found.code = i;
+      if(h.includes("código prod/serv") || h.includes("codigo prod/serv")) found.code = i;
+      if(h === "cod." || h === "cod") found.code = i;
+
+      // grades
+      if(h.includes("grade 1") || h === "grade1") found.g1 = i;
+      if(h.includes("grade 2") || h === "grade2") found.g2 = i;
+      if(h.includes("grade 3") || h === "grade3") found.g3 = i;
+
+      // qty
+      if(h.includes("qtde estoque") || h.includes("qtd. estoque") || h.includes("qtd estoque")) found.qty = i;
+      if(h.includes("quant. liberada") || h.includes("quant liberada")) found.qty = i;
+    });
+
+    // se não achou qty, usa última coluna
+    if(found.qty === undefined) found.qty = cells.length - 1;
+
+    // aplica somente se pelo menos code e qty existem
+    if(found.code !== undefined && found.qty !== undefined){
+      cols = { ...cols, ...found };
+      return true;
+    }
+    return false;
+  }
+
+  // tenta achar cabeçalho (linha que contém "grade" e "quant"/"estoque")
+  let startRow = 0;
+  for(let i=0;i<rows.length;i++){
+    const texts = Array.from(rows[i].cells).map(c=>lower(c.innerText)).join(" ");
+    if(texts.includes("grade") && (texts.includes("estoque") || texts.includes("quant"))){
+      if(detectFromHeader(Array.from(rows[i].cells))){
+        startRow = i + 1;
+        break;
+      }
+    }
+  }
+
+  for(let i=startRow;i<rows.length;i++){
+    const cells = rows[i].cells;
+    if(!cells || !cells.length) continue;
+
+    const code = norm(cells[cols.code]?.innerText);
+    if(!code) continue;
+
+    const g1 = norm(cells[cols.g1]?.innerText);
+    const g2 = norm(cells[cols.g2]?.innerText);
+    const g3 = norm(cells[cols.g3]?.innerText);
+
+    const qtyTxt = norm(cells[cols.qty]?.innerText);
+    const qty = normalizeQTD(qtyTxt || "0");
+    if(isNaN(qty) || qty === 0) continue;
+
+    // chave por código + grades (para não misturar tamanhos/cores)
+    const key = [code, g1, g2, g3].join("||");
+    map.set(key, (map.get(key) || 0) + qty);
+  }
+
+  return map;
+}
+
+function render164Resultado(diffMap){
+  const tbody = document.querySelector("#tbl164Res tbody");
+  tbody.innerHTML = "";
+
+  const sobras = [...diffMap.entries()]
+    .filter(([_,v]) => Math.abs(v) > 0)
+    .sort((a,b)=> a[0].localeCompare(b[0], "pt-BR"));
+
+  if(!sobras.length){
+    document.getElementById("res164Hint").textContent = "✅ 164 está certo: nenhuma sobra.";
+    return;
+  }
+
+  document.getElementById("res164Hint").textContent = `⚠️ Existem ${sobras.length} itens com sobra. Veja abaixo:`;
+
+  for(const [key, qtd] of sobras){
+    const [code, g1, g2, g3] = key.split("||");
+    const parts = [code];
+    const grades = [g1,g2,g3].filter(x=>x && x.trim());
+    if(grades.length) parts.push(`(${grades.join(" / ")})`);
+
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    td1.textContent = parts.join(" ");
+    td2.textContent = formatQtdTxtFromNum(qtd);
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tbody.appendChild(tr);
+  }
+}
+
+function comparar164(){
+  try{
+    const aBody = document.querySelector("#tbl164A tbody");
+    const bBody = document.querySelector("#tbl164B tbody");
+    const mapA = mapFrom164Table(aBody, "A");
+    const mapB = mapFrom164Table(bBody, "B");
+
+    const diff = new Map();
+
+    // A - B
+    for(const [cod, qtdA] of mapA.entries()){
+      diff.set(cod, (diff.get(cod) || 0) + qtdA);
+    }
+    for(const [cod, qtdB] of mapB.entries()){
+      diff.set(cod, (diff.get(cod) || 0) - qtdB);
+    }
+
+    // remove quase zero
+    for(const [cod, v] of diff.entries()){
+      if(Math.abs(v) < 0.0000001) diff.delete(cod);
+    }
+
+    render164Resultado(diff);
+
+    const wrap = document.getElementById("wrap164Inputs");
+    if(wrap) wrap.style.display = "none";
+
+    const anchor = document.getElementById("sobras164");
+    if(anchor) anchor.scrollIntoView({behavior:"smooth", block:"start"});
+
+    toast("ok","164","Comparação concluída.");
+  }catch(err){
+    toast("danger","Erro", err.message || String(err));
+  }
+}
+
+
+
+
 function handlePaste(e){
   e.preventDefault();
   const text=(e.clipboardData||window.clipboardData).getData("text");
@@ -905,6 +1194,8 @@ function aplicarPermissoesUI(){
   setItem("m_transferencia", PERMS.transferencia, "📦 Transferência");
   setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento");
   setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisição");
+  // ✅ Aba 164 segue a mesma permissão da Requisição (EDITAR/VISUALIZAR/BLOQUEAR)
+  setItem("m_aba164",        PERMS.requisicao,    "📌 164 (Conferência)");
 
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
@@ -994,6 +1285,7 @@ async function entrar(){
     criarTabela("transferencia",10,COL_TRANSFER);
     criarTabela("zeramento",10,COL_DEFAULT);
     criarTabela("requisicao",10,COL_DEFAULT);
+    init164();
 
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
 
@@ -1056,6 +1348,7 @@ function sair(){
 async function importacaoTransferencia(){
   try{
     loading(true, "Gerando TXT...");
+    const mov = await escolherMovOrigemSePreciso();
     const rows=tableBody("transferencia").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
@@ -1088,7 +1381,7 @@ async function importacaoTransferencia(){
 
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
 
-      out.push(["M1","T",hoje,codigo,f5,f6,f7,origem,destino,qtd3Txt,"0,01",valor,"5949"].join("|"));
+      out.push([mov,"T",hoje,codigo,f5,f6,f7,origem,destino,qtd3Txt,"0,01",valor,"5949"].join("|"));
     }
 
     if(!out.length) return toast("warn","Importação","Nada para importar.");
@@ -1104,6 +1397,7 @@ async function importacaoTransferencia(){
 async function importacaoZeramento(){
   try{
     loading(true, "Gerando TXT...");
+    const mov = await escolherMovOrigemSePreciso();
     const rows=tableBody("zeramento").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
     const out=[];
@@ -1131,7 +1425,7 @@ async function importacaoZeramento(){
       const final=(qtd2>qtd1)?"1905":"5906";
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
 
-      out.push(["M1",tipo,hoje,codigo,f5,f6,f7,local,qtd3Txt,"0,01",valor,final].join("|"));
+      out.push([mov,tipo,hoje,codigo,f5,f6,f7,local,qtd3Txt,"0,01",valor,final].join("|"));
     }
 
     if(!out.length) return toast("warn","Importação","Nada para importar.");
@@ -1401,6 +1695,7 @@ $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 
 $("appVersion").textContent = "v" + APP_VERSION;
 trocarView("login");
+init164();
 
 // ✅ PWA (GitHub Pages em /sistema-pwa/)
 if ("serviceWorker" in navigator) {
