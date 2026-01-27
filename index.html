@@ -491,7 +491,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 
         <div id="m_aba164" class="item" onclick="abrir('aba164')">
-          <span>📌 164 (Conferência)</span><small>Comparar</small>
+          <span>📌 164</span><small>Comparar</small>
         </div>
 
       </div>
@@ -602,7 +602,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
       <section class="card hidden" id="requisicaoManual">
         <h2>✍️ Requisição Manual</h2>
-        <div class="subhint">Cole ou digite a requisição manual (texto livre). O sistema tenta transformar no mesmo TXT de “Pedidos”.</div>
+        <div class="subhint">Cole ou digite a requisição manual.</div>
 
         <div class="grid2" style="margin-top:10px;">
           <input id="reqManualPedido" class="in" placeholder="Pedido (opcional)" />
@@ -614,7 +614,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         </div>
 
         <div class="actions" style="margin-top:10px;">
-          <button class="btn btn-primary" onclick="importacaoRequisicaoManual()">Gerar TXT (Manual)</button>
+          <button class="btn btn-primary" onclick="importacaoRequisicaoManual()">Gerar RI </button>
           <button class="btn btn-ghost" onclick="limparReqManual()">Limpar</button>
         </div>
       </section>
@@ -622,11 +622,10 @@ table.sheet{ width:100%; border-collapse:collapse; }
       
       
       <section class="card hidden" id="aba164" style="overflow:hidden;">
-        <h2>📌 164 (Conferência)</h2>
+        <h2>📌 164 </h2>
 
         <div class="subhint">
-          Cole as 2 planilhas abaixo (cada uma pode ter um formato diferente). O sistema soma itens iguais (por Código + Grades) e faz A − B.
-          Se não sobrar nada, o 164 está certo.
+          Cole as 2 planilhas abaixo . O sistema soma itens iguais Se não sobrar nada, o 164 está certo.
         </div>
 
         <div id="wrap164Inputs" style="display:block;">
@@ -647,7 +646,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
             <table class="sheet" id="tbl164B">
               <thead>
                 <tr>
-                  <th>Código Prod/Serv</th><th>Nome Prod/Serv</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Un. Med.</th><th>Quant. Liberada</th>
+                  <th>Código Produto</th><th>Nome do Produto</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Un. Med.</th><th>Quant. Liberada</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -656,7 +655,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" onclick="comparar164()">Comparar (A − B)</button>
+          <button class="btn btn-primary" onclick="comparar164()">Comparar</button>
           <button class="btn btn-ghost" onclick="limpar164()">Limpar</button>
           <button class="btn btn-ghost" onclick="toggleInputs164()">Mostrar mais</button>
 </div>
@@ -664,7 +663,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div id="sobras164" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column;">
           <div class="subhint" id="res164Hint">—</div>
 
-          <h3 style="margin:10px 0 8px 0; font-size:14px;">Sobras (A − B)</h3>
+          <h3 style="margin:10px 0 8px 0; font-size:14px;">Divergencia</h3>
           <div class="sheet-wrap" style="flex:1 1 auto; min-height:180px;">
             <table class="sheet" id="tbl164Res">
               <thead>
