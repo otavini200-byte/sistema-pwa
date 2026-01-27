@@ -121,8 +121,8 @@ body{
 .brand{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
 .logo{
   width:44px; height:44px; border-radius:16px;
-  background:linear-gradient(135deg,var(--secondary),var(--primary));
-  box-shadow:0 10px 24px rgba(106,75,201,.25);
+  background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAqFBMVEUAAADvTCEAAAP0TSGdOh70USHuTSPzTyP2TB+FSTmiNBOqKw/0Tx3ySiPmTyj2TCOUNx4nDAYVBgUEAADWSCblTSxXGAt6KBgbCgjdSioAAAh1JRZ/KBcYAAgJBACcQieHUEGjNxyKSTAgCAA2BwCzMgvpUCNiKByUNSNmJRf4VzctFRJFGQtwJxh1KxpqKBhkHhC4OB1fGg4PAAaePBV5Jx2lQSs6HRl1QZu4AAAEMElEQVR4nO3cb1uTUBjHceC4w5qw2QZOnFlmmrM2bWa9/3cWrGxjk/HnnMN9H/x9H3RdPTE+3QjniMxxEEIIIYQQQgghhBBCCCGEOpHX1h80ffDaKP2Hzi89GubHoNdKfv8Tic9xrkZuK4Wjz0TCI9GO0O2/ewNCmu9DCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhPANCb27YfNkaIPw+n3jvtz0a5wAVMLJecZs9hujznH/lr+weRNncixqnKb2CdOOAwgh5B6EEPIPQh5ClX+1rpAitf9VG4QT5+tJ9e5O5k2FUtx/IxE6zlV/VDl/NGgq7MffvQn/HbD0B7nzuqpQSDeZFx4BM6HXQChlmCzIgK3M0E2BdPfCNoTRA+W9vgVhNLsk4zktCGU0G3sTMp9xoZTR9MyhBBoXRssx8YLbrFBGC6L7/CaDQumKaEkONDpDkczGZLD/GVzTiHhOepv4l6kZpl82Pj0nY21laIZSpkAyVC5DQj+IH5j8XMbMWSrFGkh6p3/J0AyTRzLRbmZmmAJZXGWyjAijxRMZaC8DwvVim0/6hX662CbjvJJmoWR2ijr6hekpSr1d2km3MFqeke7o99MpTP/GYjeRT6NQyF7yyGE3kU/nmiaM50zWottpnGEQE/5kuziNM7znOEF9QinuT1kCtZ2lAZMd/X66ZpgsWA7Q0TRD6UYzXrf5rfQIiR++HEyLMFqwnaAWYY/dYjuXujDb8BJ9vGyl1IW8dvT7qQpD+sdnJSkK/YTzRWadmlAkU/rHZyUprWn6MfsJKs1wcnO7ojvwyqnM8MeK6WI7l4JwPObx6KUklSsN5/v8JpWz1I5UZmhHEELIPwgh5B/uhzmh6PwMe4PyL8iuOkLRH9g3wnqfGjF8oD7cBtUQ+jyfD5ZVXSjilYXXmRrCYMjnl/FqVVUoE75Plw5XUehHU3a/RlKxikJ7gVWEcv3uEvWBNq7SDHk/PiupijB7fEZ9nM0rE2bv8FoNLJ9hmMysBpYKfRsevhysRBjEz9RHqNphYTC0crGd67BQMnl3SaViYZi9fWblbiJfoTB0e7buJvIVz7CXzDowwQNCP90udQFYLLR2P7hbkTCaXnZigoXCbD/Y5Rn60cU19YFp61Uh+WdZ6GxPKEW6m3jqyPdg1q4wlEFyYfGOfr9doRTD504Bd4TZWnTJ6wVJ5XJC4fbiTqxFt8sJ06vMis9r5prKn6Ud2PDutS3sxTPqwzHQtjCm/OA4Y22Egu/LWUpthIm9D18O9iL0kwveL4Y07kUYdRX4VxhKi58PlvV3hlG3Ftu51sL0e5DZRz1o7ChYX2Q6O8FU6I/iWXdPUSebYbxg8qFcRpqc/5TWPz4r6deU+gjM5jm/ne5eRRFCCCGEEEIIIYQQQgghhFD9/gCOe2uDL8Gy/gAAAABJRU5ErkJggg==') center/contain no-repeat;
+  box-shadow:0 10px 24px rgba(0,0,0,.25);
 }
 .brand h2{ margin:0; font-size:18px; }
 .brand p{ margin:2px 0 0 0; font-size:12px; color:var(--muted); }
@@ -350,6 +350,14 @@ table.sheet{ width:100%; border-collapse:collapse; }
   flex-wrap:wrap;
 }
 .actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
+
+  /* ✅ submenu (Requisições) */
+  .subitems{margin-left:10px; border-left:2px solid rgba(255,255,255,.08); padding-left:10px; margin-top:6px;}
+  .subitem{padding:10px 12px; border-radius:12px; cursor:pointer; opacity:.95; user-select:none;}
+  .subitem:hover{background:rgba(255,255,255,.06);}
+  .subitem.active{background:rgba(255,255,255,.09);}
+  .subitem.locked{opacity:.5; pointer-events:none;}
+
 </style>
 </head>
 
@@ -472,12 +480,18 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div id="m_zeramento" class="item" onclick="abrir('zeramento')">
           <span>🔁 Zeramento</span><small>Editar</small>
         </div>
-        <div id="m_requisicao" class="item" onclick="abrir('requisicao')">
-          <span>📝 Requisição</span><small>Editar</small>
+        
+        <div id="m_requisicao" class="item" onclick="toggleSubmenu('sub_requisicao')">
+          <span>📝 Requisições</span><small>Pedidos / Manual</small>
+        </div>
+        <div id="sub_requisicao" class="subitems hidden">
+          <div id="m_requisicao_pedidos" class="subitem" onclick="abrir('requisicao')">📄 Pedidos</div>
+          <div id="m_requisicao_manual" class="subitem" onclick="abrir('requisicaoManual')">✍️ Manual</div>
         </div>
 
+
         <div id="m_aba164" class="item" onclick="abrir('aba164')">
-          <span>📌 164 </span><small>Comparar</small>
+          <span>📌 164 (Conferência)</span><small>Comparar</small>
         </div>
 
       </div>
@@ -503,7 +517,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <!-- ✅ Sair + versão ao lado (v2.1) -->
         <div style="display:flex; align-items:center; gap:10px;">
           <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
-          <span id="appVersion" style="opacity:.85; font-size:12px;">v3.0</span>
+          <span id="appVersion" style="opacity:.85; font-size:12px;">v2.1</span>
         </div>
       </div>
     </aside>
@@ -585,13 +599,34 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
         <div class="subhint">✅ Cole vários pedidos que o sistema separa pelo número do pedido e importe.</div>
       </section>
+
+      <section class="card hidden" id="requisicaoManual">
+        <h2>✍️ Requisição Manual</h2>
+        <div class="subhint">Cole ou digite a requisição manual (texto livre). O sistema tenta transformar no mesmo TXT de “Pedidos”.</div>
+
+        <div class="grid2" style="margin-top:10px;">
+          <input id="reqManualPedido" class="in" placeholder="Pedido (opcional)" />
+          <input id="reqManualCliente" class="in" placeholder="Cliente (opcional)" />
+        </div>
+
+        <div style="margin-top:10px;">
+          <textarea id="reqManualTexto" class="in" rows="8" placeholder="Escreva aqui..." style="width:100%; min-height:180px; resize:vertical;"></textarea>
+        </div>
+
+        <div class="actions" style="margin-top:10px;">
+          <button class="btn btn-primary" onclick="importacaoRequisicaoManual()">Gerar TXT (Manual)</button>
+          <button class="btn btn-ghost" onclick="limparReqManual()">Limpar</button>
+        </div>
+      </section>
+
       
       
       <section class="card hidden" id="aba164" style="overflow:hidden;">
-        <h2>📌 164 </h2>
+        <h2>📌 164 (Conferência)</h2>
 
         <div class="subhint">
-          Cole as 2 planilhas abaixo  Se não sobrar nada, o 164 está certo.
+          Cole as 2 planilhas abaixo (cada uma pode ter um formato diferente). O sistema soma itens iguais (por Código + Grades) e faz A − B.
+          Se não sobrar nada, o 164 está certo.
         </div>
 
         <div id="wrap164Inputs" style="display:block;">
@@ -621,7 +656,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" onclick="comparar164()">Comparar</button>
+          <button class="btn btn-primary" onclick="comparar164()">Comparar (A − B)</button>
           <button class="btn btn-ghost" onclick="limpar164()">Limpar</button>
           <button class="btn btn-ghost" onclick="toggleInputs164()">Mostrar mais</button>
 </div>
@@ -629,7 +664,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
         <div id="sobras164" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column;">
           <div class="subhint" id="res164Hint">—</div>
 
-          <h3 style="margin:10px 0 8px 0; font-size:14px;">Divergencias</h3>
+          <h3 style="margin:10px 0 8px 0; font-size:14px;">Sobras (A − B)</h3>
           <div class="sheet-wrap" style="flex:1 1 auto; min-height:180px;">
             <table class="sheet" id="tbl164Res">
               <thead>
@@ -734,6 +769,116 @@ let NIVEL = "";
 let USUARIO_LOGADO = "";
 let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR", aba164:"EDITAR"};
 const codCache = new Map();
+
+/* ✅ Esquema de Grade por Código (descobre onde vai Cor/Tamanho/Sexo) */
+
+/* ✅ Normalização (busca no banco via COD) */
+async function normalizarCorParaGrade(cor){
+  let c = String(cor||"").trim();
+  if(!c) c = "Preto";
+  const up = c.toUpperCase();
+
+  // default compatível com suas planilhas: Preto -> PRE
+  if(up === "PRETO") return "PRE";
+
+  // tenta buscar no banco: chave "__COR__<NOME>"
+  const key = "__COR__" + up;
+  const res = await api("cod_get", key);
+  if(res && res.ok && res.found){
+    const v = String(res.value||"").trim();
+    if(v) return v;
+  }
+
+  // fallback: tenta abreviar (3 letras) sem quebrar
+  if(up.length >= 3) return up.slice(0,3);
+  return up || "PRE";
+}
+
+async function normalizarSexoParaGrade(sexo){
+  let s = String(sexo||"").trim();
+  if(!s) s = "Masculino";
+  const up = s.toUpperCase();
+
+  // tenta buscar no banco: "__SEXO__MASCULINO" -> "MASC" etc
+  const key = "__SEXO__" + up;
+  const res = await api("cod_get", key);
+  if(res && res.ok && res.found){
+    const v = String(res.value||"").trim();
+    if(v) return v;
+  }
+
+  // defaults comuns
+  if(up === "MASCULINO") return "M";
+  if(up === "FEMININO") return "F";
+  return up;
+}
+const gradeSchemaCache = new Map(); // codigo -> {colorCol, sizeCol, genderCol}
+
+function _isGenderVal(v){
+  const t = String(v||"").trim().toUpperCase();
+  return ["MASCULINO","FEMININO","INFANTIL","UNISSEX"].includes(t);
+}
+function _isSizeVal(v){
+  const t = String(v||"").trim().toUpperCase();
+  if(!t) return false;
+  if(["PP","P","M","G","GG","XG","XGG","2XGG","3XGG","4XGG","EG","EGG","UN","U"].includes(t)) return true;
+  if(/^\d{2}$/.test(t)){
+    const n = parseInt(t,10);
+    return n >= 20 && n <= 60;
+  }
+  if(/^\d{2}(PP|P|M|G|GG|XG|XGG|EG|EGG)$/.test(t)) return true;
+  return false;
+}
+function _isColorVal(v){
+  const t = String(v||"").trim().toUpperCase();
+  if(!t) return false;
+  const baseColors = new Set(["PRETO","BRANCO","VERDE","AZUL","VERMELHO","AMARELO","ROSA","LARANJA","CINZA","MARROM","BEGE","NATURAL","OFFWHITE","OFF-WHITE"]);
+  if(baseColors.has(t)) return true;
+  const parts = t.split(/\s+/);
+  if(parts.length>=2 && baseColors.has(parts[0])) return true; // ex: VERDE MILITAR, AZUL MARINHO, AMARELO NEON
+  return false;
+}
+function inferGradeSchemaFromValues(g1,g2,g3){
+  const vals = [g1,g2,g3].map(v=>String(v||"").trim());
+  const schema = { colorCol:null, sizeCol:null, genderCol:null };
+  vals.forEach((v, idx)=>{
+    const col = idx+1;
+    if(_isGenderVal(v) && !schema.genderCol) schema.genderCol = col;
+    else if(_isColorVal(v) && !schema.colorCol) schema.colorCol = col;
+    else if(_isSizeVal(v) && !schema.sizeCol) schema.sizeCol = col;
+  });
+  // defaults razoáveis: se não detectou, cor=2 e tamanho=3
+  if(!schema.colorCol) schema.colorCol = 2;
+  if(!schema.sizeCol) schema.sizeCol = 3;
+  return schema;
+}
+async function getGradeSchema(codigo){
+  const code = String(codigo||"").trim();
+  if(!code) return {colorCol:2,sizeCol:3,genderCol:null};
+  if(gradeSchemaCache.has(code)) return gradeSchemaCache.get(code);
+
+  const key = "__SCHEMA__" + code;
+  const res = await api("cod_get", key);
+  if(res && res.ok && res.found){
+    try{
+      const obj = JSON.parse(res.value || "{}");
+      if(obj && obj.colorCol && obj.sizeCol){
+        gradeSchemaCache.set(code, obj);
+        return obj;
+      }
+    }catch(_){}
+  }
+  const def = {colorCol:2,sizeCol:3,genderCol:null};
+  gradeSchemaCache.set(code, def);
+  return def;
+}
+async function saveGradeSchema(codigo, schema){
+  const code = String(codigo||"").trim();
+  if(!code || !schema) return;
+  gradeSchemaCache.set(code, schema);
+  const key = "__SCHEMA__" + code;
+  await api("cod_set", key, JSON.stringify(schema));
+}
 let LOCAL_OUTRO_TRANSFER = localStorage.getItem("LOCAL_OUTRO_TRANSFER") || "4044";
 
 let ADMIN_USERS = [];
@@ -802,6 +947,23 @@ function setActiveNav(key){
   const el = $("m_"+key);
   if(el) el.classList.add("active");
 }
+
+
+function toggleSubmenu(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle("hidden");
+}
+
+function limparReqManual(){
+  const t = document.getElementById("reqManualTexto");
+  if(t) t.value = "";
+  const p = document.getElementById("reqManualPedido");
+  const c = document.getElementById("reqManualCliente");
+  if(p) p.value = "";
+  if(c) c.value = "";
+  toast("ok","Manual","Campo limpo.");
+}
 function setTop(title,subtitle){
   $("topTitle").textContent=title;
   $("topSubtitle").textContent=subtitle;
@@ -813,7 +975,16 @@ function abrir(id){
 
   if(id==="transferencia"){ setTop("Transferência","Cole e clique em Importação"); setActiveNav("transferencia"); }
   if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
-  if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao"); }
+  if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao");
+    document.getElementById("sub_requisicao")?.classList.remove("hidden");
+    document.getElementById("m_requisicao_pedidos")?.classList.add("active");
+    document.getElementById("m_requisicao_manual")?.classList.remove("active");
+  }
+  if(id==="requisicaoManual"){ setTop("Requisição Manual","Digite manualmente"); setActiveNav("requisicao");
+    document.getElementById("sub_requisicao")?.classList.remove("hidden");
+    document.getElementById("m_requisicao_manual")?.classList.add("active");
+    document.getElementById("m_requisicao_pedidos")?.classList.remove("active");
+  }
   if(id==="aba164"){ setTop("164 (Conferência)","Cole as planilhas e compare A − B"); setActiveNav("aba164"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
@@ -1192,7 +1363,19 @@ function aplicarPermissoesUI(){
 
   setItem("m_transferencia", PERMS.transferencia, "📦 Transferência");
   setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento");
-  setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisição");
+  setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisições");
+  // submenu (Pedidios/Manual) segue a mesma permissão de Requisições
+  const bloqueadoReq = String(PERMS.requisicao||"").toUpperCase()==="BLOQUEAR";
+  const sub = document.getElementById("sub_requisicao");
+  if(sub){
+    if(bloqueadoReq){ sub.classList.add("hidden"); }
+  }
+  ["m_requisicao_pedidos","m_requisicao_manual"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(bloqueadoReq){ el.classList.add("locked"); }
+    else{ el.classList.remove("locked"); }
+  });
   setItem("m_aba164",        PERMS.aba164,       "📌 164 (Conferência)");
   // ✅ Aba 164 segue a mesma permissão da Requisição (EDITAR/VISUALIZAR/BLOQUEAR)
   
@@ -1217,6 +1400,17 @@ async function mapearOuCadastrar(chave){
   if(!saved.ok) throw new Error(saved.msg || "Erro ao salvar COD");
   codCache.set(norm,out);
   return out;
+}
+
+async function autoCadastrarParaManual(descricao, codigo){
+  const desc = (descricao||"").toString().trim();
+  const cod = (codigo||"").toString().trim();
+  if(!desc || !cod) return;
+  // cadastra SOMENTE pelo nome do produto (sem cor/sexo), se a descrição vier com isso o manual remove depois.
+  const res = await api("cod_get", desc);
+  if(res.ok && res.found) return;
+  await api("cod_set", desc, cod);
+  codCache.set(desc.toLowerCase(), cod);
 }
 async function getLocalPorItem(codigoItem){
   const code=(codigoItem||"").toString().trim();
@@ -1357,6 +1551,9 @@ async function importacaoTransferencia(){
       while(c.length<COL_TRANSFER) c.push("");
 
       const codigo=c[0];
+      const descricao=c[1]||"";
+      // ✅ sempre que gerar transferência, cadastra automaticamente para Requisição Manual (COD A/B)
+      await autoCadastrarParaManual(descricao, codigo);
       const chave5=c[2], chave6=c[3], chave7=c[4];
       const qtd1=normalizeQTD(c[5]||"0");
       const qtd2=normalizeQTD(c[6]||"0");
@@ -1482,6 +1679,285 @@ async function importacaoRequisicao(){
     toast("ok","Importação",`${out.length} linhas geradas.`);
   }catch(err){
     toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
+}
+
+
+/* ✅ Requisição Manual -> mesmo TXT de Pedidos (mensagens variadas) */
+function _extractPedidoCliente(text){
+  const lines = String(text||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length) return {pedido:"", cliente:"", rest:""};
+  const m = lines[0].match(/^(\d{4}-\d{6})\s+(.+)$/);
+  if(m){
+    return { pedido: m[1], cliente: m[2].trim(), rest: lines.slice(1).join("\n") };
+  }
+  return { pedido:"", cliente:"", rest: lines.join("\n") };
+}
+
+function _normText(t){
+  return String(t||"")
+    .replace(/[“”"]/g,"")
+    .replace(/\t/g," ")
+    .replace(/[,\.;:]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function _normalizeGrade(tok){
+  let t = String(tok||"").toUpperCase().trim();
+    if(t === "4XG" || t === "4X") t = "4XGG";
+  if(t === "XG") t = "XG"; // keep
+  if(t === "XGG") t = "XGG";
+  return t;
+}
+
+function _isGrade(tok){
+  const t = String(tok||"").toUpperCase().trim();
+  return ["PP","P","M","G","GG","XG","XGG","2XGG","3XGG","4XGG","EG","EGG","UN","U"].includes(t) || /^\d{2}$/.test(t) || /^\d{2}(PP|P|M|G|GG|XG|XGG|EG|EGG)$/.test(t);
+}
+
+function _tokenizeManual(text){
+  return _normText(text).split(" ").filter(Boolean);
+}
+
+function _splitJoinedQtyGrade(tok){
+  const t = String(tok||"").toUpperCase().trim();
+  const m = t.match(/^(\d+)(PP|P|M|G|GG|XG|XGG|2XGG|3XGG|4XGG|EG|EGG)$/);
+  if(!m) return null;
+  return { qty: parseInt(m[1],10), grade: m[2] };
+}
+
+function _detectColorAndRemove(tokens){
+  const up = tokens.map(t=>String(t||"").toUpperCase());
+  const baseColors = new Set(["PRETO","BRANCO","VERDE","AZUL","VERMELHO","AMARELO","ROSA","LARANJA","CINZA","MARROM","BEGE","NATURAL","OFFWHITE","OFF-WHITE"]);
+  const mods = new Set(["MILITAR","MARINHO","NEON","OURO","CLARO","ESCURO"]);
+  for(let i=0;i<up.length;i++){
+    if(baseColors.has(up[i])){
+      let color = up[i];
+      let rm = [i];
+      if(i+1<up.length && mods.has(up[i+1])){
+        color = (up[i] + " " + up[i+1]).trim();
+        rm = [i,i+1];
+      }
+      const cleaned = tokens.filter((_,idx)=>!rm.includes(idx));
+      return { color, tokens: cleaned };
+    }
+  }
+  return { color:"PRETO", tokens };
+}
+
+function _detectGenderAndRemove(tokens){
+  const up = tokens.map(t=>String(t||"").toUpperCase());
+  for(let i=0;i<up.length;i++){
+    if(["MASCULINO","FEMININO","INFANTIL","UNISSEX"].includes(up[i])){
+      const gender = up[i].charAt(0) + up[i].slice(1).toLowerCase();
+      const cleaned = tokens.filter((_,idx)=>idx!==i);
+      return { gender, tokens: cleaned };
+    }
+  }
+  return { gender:"", tokens };
+}
+
+function _removeNoiseWords(arr){
+  const stop = new Set(["E","DE","DA","DO","DAS","DOS","PRA","PRO","PARA","O","A","OS","AS","NO","NA","NOS","NAS","LINHA"]);
+  return arr.filter(w => !stop.has(String(w||"").toUpperCase()));
+}
+
+function _parseManualItems(text){
+  const toks = _tokenizeManual(text);
+  const items = [];
+  let cur = { defaultQty:null, nameTokens:[], pairs:[] };
+
+  function flush(){
+    const name = _normText(_removeNoiseWords(cur.nameTokens).join(" "));
+    if(name || cur.pairs.length){
+      items.push({ name, pairs: cur.pairs.slice(), defaultQty: cur.defaultQty || 1 });
+    }
+    cur = { defaultQty:null, nameTokens:[], pairs:[] };
+  }
+
+  for(let i=0;i<toks.length;i++){
+    const tok = toks[i];
+    const next = toks[i+1];
+
+    // ✅ remoção de item: se tiver "nao vai", "não vai", "retirar", "remover", "tira"
+    const upTok = String(tok||"").toUpperCase();
+    const upNext = String(next||"").toUpperCase();
+    if(upTok === "NAO" || upTok === "NÃO"){
+      if(upNext === "VAI"){
+        cur.neg = true;
+        continue;
+      }
+    }
+    if(upTok === "RETIRAR" || upTok === "REMOVER" || upTok === "TIRAR" || upTok === "TIRA" || upTok === "CANCELAR"){
+      cur.neg = true;
+      continue;
+    }
+
+    const joined = _splitJoinedQtyGrade(tok);
+    if(joined){
+      cur.pairs.push(joined);
+      continue;
+    }
+
+    const isNum = /^\d+$/.test(tok);
+    const tokIsGrade = _isGrade(tok);
+
+    if(isNum && next && _isGrade(next)){
+      cur.pairs.push({ qty: parseInt(tok,10), grade: String(next).toUpperCase() });
+      i++;
+      continue;
+    }
+
+    if(tokIsGrade && next && /^\d+$/.test(next)){
+      cur.pairs.push({ qty: parseInt(next,10), grade: String(tok).toUpperCase() });
+      i++;
+      continue;
+    }
+
+    if(tokIsGrade){
+      const q = cur.defaultQty ? cur.defaultQty : 1;
+      cur.pairs.push({ qty: q, grade: String(tok).toUpperCase() });
+      continue;
+    }
+
+    if(isNum){
+      const n = parseInt(tok,10);
+      const nextIsGrade = next && (_isGrade(next) || _splitJoinedQtyGrade(next));
+      if(!nextIsGrade){
+        if(cur.nameTokens.length || cur.pairs.length){
+          flush();
+        }
+        cur.defaultQty = n;
+        continue;
+      }
+    }
+
+    if(String(tok).toUpperCase()==="E"){
+      const n1 = toks[i+1];
+      const n2 = toks[i+2];
+
+      // caso: "e 1 xgg" => mais um tamanho do MESMO item
+      if(n1 && /^\d+$/.test(n1) && n2 && _isGrade(n2)){
+        cur.pairs.push({ qty: parseInt(n1,10), grade: _normalizeGrade(n2) });
+        i += 2; // consume "1 xgg"
+        continue;
+      }
+
+      // caso: "e xgg 1" => mais um tamanho do MESMO item
+      if(n1 && _isGrade(n1) && n2 && /^\d+$/.test(n2)){
+        cur.pairs.push({ qty: parseInt(n2,10), grade: _normalizeGrade(n1) });
+        i += 2; // consume "xgg 1"
+        continue;
+      }
+
+      // caso: "e 2XGG" (colado) => mais um tamanho do MESMO item
+      const joined = n1 ? _splitJoinedQtyGrade(n1) : null;
+      if(joined){
+        cur.pairs.push(joined);
+        i += 1;
+        continue;
+      }
+
+      // se for "e" seguido de número que não é tamanho, aí sim quebra item
+      if(n1 && /^\d+$/.test(n1) && !(n2 && _isGrade(n2))){
+        if(cur.nameTokens.length || cur.pairs.length){
+          flush();
+        }
+        continue;
+      }
+    }
+
+    cur.nameTokens.push(tok);
+  }
+  flush();
+  return items;
+}
+
+async function importacaoRequisicaoManual(){
+  try{
+    loading(true, "Gerando TXT...");
+    const texto = (document.getElementById("reqManualTexto")?.value || "").trim();
+    if(!texto) return toast("warn","Manual","Cole ou digite o texto da requisição.");
+
+    const extra = _extractPedidoCliente(texto);
+    const pedidoInp = (document.getElementById("reqManualPedido")?.value || "").trim();
+    const clienteInp = (document.getElementById("reqManualCliente")?.value || "").trim();
+
+    let pedido = pedidoInp || extra.pedido || ("MANUAL-" + Date.now());
+    let cliente = clienteInp || extra.cliente || "";
+
+    const corpo = _normText(extra.rest || texto);
+
+    const parsed = _parseManualItems(corpo);
+
+    const itens = [];
+    for(const it of parsed){
+      if(!it.name) continue;
+
+      // cor e sexo são ATRIBUTOS de grade, não entram no código do produto
+      let tks = _tokenizeManual(it.name);
+      const genderInfo = _detectGenderAndRemove(tks);
+      tks = genderInfo.tokens;
+      const colorInfo = _detectColorAndRemove(tks);
+      tks = colorInfo.tokens;
+
+      const nomeProduto = _normText(_removeNoiseWords(tks).join(" "));
+      if(!nomeProduto) continue;
+
+      const codigo = await mapearOuCadastrar(nomeProduto);
+      const schema = await getGradeSchema(codigo);
+
+      // base g1/g2/g3
+      const base = { g1:"", g2:"", g3:"" };
+      const setCol = (col, val)=>{
+        if(!val) return;
+        if(col===1) base.g1 = val;
+        else if(col===2) base.g2 = val;
+        else if(col===3) base.g3 = val;
+      };
+      const corGrade = await normalizarCorParaGrade(colorInfo.color || "Preto");
+      setCol(schema.colorCol, corGrade);
+      if(schema.genderCol){
+        const sexoGrade = await normalizarSexoParaGrade(genderInfo.gender || "Masculino");
+        setCol(schema.genderCol, sexoGrade);
+      }
+
+      const pairs = (it.pairs||[]).length ? it.pairs : [{qty: it.defaultQty || 1, grade:""}];
+
+      for(const p of pairs){
+        const g = { ...base };
+        const gradeVal = String(p.grade||"").toUpperCase().trim();
+        if(gradeVal){
+          if(schema.sizeCol===1) g.g1 = gradeVal;
+          else if(schema.sizeCol===2) g.g2 = gradeVal;
+          else g.g3 = gradeVal;
+        }
+        itens.push({ codigo, k5:g.g1, k6:g.g2, k7:g.g3, qtd: formatQtdTxtFromNum(p.qty) });
+      }
+    }
+
+    if(!itens.length){
+      return toast("warn","Manual","Não consegui identificar itens. Exemplos: 'jaqueta canguru 2 EGG' ou 'EGG 2 jaqueta canguru'.");
+    }
+
+    const hoje = dataHoje_ptBR();
+    const requisitante = await getRequisitantePorUsuario(USUARIO_LOGADO);
+
+    const out = [];
+    out.push(["R",hoje,"1","1",requisitante,"27",`${pedido}  -  ${cliente}`.trim(),pedido,"0","0"].join("|"));
+
+    for(const it of itens){
+      const local = await getLocalPorItem(it.codigo);
+      out.push(["I","P",it.codigo,it.k5||"",it.k6||"",it.k7||"",it.qtd,"3",local||""].join("|"));
+    }
+
+    baixarComoTXT("importacao_requisicao_manual", out.join("\n"));
+    toast("ok","Manual","TXT gerado.");
+  }catch(err){
+    toast("danger","Erro", err.message || String(err));
   }finally{
     loading(false);
   }
