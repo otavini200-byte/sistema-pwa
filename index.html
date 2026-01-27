@@ -358,6 +358,128 @@ table.sheet{ width:100%; border-collapse:collapse; }
   .subitem.active{background:rgba(255,255,255,.09);}
   .subitem.locked{opacity:.5; pointer-events:none;}
 
+
+/* ✅ Entrada x Saída - visibilidade maior (escopo pela section) */
+#entradaSaida .sheet thead th{ font-size:14px; padding:14px 12px; }
+#entradaSaida .sheet td{ font-size:18px; padding:14px 12px; min-width:160px; }
+#entradaSaida .sheet td[contenteditable="true"]{ font-weight:800; }
+#entradaSaida .sheet-wrap{ border-radius:16px; }
+#entradaSaida .es-titlebar{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+#entradaSaida .es-kebab{ width:36px; height:36px; border-radius:14px; border:1px solid var(--line); background:rgba(106,75,201,.06); color:var(--text); cursor:pointer; transition:transform .12s ease, opacity .12s ease; }
+#entradaSaida .es-kebab:hover{ opacity:.92; transform:translateY(-1px); }
+#entradaSaida .es-panel{
+  position:absolute; top:52px; right:14px;
+  width:min(360px, calc(100vw - 56px));
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:16px;
+  box-shadow:var(--shadow2);
+  padding:12px;
+  z-index:5;
+}
+#entradaSaida .es-panel.hidden{ display:none !important; }
+#entradaSaida .es-panel h4{ margin:0 0 8px 0; font-size:13px; }
+#entradaSaida .es-panel .row{ display:flex; gap:10px; align-items:center; }
+#entradaSaida .es-panel input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  outline:none;
+}
+
+
+/* ✅ Polimento visual (mantém paleta) */
+.sidebar{
+  box-shadow: 0 18px 40px rgba(0,0,0,.35);
+}
+.side-top{
+  border:1px solid rgba(255,255,255,.10);
+}
+.nav .item, .subitem{
+  border:1px solid rgba(255,255,255,.08);
+}
+.nav .item{
+  background:rgba(255,255,255,.07);
+}
+.nav .item.active{
+  background:rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.16);
+  box-shadow: 0 10px 22px rgba(0,0,0,.22);
+}
+.nav .item::before{
+  content:"";
+  width:6px;
+  height:100%;
+  border-radius:999px;
+  background:transparent;
+  position:absolute;
+  left:6px; top:0;
+}
+.nav .item{
+  position:relative;
+  padding-left:14px;
+}
+.nav .item.active::before{
+  background: rgba(106,75,201,.95);
+}
+.nav .item small{
+  opacity:.75;
+}
+.subitems{
+  margin-left:14px;
+  border-left:2px solid rgba(255,255,255,.10);
+  padding-left:12px;
+}
+.subitem{
+  background:rgba(255,255,255,.04);
+  border-radius:14px;
+  margin:6px 0;
+}
+.subitem.active{
+  background:rgba(255,255,255,.10);
+}
+.topbar{
+  backdrop-filter: blur(6px);
+}
+.card h2{
+  letter-spacing:.2px;
+}
+.pill{
+  font-weight:800;
+}
+
+/* ✅ Destaque forte do item/pasta selecionada */
+.nav .item.active{
+  background: linear-gradient(135deg, rgba(106,75,201,.45), rgba(44,26,77,.65));
+  border-color: rgba(106,75,201,.9);
+  color:#fff;
+}
+
+.nav .item.active span{
+  font-weight:900;
+}
+
+.nav .item.active::before{
+  background: var(--secondary);
+  box-shadow: 0 0 0 2px rgba(106,75,201,.35);
+}
+
+/* subitem selecionado */
+.subitem.active{
+  background: linear-gradient(135deg, rgba(106,75,201,.35), rgba(44,26,77,.55));
+  border:1px solid rgba(106,75,201,.6);
+  color:#fff;
+  font-weight:800;
+}
+
+/* quando pasta está aberta (estoque / produção) */
+.item.open{
+  background: rgba(106,75,201,.25);
+  border-color: rgba(106,75,201,.55);
+}
 </style>
 </head>
 
@@ -474,27 +596,41 @@ table.sheet{ width:100%; border-collapse:collapse; }
       </div>
 
       <div class="nav" id="menuPrincipal">
+        <!-- 1) Estoque -->
+        <div id="m_estoque" class="item" onclick="toggleSubmenu('sub_estoque')">
+          <span>📦 Estoque</span><small>Abrir</small>
+        </div>
+
+        <div id="sub_estoque" class="subitems hidden">
+          <div id="m_requisicao" class="subitem" onclick="toggleSubmenu('sub_requisicao')">📝 Requisições</div>
+          <div id="sub_requisicao" class="subitems hidden">
+            <div id="m_requisicao_pedidos" class="subitem" onclick="abrir('requisicao')">📄 Pedidos</div>
+            <div id="m_requisicao_manual" class="subitem" onclick="abrir('requisicaoManual')">✍️ Manual</div>
+          </div>
+
+          <div id="m_aba164" class="subitem" onclick="abrir('aba164')">📌 164</div>
+          <div id="m_entradaSaida" class="subitem" onclick="abrir('entradaSaida')">⚖️ Entrada x Saída</div>
+        </div>
+
+        <!-- 2) Produção -->
+        <div id="m_producao_group" class="item" onclick="toggleSubmenu('sub_producao')">
+          <span>🏭 Produção</span><small>Abrir</small>
+        </div>
+
+        <div id="sub_producao" class="subitems hidden">
+          <div id="m_producao" class="subitem" onclick="abrir('producao')">🏭 Planilha de Produção</div>
+        </div>
+
+        <!-- 3) Transferência -->
         <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
           <span>📦 Transferência</span><small>Editar</small>
         </div>
+
+        <!-- 4) Zeramento -->
         <div id="m_zeramento" class="item" onclick="abrir('zeramento')">
           <span>🔁 Zeramento</span><small>Editar</small>
         </div>
-        
-        <div id="m_requisicao" class="item" onclick="toggleSubmenu('sub_requisicao')">
-          <span>📝 Requisições</span><small>Pedidos / Manual</small>
-        </div>
-        <div id="sub_requisicao" class="subitems hidden">
-          <div id="m_requisicao_pedidos" class="subitem" onclick="abrir('requisicao')">📄 Pedidos</div>
-          <div id="m_requisicao_manual" class="subitem" onclick="abrir('requisicaoManual')">✍️ Manual</div>
-        </div>
-
-
-        <div id="m_aba164" class="item" onclick="abrir('aba164')">
-          <span>📌 164</span><small>Comparar</small>
-        </div>
-
-      </div>
+</div>
 
       <div class="nav hidden" id="menuConfig">
         <div class="item" onclick="abrir('cfgTransfer')">
@@ -679,7 +815,114 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 
 
-      <section class="card hidden" id="cfgTransfer">
+      
+      <section class="card hidden" id="producao">
+        <h2>🏭 Produção</h2>
+
+        <div class="subhint">
+          Cole a planilha de produção abaixo. Mantém o mesmo layout e paleta do sistema.
+        </div>
+
+        <div class="sheet-wrap" style="margin-top:10px;">
+          <table class="sheet">
+            <thead>
+              <tr>
+                <th>Ordem</th>
+                <th>Código</th>
+                <th>Descrição</th>
+                <th>Grade 1</th>
+                <th>Grade 2</th>
+                <th>Grade 3</th>
+                <th>Quantidade</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="importacaoProducao()">Importação</button>
+          <button class="btn btn-ghost" onclick="limparTabela('producao')">Limpar</button>
+        </div>
+
+        <div class="subhint">✅ Cole e importe.</div>
+      </section>
+
+
+      <section class="card hidden" id="entradaSaida" style="overflow:hidden;">
+        <h2>⚖️ Entrada x Saída</h2>
+        <div class="es-titlebar" style="margin-top:10px; position:relative;">
+          <div class="subhint" style="margin:0;">
+            Resumo no estilo “Entrada x Saída”, adaptado ao layout do app (mesma paleta e componentes).
+          </div>
+
+          <button class="es-kebab" title="Configurar saldo inicial" onclick="toggleESPanel(event)">⋮</button>
+
+          <div id="es_panel" class="es-panel hidden">
+            <h4>Saldo inicial do mês <span id="es_mes_ref" style="color:var(--muted); font-weight:700;"></span></h4>
+            <div class="row">
+              <input id="es_saldo_mes" placeholder="Ex: 24.453" inputmode="decimal" />
+            </div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="btn btn-primary" style="width:auto;" onclick="aplicarSaldoInicialMes()">Aplicar e salvar</button>
+              <button class="btn btn-ghost" style="width:auto;" onclick="toggleESPanel(event, true)">Fechar</button>
+            </div>
+            <div class="subhint" style="margin-top:8px;">
+              ✅ Troque este valor no início de cada mês. Fica salvo para todos.
+            </div>
+          </div>
+        </div>
+
+
+        <div style="display:grid; grid-template-columns: 1.15fr 0.95fr; gap:18px; margin-top:14px; align-items:start;">
+          <!-- Bloco Esquerdo -->
+          <div class="sheet-wrap" style="overflow:hidden;">
+            <table class="sheet" style="width:100%;">
+              <thead>
+                <tr>
+                  <th colspan="2" style="text-align:center;">Entrada x Saída</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="font-weight:800;">Saldo inicial</td><td contenteditable="true" oninput="recalcularEntradaSaida()">0</td></tr>
+                <tr><td style="font-weight:800;">Entrada</td><td contenteditable="true" oninput="recalcularEntradaSaida()">0</td></tr>
+                <tr><td style="font-weight:800;">Saída</td><td contenteditable="true" oninput="recalcularEntradaSaida()">0</td></tr>
+                <tr><td style="font-weight:800;">Ajuste</td><td contenteditable="true" oninput="recalcularEntradaSaida()">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bloco Direito -->
+          <div class="sheet-wrap" style="overflow:hidden;">
+            <table class="sheet" style="width:100%;">
+              <thead>
+                <tr>
+                  <th colspan="2" style="text-align:center;">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="font-weight:800;">Total</td><td id="es_total">0</td></tr>
+                <tr><td style="font-weight:800;">Real</td><td contenteditable="true" id="es_real" oninput="recalcularEntradaSaida()">0</td></tr>
+                <tr>
+                  <td style="font-weight:800;">Diferença</td>
+                  <td id="es_diff" style="font-weight:900;"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="recalcularEntradaSaida()">Recalcular</button>
+          <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
+        </div>
+
+        <div class="subhint">
+          ✅ Você pode digitar valores direto nas células. “Total” = Saldo inicial + Entrada + Saída + Ajuste. “Diferença” = Real − Total.
+        </div>
+      </section>
+
+<section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
         <label>Outro Local (ex: 4044)</label>
         <input id="cfgLocalOutro" placeholder="4044">
@@ -766,7 +1009,7 @@ const COL_TRANSFER = 10;
 
 let NIVEL = "";
 let USUARIO_LOGADO = "";
-let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR", aba164:"EDITAR"};
+let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR", requisicaoPedidos:"EDITAR", requisicaoManual:"EDITAR", aba164:"EDITAR", entradaSaida:"EDITAR", producao:"EDITAR"};
 const codCache = new Map();
 
 /* ✅ Esquema de Grade por Código (descobre onde vai Cor/Tamanho/Sexo) */
@@ -942,16 +1185,23 @@ function voltarMenu(){
   $("menuPrincipal").classList.remove("hidden");
 }
 function setActiveNav(key){
-  document.querySelectorAll("#menuPrincipal .item").forEach(el=>el.classList.remove("active"));
+  document.querySelectorAll("#menuPrincipal .item, #menuPrincipal .subitem")
+    .forEach(el=>el.classList.remove("active"));
   const el = $("m_"+key);
   if(el) el.classList.add("active");
 }
 
 
+// 🔥 marca pasta aberta
 function toggleSubmenu(id){
   const el = document.getElementById(id);
   if(!el) return;
   el.classList.toggle("hidden");
+
+  const parent = el.previousElementSibling;
+  if(parent && parent.classList.contains("item")){
+    parent.classList.toggle("open", !el.classList.contains("hidden"));
+  }
 }
 
 function limparReqManual(){
@@ -985,6 +1235,8 @@ function abrir(id){
     document.getElementById("m_requisicao_pedidos")?.classList.remove("active");
   }
   if(id==="aba164"){ setTop("164",""); setActiveNav("aba164"); }
+  if(id==="producao"){ setTop("Produção","Cole e clique em Importação"); setActiveNav("producao"); }
+  if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
@@ -1062,7 +1314,9 @@ function criarTabela(sectionId, linhas=10, colunas=9){
   }
 }
 function limparTabela(sectionId){
-  const cols = (sectionId === "transferencia") ? COL_TRANSFER : COL_DEFAULT;
+  let cols = COL_DEFAULT;
+  if(sectionId === "transferencia") cols = COL_TRANSFER;
+  if(sectionId === "producao") cols = 7;
   criarTabela(sectionId,10,cols);
   toast("ok","Limpar","Tabela limpa.");
 }
@@ -1096,6 +1350,7 @@ function init164(){
 
 function limpar164(){
   init164();
+    carregarEntradaSaidaCompartilhado();
   const wrap = document.getElementById("wrap164Inputs");
   if(wrap) wrap.style.display = "block";
   toast("ok","164","Tabelas limpas.");
@@ -1342,44 +1597,122 @@ async function salvarSenha(){
 
 /* ✅ Menu com cadeado quando bloqueado */
 function aplicarPermissoesUI(){
-  function setItem(id, perm, nome){
+  // item (layout com <span> e <small>)
+  function setItem(id, perm, nome, smallDefault){
     const el = $(id);
     if(!el) return;
 
     const small = el.querySelector("small");
     const span = el.querySelector("span");
 
-    if(perm === "BLOQUEAR"){
+    const p = String(perm||"").toUpperCase();
+    if(p === "BLOQUEAR"){
       el.classList.add("disabled");
       if(span) span.textContent = `🔒 ${nome}`;
       if(small) small.textContent = "Bloqueado";
     }else{
       el.classList.remove("disabled");
       if(span) span.textContent = nome;
-      if(small) small.textContent = (perm === "VISUALIZAR") ? "Visualizar" : "Editar";
+      if(small){
+        if(p === "VISUALIZAR") small.textContent = "Visualizar";
+        else small.textContent = (smallDefault || "Abrir");
+      }
     }
   }
 
-  setItem("m_transferencia", PERMS.transferencia, "📦 Transferência");
-  setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento");
-  setItem("m_requisicao",    PERMS.requisicao,    "📝 Requisições");
-  // submenu (Pedidios/Manual) segue a mesma permissão de Requisições
-  const bloqueadoReq = String(PERMS.requisicao||"").toUpperCase()==="BLOQUEAR";
-  const sub = document.getElementById("sub_requisicao");
-  if(sub){
-    if(bloqueadoReq){ sub.classList.add("hidden"); }
-  }
-  ["m_requisicao_pedidos","m_requisicao_manual"].forEach(id=>{
+  // subitem (texto direto)
+  function setSubitem(id, perm, label){
     const el = document.getElementById(id);
     if(!el) return;
-    if(bloqueadoReq){ el.classList.add("locked"); }
-    else{ el.classList.remove("locked"); }
-  });
-  setItem("m_aba164",        PERMS.aba164,       "📌 164 (Conferência)");
-  // ✅ Aba 164 segue a mesma permissão da Requisição (EDITAR/VISUALIZAR/BLOQUEAR)
-  
+
+    const p = String(perm||"").toUpperCase();
+    const blocked = (p === "BLOQUEAR");
+    el.classList.toggle("locked", blocked);
+
+    if(blocked){
+      if(!el.textContent.includes("🔒")) el.textContent = `🔒 ${label}`;
+    }else{
+      el.textContent = label;
+    }
+  }
+
+  // ✅ Transferência / Zeramento (sempre visíveis)
+  setItem("m_transferencia", PERMS.transferencia, "📦 Transferência", "Editar");
+  setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento",     "Editar");
+
+  // ✅ Requisições granular (Pedidos / Manual)
+  // Compat: se não vier granular da API, usa PERMS.requisicao como fallback
+  const pReqPed = (PERMS.requisicaoPedidos != null) ? PERMS.requisicaoPedidos : PERMS.requisicao;
+  const pReqMan = (PERMS.requisicaoManual  != null) ? PERMS.requisicaoManual  : PERMS.requisicao;
+
+  const pPed = String(pReqPed||"").toUpperCase();
+  const pMan = String(pReqMan||"").toUpperCase();
+
+  const reqTudoBloq = (pPed==="BLOQUEAR" && pMan==="BLOQUEAR");
+
+  // Estoque (grupo) depende: Requisições (ped/man) + 164 + EntradaSaida
+  const p164  = String(PERMS.aba164||"").toUpperCase();
+  const pES   = String(PERMS.entradaSaida||"").toUpperCase();
+  const estoqueTudoBloq = (reqTudoBloq && p164==="BLOQUEAR" && pES==="BLOQUEAR");
+
+  const estoqueItem = document.getElementById("m_estoque");
+  const estoqueSub  = document.getElementById("sub_estoque");
+
+  if(estoqueItem){
+    estoqueItem.classList.toggle("disabled", estoqueTudoBloq);
+    const span = estoqueItem.querySelector("span");
+    const small = estoqueItem.querySelector("small");
+    if(estoqueTudoBloq){
+      if(span) span.textContent = "🔒 📦 Estoque";
+      if(small) small.textContent = "Bloqueado";
+      if(estoqueSub) estoqueSub.classList.add("hidden");
+    }else{
+      if(span) span.textContent = "📦 Estoque";
+      if(small) small.textContent = "Abrir";
+    }
+  }
+
+  // Requisições (item colapsável dentro do Estoque)
+  setSubitem("m_requisicao", reqTudoBloq ? "BLOQUEAR" : "EDITAR", "📝 Requisições");
+  const subReq = document.getElementById("sub_requisicao");
+  if(subReq){
+    // se tudo bloqueado, some o submenu
+    if(reqTudoBloq) subReq.classList.add("hidden");
+  }
+  setSubitem("m_requisicao_pedidos", pReqPed, "📄 Pedidos");
+  setSubitem("m_requisicao_manual",  pReqMan, "✍️ Manual");
+
+  // Outros itens dentro do Estoque
+  setSubitem("m_aba164",       PERMS.aba164,       "📌 164");
+  setSubitem("m_entradaSaida", PERMS.entradaSaida, "⚖️ Entrada x Saída");
+
+  // ✅ Produção (grupo colapsável)
+  const pProd = String(PERMS.producao||"").toUpperCase();
+  const prodBloq = (pProd==="BLOQUEAR");
+
+  const prodItem = document.getElementById("m_producao_group");
+  const prodSub  = document.getElementById("sub_producao");
+
+  if(prodItem){
+    prodItem.classList.toggle("disabled", prodBloq);
+    const span = prodItem.querySelector("span");
+    const small = prodItem.querySelector("small");
+    if(prodBloq){
+      if(span) span.textContent = "🔒 🏭 Produção";
+      if(small) small.textContent = "Bloqueado";
+      if(prodSub) prodSub.classList.add("hidden");
+    }else{
+      if(span) span.textContent = "🏭 Produção";
+      if(small) small.textContent = "Abrir";
+    }
+  }
+  setSubitem("m_producao", PERMS.producao, "🏭 Planilha de Produção");
+
+  // ✅ Admin menu
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
+
+
 
 async function mapearOuCadastrar(chave){
   const key=(chave||"").toString().trim();
@@ -1477,6 +1810,7 @@ async function entrar(){
     criarTabela("transferencia",10,COL_TRANSFER);
     criarTabela("zeramento",10,COL_DEFAULT);
     criarTabela("requisicao",10,COL_DEFAULT);
+    criarTabela("producao",10,7);
     init164();
 
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
@@ -1534,6 +1868,190 @@ function sair(){
   $("senha").value="";
   trocarView("login");
   toast("ok","Saiu","Você voltou para o login.");
+}
+
+
+function importacaoProducao(){
+  toast("ok","Produção","Importação de produção em desenvolvimento.");
+}
+
+
+
+/* ✅ Entrada x Saída (Resumo) - compartilhado (salva na API p/ todos) */
+function _esMesRef(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  return `${y}-${m}`; // YYYY-MM
+}
+function _esKey(suf){ return `__ENTRADA_SAIDA__${_esMesRef()}__${suf}`; }
+
+function _parseBRNum(v){
+  const s = String(v||"0").trim();
+  // aceita "24.453" como separador de milhar e "," decimal
+  let n = parseFloat(s.replace(/\./g,"").replace(",", "."));
+  if(isNaN(n)) n = 0;
+  return n;
+}
+function _fmtBRIntOrDec(n){
+  if (Number.isInteger(n)) return String(n);
+  let s = n.toFixed(3).replace(".", ",");
+  s = s.replace(/0+$/,"").replace(/,$/,"");
+  return s;
+}
+
+let _esSaveTimer = null;
+
+function _getEsLeftCells(){
+  const sec = document.getElementById("entradaSaida");
+  if(!sec) return null;
+  const rows = sec.querySelectorAll("tbody tr");
+  // rows 0..3: saldo/entrada/saida/ajuste (tabela esquerda)
+  return {
+    saldoTd: rows[0]?.cells[1],
+    entradaTd: rows[1]?.cells[1],
+    saidaTd: rows[2]?.cells[1],
+    ajusteTd: rows[3]?.cells[1],
+  };
+}
+
+function _getEsRealTd(){
+  return document.getElementById("es_real");
+}
+
+function _scheduleSalvarEntradaSaida(){
+  clearTimeout(_esSaveTimer);
+  _esSaveTimer = setTimeout(()=> salvarEntradaSaidaCompartilhado(), 450);
+}
+
+async function salvarEntradaSaidaCompartilhado(){
+  try{
+    const left = _getEsLeftCells();
+    const realTd = _getEsRealTd();
+    if(!left || !realTd) return;
+
+    const payload = {
+      saldo: (left.saldoTd?.innerText||"0").trim(),
+      entrada: (left.entradaTd?.innerText||"0").trim(),
+      saida: (left.saidaTd?.innerText||"0").trim(),
+      ajuste: (left.ajusteTd?.innerText||"0").trim(),
+      real: (realTd?.innerText||"0").trim(),
+      ts: Date.now()
+    };
+
+    await api("cod_set", _esKey("DATA"), JSON.stringify(payload));
+  }catch(err){
+    console.warn("Falha ao salvar Entrada x Saída:", err.message || err);
+  }
+}
+
+async function carregarEntradaSaidaCompartilhado(){
+  try{
+    const mesEl = document.getElementById("es_mes_ref");
+    if(mesEl) mesEl.textContent = `(${_esMesRef()})`;
+
+    const res = await api("cod_get", _esKey("DATA"));
+    if(!res || !res.ok || !res.found) {
+      recalcularEntradaSaida();
+      return;
+    }
+    let obj = null;
+    try{ obj = JSON.parse(res.value || "{}"); }catch(_){ obj = null; }
+    if(!obj) { recalcularEntradaSaida(); return; }
+
+    const left = _getEsLeftCells();
+    const realTd = _getEsRealTd();
+    if(left?.saldoTd) left.saldoTd.innerText = obj.saldo ?? "0";
+    if(left?.entradaTd) left.entradaTd.innerText = obj.entrada ?? "0";
+    if(left?.saidaTd) left.saidaTd.innerText = obj.saida ?? "0";
+    if(left?.ajusteTd) left.ajusteTd.innerText = obj.ajuste ?? "0";
+    if(realTd) realTd.innerText = obj.real ?? "0";
+
+    const inp = document.getElementById("es_saldo_mes");
+    if(inp) inp.value = (obj.saldo ?? "0");
+
+    recalcularEntradaSaida();
+  }catch(err){
+    console.warn("Falha ao carregar Entrada x Saída:", err.message || err);
+    recalcularEntradaSaida();
+  }
+}
+
+function recalcularEntradaSaida(){
+  const sec = document.getElementById("entradaSaida");
+  if(!sec) return;
+
+  const rows = sec.querySelectorAll("tbody tr");
+  const saldo = _parseBRNum(rows[0]?.cells[1]?.innerText);
+  const entrada = _parseBRNum(rows[1]?.cells[1]?.innerText);
+  const saida = _parseBRNum(rows[2]?.cells[1]?.innerText);
+  const ajuste = _parseBRNum(rows[3]?.cells[1]?.innerText);
+
+  const total = saldo + entrada + saida + ajuste;
+
+  const realEl = document.getElementById("es_real");
+  const real = _parseBRNum(realEl?.innerText);
+
+  const diff = real - total;
+
+  const totalEl = document.getElementById("es_total");
+  const diffEl  = document.getElementById("es_diff");
+
+  if(totalEl) totalEl.textContent = _fmtBRIntOrDec(total);
+  if(diffEl){
+    diffEl.textContent = _fmtBRIntOrDec(diff);
+    diffEl.style.background = Math.abs(diff) < 0.0000001 ? "rgba(18,183,106,.12)" : "rgba(240,68,56,.10)";
+    diffEl.style.borderRadius = "12px";
+    diffEl.style.textAlign = "center";
+  }
+
+  _scheduleSalvarEntradaSaida();
+}
+
+function limparEntradaSaida(){
+  const sec = document.getElementById("entradaSaida");
+  if(!sec) return;
+  const cells = sec.querySelectorAll("tbody td[contenteditable='true']");
+  cells.forEach(td => td.innerText = "0");
+  const totalEl = document.getElementById("es_total");
+  const diffEl  = document.getElementById("es_diff");
+  if(totalEl) totalEl.textContent = "0";
+  if(diffEl){ diffEl.textContent = ""; diffEl.style.background = ""; }
+  toast("ok","Entrada x Saída","Campos limpos.");
+  salvarEntradaSaidaCompartilhado();
+}
+
+/* ✅ Menu 3 pontos (saldo inicial do mês) */
+function toggleESPanel(ev, forceClose=false){
+  if(ev) ev.stopPropagation();
+  const p = document.getElementById("es_panel");
+  if(!p) return;
+  if(forceClose){ p.classList.add("hidden"); return; }
+  p.classList.toggle("hidden");
+  const mesEl = document.getElementById("es_mes_ref");
+  if(mesEl) mesEl.textContent = `(${_esMesRef()})`;
+}
+
+// fecha painel clicando fora
+document.addEventListener("click", (e)=>{
+  const p = document.getElementById("es_panel");
+  const sec = document.getElementById("entradaSaida");
+  if(!p || !sec) return;
+  if(p.classList.contains("hidden")) return;
+  if(sec.contains(e.target)) return;
+  p.classList.add("hidden");
+});
+
+async function aplicarSaldoInicialMes(){
+  const inp = document.getElementById("es_saldo_mes");
+  const v = (inp?.value || "").trim();
+  if(!v) return toast("warn","Entrada x Saída","Informe o saldo inicial do mês.");
+  const left = _getEsLeftCells();
+  if(left?.saldoTd) left.saldoTd.innerText = v;
+  recalcularEntradaSaida();
+  await salvarEntradaSaidaCompartilhado();
+  toast("ok","Entrada x Saída","Saldo inicial aplicado e salvo para todos.");
+  toggleESPanel(null, true);
 }
 
 /* IMPORTAÇÕES */
@@ -2110,15 +2628,22 @@ function renderAdminPermForm(){
 
   const pT = makePermSelect("Transferência", u.perms?.transferencia);
   const pZ = makePermSelect("Zeramento",     u.perms?.zeramento);
-  const pR = makePermSelect("Requisição",    u.perms?.requisicao);
 
+  // Requisições granular (Pedidos / Manual) - fallback para u.perms?.requisicao
+  const pRP = makePermSelect("Req. Pedidos", u.perms?.requisicaoPedidos ?? u.perms?.requisicao);
+  const pRM = makePermSelect("Req. Manual",  u.perms?.requisicaoManual  ?? u.perms?.requisicao);
 
-  const p164 = makePermSelect("164 (Conferência)", u.perms?.aba164);
+  const p164 = makePermSelect("164",      u.perms?.aba164);
+  const pES  = makePermSelect("Entrada x Saída",  u.perms?.entradaSaida);
+  const pP   = makePermSelect("Produção",         u.perms?.producao);
+
   rowPerm.appendChild(pT.wrapSel);
   rowPerm.appendChild(pZ.wrapSel);
-  rowPerm.appendChild(pR.wrapSel);
-
+  rowPerm.appendChild(pRP.wrapSel);
+  rowPerm.appendChild(pRM.wrapSel);
   rowPerm.appendChild(p164.wrapSel);
+  rowPerm.appendChild(pES.wrapSel);
+  rowPerm.appendChild(pP.wrapSel);
   form.appendChild(rowPerm);
 
   const rowBtn = document.createElement("div");
@@ -2139,8 +2664,16 @@ function renderAdminPermForm(){
         selNivel.value,
         pT.sel.value,
         pZ.sel.value,
-        pR.sel.value,
-        p164.sel.value
+
+        // compat antigo: requisicao (um só) – se pedidos/manual iguais, usa o mesmo; se diferente, usa EDITAR
+        (pRP.sel.value === pRM.sel.value ? pRP.sel.value : "EDITAR"),
+        p164.sel.value,
+
+        // novos (granular)
+        pRP.sel.value,   // requisicaoPedidos
+        pRM.sel.value,   // requisicaoManual
+        pES.sel.value,   // entradaSaida
+        pP.sel.value     // producao
       );
       toast(r.ok ? "ok" : "danger", "Admin", r.ok ? "Salvo!" : (r.msg || "Erro"));
       if(r.ok) await adminRecarregar();
