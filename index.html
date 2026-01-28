@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
  <link rel="manifest" href="/sistema-pwa/manifest.json">
-<meta name="theme-color" content="#2c1a4d">
+<meta name="theme-color" content="#070a12">
 <link rel="apple-touch-icon" href="/sistema-pwa/icons/icon-192.png">
 <link rel="icon" href="/sistema-pwa/icons/icon-192.png">
 <base target="_top">
@@ -12,30 +12,48 @@
 
 <style>
 :root{
-  --primary:#2c1a4d;
-  --secondary:#6a4bc9;
- --bg:#0f1116;
-  --card:#171a22;
-  --text:#f3f4f6;
-  --muted:#a7afbd;
-  --line:#2a2f3a;
-   --shadow: 0 12px 30px rgba(0,0,0,.45);
-  --shadow2: 0 8px 18px rgba(0,0,0,.35);
-  --ok:#12b76a;
-  --warn:#f79009;
-  --danger:#f04438;
-  --radius:16px;
+  /* Futurista / Dark (padrão) */
+  --primary:#7c3aed;          /* roxo neon */
+  --secondary:#a855f7;        /* roxo claro */
+  --accent:#22d3ee;           /* ciano neon */
+  --accent2:#34d399;          /* verde neon */
+  --bg:#070a12;               /* fundo profundo */
+  --card:#0d1220;             /* cartões */
+  --card2:#0b1020;
+  --text:#e7e9ee;
+  --muted:#9aa4b2;
+  --line:rgba(148,163,184,.16);
+  --shadow: 0 18px 45px rgba(0,0,0,.55);
+  --shadow2: 0 10px 26px rgba(0,0,0,.45);
+  --ok:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
+  --radius:18px;
+
+  /* extras */
+  --glow: 0 0 18px rgba(34,211,238,.22), 0 0 40px rgba(168,85,247,.18);
+  --glass: rgba(255,255,255,.06);
+  --glass2: rgba(255,255,255,.10);
 }
+
+/* Light (quando clicar no botão de tema) */
 .dark{
-  --bg:#f3f5fb;
+  --primary:#3b2a75;
+  --secondary:#6a4bc9;
+  --accent:#0ea5e9;
+  --accent2:#10b981;
+  --bg:#f5f7ff;
   --card:#ffffff;
-  --text:#1f2430;
-  --muted:#667085;
-  --line:#e5e7ee;
-  --shadow: 0 10px 30px rgba(16,24,40,.10);
-  --shadow2: 0 6px 18px rgba(16,24,40,.08);
- 
+  --card2:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --line:#e6e9f2;
+  --shadow: 0 16px 40px rgba(16,24,40,.12);
+  --shadow2: 0 8px 20px rgba(16,24,40,.10);
+  --glass: rgba(17,24,39,.04);
+  --glass2: rgba(17,24,39,.06);
 }
+
 
 .hidden{ display:none !important; }
 
@@ -509,6 +527,141 @@ table.sheet{ width:100%; border-collapse:collapse; }
 }
 .prod-modal-close:hover{ background:rgba(0,0,0,.06); }
 
+
+/* =========================
+   Futurista / Profissional
+   ========================= */
+
+/* Fundo com grade sutil + glow */
+body{
+  background:
+    radial-gradient(900px 520px at 16% 10%, rgba(168,85,247,.18), transparent 55%),
+    radial-gradient(780px 520px at 86% 18%, rgba(34,211,238,.14), transparent 55%),
+    radial-gradient(680px 520px at 50% 92%, rgba(52,211,153,.10), transparent 60%),
+    var(--bg);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,.035), transparent 24%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 1px, transparent 1px 36px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.020) 0 1px, transparent 1px 36px);
+  opacity:.22;
+  mix-blend-mode: overlay;
+}
+
+/* Scrollbar discreta */
+*::-webkit-scrollbar{ height:10px; width:10px; }
+*::-webkit-scrollbar-thumb{
+  background: rgba(148,163,184,.22);
+  border:2px solid transparent;
+  background-clip: padding-box;
+  border-radius:999px;
+}
+*::-webkit-scrollbar-thumb:hover{ background: rgba(148,163,184,.32); border:2px solid transparent; background-clip:padding-box; }
+
+/* Cartões com “glass” */
+.topbar,.card,.login-card,.loading-box,.toast{
+  background: linear-gradient(180deg, var(--glass2), transparent 120%), var(--card);
+  border-color: var(--line);
+  box-shadow: var(--shadow2);
+}
+
+/* Inputs mais “clean” */
+input,select,textarea,button{
+  border-color: var(--line);
+}
+input,select,textarea{
+  background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 90%), var(--card);
+}
+input:focus,select:focus,textarea:focus{
+  border-color: rgba(34,211,238,.55);
+  box-shadow: 0 0 0 4px rgba(34,211,238,.12), var(--glow);
+}
+
+/* Botões com neon sutil */
+.btn-primary{
+  background:
+    linear-gradient(135deg, rgba(34,211,238,.92), rgba(168,85,247,.92));
+  box-shadow: 0 10px 22px rgba(0,0,0,.22), var(--glow);
+}
+.btn-ghost{
+  background: rgba(255,255,255,.02);
+}
+.btn:hover{ filter:saturate(1.05); }
+
+/* Sidebar mais futurista */
+.sidebar{
+  background:
+    radial-gradient(700px 420px at 20% 10%, rgba(34,211,238,.18), transparent 55%),
+    radial-gradient(740px 520px at 70% 25%, rgba(168,85,247,.20), transparent 60%),
+    linear-gradient(180deg, rgba(13,18,32,.88), rgba(7,10,18,.96));
+  border-right: 1px solid rgba(148,163,184,.14);
+  box-shadow: 0 22px 60px rgba(0,0,0,.55);
+}
+.side-top{
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(148,163,184,.14);
+  backdrop-filter: blur(10px);
+}
+.icon-btn{
+  background: rgba(255,255,255,.06);
+  border-color: rgba(148,163,184,.18);
+}
+.icon-btn:hover{ box-shadow: var(--glow); }
+
+/* Menu: item ativo com glow */
+.nav .item, .subitem{
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(148,163,184,.14);
+  backdrop-filter: blur(10px);
+}
+.nav .item.active{
+  background:
+    linear-gradient(135deg, rgba(34,211,238,.18), rgba(168,85,247,.22));
+  border-color: rgba(34,211,238,.35);
+  box-shadow: 0 14px 28px rgba(0,0,0,.25), var(--glow);
+}
+.nav .item.active::before{
+  background: linear-gradient(180deg, var(--accent), var(--secondary));
+  box-shadow: 0 0 0 2px rgba(34,211,238,.20), var(--glow);
+}
+.subitem.active{
+  background: linear-gradient(135deg, rgba(34,211,238,.14), rgba(168,85,247,.18));
+  border-color: rgba(34,211,238,.28);
+  box-shadow: 0 10px 22px rgba(0,0,0,.20);
+}
+
+/* Tabelas com destaque ao passar o mouse */
+.sheet tbody tr:hover td{
+  background: rgba(34,211,238,.06);
+}
+.sheet thead th{
+  background:
+    linear-gradient(180deg, rgba(34,211,238,.14), rgba(168,85,247,.08));
+}
+
+/* Pills */
+.pill{
+  background: rgba(34,211,238,.08);
+  border-color: rgba(34,211,238,.22);
+}
+
+/* Toast refinado */
+.toast{
+  backdrop-filter: blur(12px);
+}
+.toast .dot{ box-shadow: 0 0 0 4px rgba(34,211,238,.12); }
+
+/* Overlay */
+.overlay{
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+}
+
 </style>
 </head>
 
@@ -648,8 +801,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
         <div id="sub_producao" class="subitems hidden">
           <div id="m_producao" class="subitem" onclick="abrir('producao')">⚖️ Entrada x Saída</div>
-          <div id="m_conversaoProduto" class="subitem" onclick="abrir('conversaoProduto')">🔁 Conversão de Produto</div>
-        </div>
+</div>
 
         <!-- 3) Transferência -->
         <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
@@ -935,146 +1087,8 @@ table.sheet{ width:100%; border-collapse:collapse; }
 </section>
 
 
-<section class="card hidden" id="conversaoProduto" style="overflow:hidden;">
-  <h2>🔁 Conversão de Produto</h2>
-
-  <div class="subhint" style="margin-top:10px;">
-    Informe o <b>produto final</b>. Se não estiver cadastrado, o sistema vai pedir a <b>composição</b> (componentes) e salvar.
-    Ao converter, gera um TXT com <b>SAÍDA</b> (componentes) + <b>ENTRADA</b> (produto final).
-  </div>
-
-  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:14px;">
-    <div class="sheet-wrap" style="padding:14px;">
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div>
-          <label style="margin-top:0;">Código do produto</label>
-          <input id="cp_codigo" placeholder="Ex: 2900" inputmode="numeric">
-        </div>
-        <div>
-          <label style="margin-top:0;">Quantidade</label>
-          <input id="cp_qtd" placeholder="Ex: 10" inputmode="decimal">
-        </div>
-        <div>
-          <label>Gênero</label>
-          <input id="cp_genero" placeholder="Ex: Masculino">
-        </div>
-        <div>
-          <label>Tamanho</label>
-          <input id="cp_tamanho" placeholder="Ex: G">
-        </div>
-        <div style="grid-column:1 / -1;">
-          <label>Cor</label>
-          <input id="cp_cor" placeholder="Ex: Preto">
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-        <div>
-          <label style="margin-top:0;">Local SAÍDA</label>
-          <input id="cp_local_saida" placeholder="Ex: 164" value="164">
-        </div>
-        <div>
-          <label style="margin-top:0;">Local ENTRADA</label>
-          <input id="cp_local_entrada" placeholder="Ex: 1175" value="1175">
-        </div>
-      </div>
-
-      <div class="actions" style="margin-top:12px;">
-        <button class="btn btn-primary" onclick="converterProduto()">Converter</button>
-        <button class="btn btn-ghost" onclick="abrirCadastroComposicao()">Cadastrar composição</button>
-        <button class="btn btn-ghost" onclick="limparConversaoProduto()">Limpar</button>
-      </div>
-
-      <div class="subhint" style="margin-top:8px;">
-        ✅ A composição herda Gênero/Tamanho/Cor do produto final quando o componente estiver vazio.
-      </div>
-    </div>
-
-    <div class="sheet-wrap" style="overflow:hidden;">
-      <table class="sheet" style="width:100%;">
-        <thead>
-          <tr><th colspan="2" style="text-align:center;">Prévia</th></tr>
-        </thead>
-        <tbody>
-          <tr><td style="font-weight:800;">Produto</td><td id="cp_prev_prod">—</td></tr>
-          <tr><td style="font-weight:800;">Componentes</td><td id="cp_prev_comp">—</td></tr>
-          <tr><td style="font-weight:800;">Linhas TXT</td><td id="cp_prev_linhas">0</td></tr>
-        </tbody>
-      </table>
-
-      <div style="padding:12px 14px; border-top:1px solid var(--line);">
-        <label style="margin-top:0;">TXT gerado</label>
-        <textarea id="cp_txt" style="width:100%; height:220px; resize:none; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text);" placeholder="Após converter, o TXT aparece aqui."></textarea>
-        <div class="actions" style="margin-top:10px;">
-          <button class="btn btn-ghost" onclick="baixarTXTConversao()">Baixar TXT</button>
-          <button class="btn btn-ghost" onclick="copiarTXTConversao()">Copiar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Modal: Cadastro de Composição -->
-<div id="modalComp" class="overlay">
-  <div class="login-card" style="width:min(780px, calc(100vw - 36px)); max-height:min(82vh, 720px); overflow:auto;">
-    <div class="brand" style="margin-bottom:8px;">
-      <div class="logo" style="width:38px; height:38px;"></div>
-      <div>
-        <h2 style="margin:0;">Composição do produto</h2>
-        <p style="margin:2px 0 0 0;">Cole linhas no formato: <b>codigo\tgrade1\tgrade2\tgrade3\tquantidade</b></p>
-      </div>
-    </div>
-
-    <div class="subhint" style="margin-top:6px;">
-      Exemplo: <span style="color:var(--muted);">22148	Masculino	G	Preto	1</span>
-      <br>✅ Se algum grade ficar vazio, o sistema herda do produto final.
-    </div>
-
-    <label>Código do produto final (para cadastrar)</label>
-    <input id="mc_prod_codigo" placeholder="Ex: 2900" inputmode="numeric">
-
-    <label style="margin-top:10px;">Composição (1 componente por linha)</label>
-    
-    <div class="sheet-wrap" style="margin-top:8px; overflow:hidden;">
-      <table class="sheet" style="width:100%;">
-        <thead>
-          <tr>
-            <th style="text-align:left;">Código</th>
-            <th style="text-align:left;">Grade 1</th>
-            <th style="text-align:left;">Grade 2</th>
-            <th style="text-align:left;">Grade 3</th>
-            <th style="text-align:left;">Qtd (por 1)</th>
-            <th style="width:52px;"></th>
-          </tr>
-        </thead>
-        <tbody id="mc_tbody"></tbody>
-      </table>
-      <div class="actions" style="padding:12px 14px; border-top:1px solid var(--line);">
-        <button class="btn btn-ghost" style="width:auto;" onclick="mcAddRow()">+ Linha</button>
-        <button class="btn btn-ghost" style="width:auto;" onclick="mcAddRows(10)">+10</button>
-        <button class="btn btn-ghost" style="width:auto;" onclick="mcLimpar()">Limpar</button>
-      </div>
-    </div>
-
-    <details style="margin-top:10px;">
-      <summary style="cursor:pointer; color:var(--muted); font-weight:700;">Colar em texto (opcional)</summary>
-      <textarea id="mc_linhas" style="width:100%; height:160px; resize:none; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text); margin-top:8px;" placeholder="Cole linhas no formato: codigo[TAB]grade1[TAB]grade2[TAB]grade3[TAB]quantidade"></textarea>
-      <div class="actions" style="margin-top:10px;">
-        <button class="btn btn-ghost" style="width:auto;" onclick="mcImportarTexto()">Importar para tabela</button>
-      </div>
-    </details>
 
 
-    <div class="actions" style="margin-top:12px;">
-      <button class="btn btn-primary" onclick="salvarComposicao()">Salvar composição</button>
-      <button class="btn btn-ghost" onclick="fecharCadastroComposicao()">Cancelar</button>
-    </div>
-
-    <div class="subhint" style="margin-top:8px;">
-      ✅ Fica salvo no dispositivo (localStorage) para usar sempre.
-    </div>
-  </div>
-</div>
 
 
 <section class="card hidden" id="entradaSaida" style="overflow:hidden;">
@@ -1464,8 +1478,7 @@ function abrir(id){
   }
   if(id==="aba164"){ setTop("164",""); setActiveNav("aba164"); }
   if(id==="producao"){ setTop("Entrada x Saída (Produção)","Cole Entrada e Saída/Baixa e confira pela composição"); setActiveNav("producao"); try{ const a=document.querySelector("#tblProdA tbody"); const b=document.querySelector("#tblProdB tbody"); if((a && a.children.length===0) || (b && b.children.length===0)) initProducao(); }catch(e){} }
-  if(id==="conversaoProduto"){ setTop("Conversão de Produto","Gera TXT: SAÍDA (composição) + ENTRADA (produto)"); setActiveNav("conversaoProduto"); }
-  if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); }
+if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
@@ -1969,9 +1982,7 @@ function aplicarPermissoesUI(){
     }
   }
   setSubitem("m_producao", PERMS.producao, "⚖️ Entrada x Saída");
-  setSubitem("m_conversaoProduto", PERMS.producao, "🔁 Conversão de Produto");
-
-  // ✅ Admin menu
+// ✅ Admin menu
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
 }
 
@@ -3465,250 +3476,6 @@ const det = dif>0
   }
 }
 
-
-
-/* =========================
-   ✅ Conversão de Produto
-   - Produto final (código + gênero + cor + tamanho + quantidade)
-   - Se não cadastrado: pede composição (codigo + grade1 + grade2 + grade3 + qtd)
-   - Gera TXT: SAÍDA (componentes) + ENTRADA (produto final)
-   ========================= */
-const CONV_STORE_KEY = "conv_comp_map_v1";
-
-function getConvMap(){
-  try{ return JSON.parse(localStorage.getItem(CONV_STORE_KEY)||"{}") || {}; }
-  catch(e){ return {}; }
-}
-function setConvMap(map){
-  localStorage.setItem(CONV_STORE_KEY, JSON.stringify(map||{}));
-}
-function showModalComp(show){
-  const m=document.getElementById("modalComp");
-  if(!m) return;
-  m.classList.toggle("show", !!show);
-}
-function abrirCadastroComposicao(){
-  const prod = (document.getElementById("cp_codigo")?.value||"").trim();
-  const mc = document.getElementById("mc_prod_codigo");
-  if(mc) mc.value = prod;
-  showModalComp(true);
-  mcEnsureMinRows(8);
-}
-function fecharCadastroComposicao(){
-  showModalComp(false);
-}
-function parseCompLines(txt){
-  const lines = (txt||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-  const comps=[];
-  for(const line of lines){
-    const parts=line.split("\t");
-    // aceita também separado por múltiplos espaços
-    const p = parts.length>=2 ? parts : line.split(/\s{2,}|\s+(?=\d+(?:[.,]\d+)?$)/);
-    const [codigo, g1="", g2="", g3="", qtd=""] = (p.concat(["","","","",""])).slice(0,5);
-    const q = normalizeQTD(qtd||"0");
-    if(!codigo || q===0) continue;
-    comps.push({codigo:String(codigo).trim(), g1:String(g1||"").trim(), g2:String(g2||"").trim(), g3:String(g3||"").trim(), qtd:q});
-  }
-  return comps;
-}
-
-function mcTbody(){ return document.getElementById("mc_tbody"); }
-function mcAddRow(pref){
-  const tb=mcTbody(); if(!tb) return;
-  const p=pref||{};
-  const tr=document.createElement("tr");
-  tr.innerHTML = `
-    <td><input class="mc_in" data-k="codigo" placeholder="Ex: 22148" value="${(p.codigo||"")}" inputmode="numeric" style="padding:10px; border-radius:10px;"></td>
-    <td><input class="mc_in" data-k="g1" placeholder="Ex: Masculino" value="${(p.g1||"")}" style="padding:10px; border-radius:10px;"></td>
-    <td><input class="mc_in" data-k="g2" placeholder="Ex: G" value="${(p.g2||"")}" style="padding:10px; border-radius:10px;"></td>
-    <td><input class="mc_in" data-k="g3" placeholder="Ex: Preto" value="${(p.g3||"")}" style="padding:10px; border-radius:10px;"></td>
-    <td><input class="mc_in" data-k="qtd" placeholder="Ex: 1" value="${(p.qtd!=null ? String(p.qtd).replace(".",",") : "")}" inputmode="decimal" style="padding:10px; border-radius:10px;"></td>
-    <td><button class="btn btn-ghost" style="width:44px; padding:10px;" title="Remover" onclick="this.closest('tr')?.remove()">✕</button></td>
-  `;
-  tb.appendChild(tr);
-}
-function mcAddRows(n){
-  const k = Math.max(1, Number(n||1));
-  for(let i=0;i<k;i++) mcAddRow({});
-}
-function mcEnsureMinRows(minRows){
-  const tb=mcTbody(); if(!tb) return;
-  const min = Math.max(1, Number(minRows||8));
-  const cur = tb.querySelectorAll("tr").length;
-  if(cur===0) mcAddRows(min);
-}
-function mcLimpar(){
-  const tb=mcTbody(); if(tb) tb.innerHTML="";
-  const ta=document.getElementById("mc_linhas"); if(ta) ta.value="";
-  mcAddRows(8);
-}
-function mcGetCompsFromTable(){
-  const tb=mcTbody(); if(!tb) return [];
-  const rows=[...tb.querySelectorAll("tr")];
-  const comps=[];
-  for(const r of rows){
-    const get=(k)=> (r.querySelector(`[data-k="${k}"]`)?.value||"").trim();
-    const codigo=get("codigo");
-    const g1=get("g1");
-    const g2=get("g2");
-    const g3=get("g3");
-    const qtd=normalizeQTD(get("qtd")||"0");
-    if(!codigo || !qtd || qtd===0) continue;
-    comps.push({codigo:String(codigo).trim(), g1, g2, g3, qtd});
-  }
-  return comps;
-}
-function mcImportarTexto(){
-  const ta=document.getElementById("mc_linhas");
-  const txt = ta ? ta.value : "";
-  const comps=parseCompLines(txt);
-  if(!comps.length) return toast("warn","Importar","Nenhuma linha válida para importar.");
-  const tb=mcTbody(); if(tb) tb.innerHTML="";
-  for(const c of comps) mcAddRow(c);
-  toast("ok","Importar",`${comps.length} item(ns) importados para a tabela.`);
-}
-
-function salvarComposicao(){
-  const prod=(document.getElementById("mc_prod_codigo")?.value||"").trim();
-  if(!prod) return toast("warn","Composição","Informe o código do produto final.");
-
-  // 1) tenta pela TABELA (campos de grades)
-  let comps = mcGetCompsFromTable();
-
-  // 2) fallback: texto (opcional)
-  if(!comps.length){
-    const txt=(document.getElementById("mc_linhas")?.value||"");
-    comps=parseCompLines(txt);
-  }
-
-  if(!comps.length) return toast("warn","Composição","Preencha pelo menos 1 componente (código + quantidade).");
-
-  const map=getConvMap();
-  map[prod]=comps;
-  setConvMap(map);
-  showModalComp(false);
-  toast("ok","Composição","Salva com sucesso.");
-  atualizarPreviaConversao();
-}
-function getProdutoForm(){
-  const codigo=(document.getElementById("cp_codigo")?.value||"").trim();
-  const genero=(document.getElementById("cp_genero")?.value||"").trim();
-  const cor=(document.getElementById("cp_cor")?.value||"").trim();
-  const tamanho=(document.getElementById("cp_tamanho")?.value||"").trim();
-  const qtd=normalizeQTD(document.getElementById("cp_qtd")?.value||"0");
-  const localSaida=(document.getElementById("cp_local_saida")?.value||"164").trim()||"164";
-  const localEntrada=(document.getElementById("cp_local_entrada")?.value||"1175").trim()||"1175";
-  return {codigo,genero,cor,tamanho,qtd,localSaida,localEntrada};
-}
-function atualizarPreviaConversao(){
-  const {codigo,genero,cor,tamanho,qtd}=getProdutoForm();
-  const map=getConvMap();
-  const comps = codigo ? (map[codigo]||[]) : [];
-  const p=document.getElementById("cp_prev_prod");
-  const c=document.getElementById("cp_prev_comp");
-  if(p) p.textContent = codigo ? `${codigo} • ${genero||"-"} • ${tamanho||"-"} • ${cor||"-"} • Qtd ${formatQtdTxtFromNum(qtd||0)}` : "—";
-  if(c) c.textContent = comps.length ? `${comps.length} item(ns) cadastrados` : "—";
-}
-["cp_codigo","cp_genero","cp_cor","cp_tamanho","cp_qtd"].forEach(id=>{
-  document.addEventListener("input",(e)=>{ if(e.target && e.target.id===id) atualizarPreviaConversao(); }, true);
-});
-
-async function converterProduto(){
-  try{
-    const form=getProdutoForm();
-    if(!form.codigo) return toast("warn","Conversão","Informe o código do produto.");
-    if(!form.qtd || form.qtd<=0) return toast("warn","Conversão","Informe a quantidade.");
-    const map=getConvMap();
-    const comps = map[form.codigo];
-
-    if(!comps){
-      // pede composição
-      abrirCadastroComposicao();
-      toast("warn","Conversão","Produto sem composição. Cadastre a composição e tente novamente.");
-      return;
-    }
-
-    loading(true,"Gerando TXT...");
-    const mov = await escolherMovOrigemSePreciso();
-    const hoje=dataHoje_ptBR();
-    const out=[];
-    let linhas=0;
-
-    // SAÍDA: componentes
-    for(const comp of comps){
-      const g1 = comp.g1 || form.genero;
-      const g2 = comp.g2 || form.tamanho;
-      const g3 = comp.g3 || form.cor;
-
-      const f5=await mapearOuCadastrar(g1);
-      const f6=await mapearOuCadastrar(g2);
-      const f7=await mapearOuCadastrar(g3);
-
-      const qtdAbs = Math.abs((comp.qtd||0) * form.qtd);
-      if(qtdAbs===0) continue;
-      const qtdTxt = formatQtdTxtFromNum(qtdAbs);
-      const valor=(qtdAbs*0.01).toFixed(2).replace(".",",");
-
-      // mesmo padrão do Zeramento (S)
-      out.push([mov,"S",hoje,comp.codigo,f5,f6,f7,form.localSaida,qtdTxt,"0,01",valor,"5906"].join("|"));
-      linhas++;
-    }
-
-    // ENTRADA: produto final
-    {
-      const f5=await mapearOuCadastrar(form.genero);
-      const f6=await mapearOuCadastrar(form.tamanho);
-      const f7=await mapearOuCadastrar(form.cor);
-      const qtdAbs = Math.abs(form.qtd);
-      const qtdTxt = formatQtdTxtFromNum(qtdAbs);
-      const valor=(qtdAbs*0.01).toFixed(2).replace(".",",");
-      out.push([mov,"E",hoje,form.codigo,f5,f6,f7,form.localEntrada,qtdTxt,"0,01",valor,"1905"].join("|"));
-      linhas++;
-    }
-
-    const txt = out.join("\n");
-    const ta=document.getElementById("cp_txt");
-    if(ta) ta.value = txt;
-
-    const prevLin=document.getElementById("cp_prev_linhas");
-    if(prevLin) prevLin.textContent = String(linhas);
-
-    const prevComp=document.getElementById("cp_prev_comp");
-    if(prevComp) prevComp.textContent = `${(comps||[]).length} item(ns) cadastrados`;
-
-    atualizarPreviaConversao();
-
-    toast("ok","Conversão",`TXT gerado com ${linhas} linha(s).`);
-  }catch(err){
-    toast("danger","Erro",err.message);
-  }finally{
-    loading(false);
-  }
-}
-function baixarTXTConversao(){
-  const txt=(document.getElementById("cp_txt")?.value||"").trim();
-  if(!txt) return toast("warn","Conversão","Nada para baixar. Gere o TXT primeiro.");
-  baixarComoTXT("importacao_conversao", txt);
-  toast("ok","Conversão","TXT baixado.");
-}
-async function copiarTXTConversao(){
-  const txt=(document.getElementById("cp_txt")?.value||"").trim();
-  if(!txt) return toast("warn","Conversão","Nada para copiar.");
-  try{
-    await navigator.clipboard.writeText(txt);
-    toast("ok","Conversão","Copiado!");
-  }catch(e){
-    toast("warn","Conversão","Não consegui copiar automaticamente neste navegador.");
-  }
-}
-function limparConversaoProduto(){
-  ["cp_codigo","cp_genero","cp_cor","cp_tamanho","cp_qtd"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
-  const ta=document.getElementById("cp_txt"); if(ta) ta.value="";
-  const prevLin=document.getElementById("cp_prev_linhas"); if(prevLin) prevLin.textContent="0";
-  const prevProd=document.getElementById("cp_prev_prod"); if(prevProd) prevProd.textContent="—";
-  const prevComp=document.getElementById("cp_prev_comp"); if(prevComp) prevComp.textContent="—";
-  toast("ok","Conversão","Limpo.");
-}
 
 
 /* ===== Global error handler: mostra erro na tela (sem console) ===== */
