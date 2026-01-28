@@ -662,34 +662,6 @@ input:focus,select:focus,textarea:focus{
   backdrop-filter: blur(10px);
 }
 
-
-/* ✅ Linhas com status (OK / Aviso / Erro) */
-tr.row-ok td{ background: rgba(34,197,94,.10); }
-tr.row-warn td{ background: rgba(245,158,11,.10); }
-tr.row-err td{ background: rgba(239,68,68,.10); }
-tr.row-err td:first-child{ border-left: 3px solid rgba(239,68,68,.9); }
-tr.row-ok td:first-child{ border-left: 3px solid rgba(34,197,94,.75); }
-tr.row-warn td:first-child{ border-left: 3px solid rgba(245,158,11,.8); }
-
-.table-tools{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0 10px 0; }
-.table-tools input{
-  width:min(420px, 100%);
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:var(--card);
-  color:var(--text);
-}
-.table-tools .mini{
-  width:auto;
-  padding:8px 10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(106,75,201,.06);
-  font-size:12px;
-  user-select:none;
-}
-
 </style>
 </head>
 
@@ -1010,11 +982,6 @@ tr.row-warn td:first-child{ border-left: 3px solid rgba(245,158,11,.8); }
           <div class="subhint" id="res164Hint">—</div>
 
           <h3 style="margin:10px 0 8px 0; font-size:14px;">Divergencia</h3>
-          <div class="table-tools">
-            <input id="m164_busca" placeholder="Buscar código / grade..." oninput="filterTableRows('#tbl164Res tbody', this.value)" />
-            <span class="mini" id="m164_busca_count">—</span>
-          </div>
-
           <div class="sheet-wrap" style="flex:1 1 auto; min-height:180px;">
             <table class="sheet" id="tbl164Res">
               <thead>
@@ -1086,11 +1053,6 @@ tr.row-warn td:first-child{ border-left: 3px solid rgba(245,158,11,.8); }
     <pre id="prod_errorText" style="white-space:pre-wrap; margin:10px 0 0 0; font-size:12px; color:#7f1d1d;"></pre>
   </div>
 <h3 style="margin:12px 0 8px 0; font-size:14px;">Resultado</h3>
-  <div class="table-tools">
-    <input id="prod_busca" placeholder="Buscar nome / grade..." oninput="filterTableRows('#prod_tbody', this.value)" />
-    <span class="mini" id="prod_busca_count">—</span>
-  </div>
-
   <div class="sheet-wrap" style="overflow:hidden;">
     <table class="sheet" style="width:100%;">
       <thead>
@@ -1196,34 +1158,6 @@ tr.row-warn td:first-child{ border-left: 3px solid rgba(245,158,11,.8); }
           <button class="btn btn-primary" onclick="recalcularEntradaSaida()">Recalcular</button>
           <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
         </div>
-        <div style="margin-top:12px; border-top:1px solid var(--line); padding-top:12px;">
-          <h3 style="margin:0 0 10px 0; font-size:14px;">📆 Histórico mensal</h3>
-          <div class="table-tools">
-            <input id="es_hist_mes" type="month" onchange="carregarHistoricoEntradaSaida(this.value)" />
-            <button class="btn btn-primary" style="width:auto;" onclick="registrarHistoricoEntradaSaida()">Registrar no histórico</button>
-            <button class="btn btn-ghost" style="width:auto;" onclick="carregarHistoricoEntradaSaida(document.getElementById('es_hist_mes').value)">Atualizar</button>
-            <span class="mini" id="es_hist_hint">—</span>
-          </div>
-          <div class="sheet-wrap" style="max-height:260px;">
-            <table class="sheet" style="width:100%;">
-              <thead>
-                <tr>
-                  <th>Data/Hora</th>
-                  <th>Usuário</th>
-                  <th>Saldo</th>
-                  <th>Entrada</th>
-                  <th>Saída</th>
-                  <th>Ajuste</th>
-                  <th>Total</th>
-                  <th>Real</th>
-                  <th>Diferença</th>
-                </tr>
-              </thead>
-              <tbody id="es_hist_tbody"></tbody>
-            </table>
-          </div>
-        </div>
-
 
         <div class="subhint">
           ✅ Você pode digitar valores direto nas células. “Total” = Saldo inicial + Entrada + Saída + Ajuste. “Diferença” = Real − Total.
@@ -1448,54 +1382,15 @@ function loading(on, text){
 }
 
 let toastTimer=null;
-
-function markRowStatus(tr, status, tooltip=""){
-  if(!tr) return;
-  tr.classList.remove("row-ok","row-warn","row-err");
-  if(status) tr.classList.add("row-"+status);
-  if(tooltip) tr.title = tooltip;
+function toast(type,title,msg){
+  const t = $("toast");
+  t.className = "toast " + (type||"");
+  $("toastTitle").textContent = title||"";
+  $("toastMsg").textContent = msg||"";
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
 }
-
-function showImportResumo(title, stats){
-  const imp = Number(stats.importadas||0);
-  const ign = Number(stats.ignoradas||0);
-  const err = Number(stats.erros||0);
-  const msg = `✔️ ${imp} linhas importadas
-⚠️ ${ign} linhas ignoradas
-❌ ${err} erros`;
-  // usa toast + mantém msg legível
-  const type = err>0 ? "danger" : (ign>0 ? "warn" : "ok");
-  toast(type, title||"Importação", msg);
-}
-
-function filterTableRows(tbodySelector, query){
-  const tb = document.querySelector(tbodySelector);
-  if(!tb) return;
-  const q = String(query||"").trim().toLowerCase();
-  let shown=0, total=0;
-  for(const tr of tb.querySelectorAll("tr")){
-    total++;
-    const txt = tr.innerText.toLowerCase();
-    const ok = !q || txt.includes(q);
-    tr.style.display = ok ? "" : "none";
-    if(ok) shown++;
-  }
-  // tenta atualizar contador perto do input
-  if(tbodySelector.includes("prod_tbody")){
-    const el = document.getElementById("prod_busca_count"); if(el) el.textContent = `${shown}/${total}`;
-  }
-  if(tbodySelector.includes("tbl164Res")){
-    const el = document.getElementById("m164_busca_count"); if(el) el.textContent = `${shown}/${total}`;
-  }
-}
-
-function _fmtDateTime(ts){
-  try{
-    const d = new Date(ts);
-    return d.toLocaleString("pt-BR");
-  }catch(_){ return String(ts||""); }
-}
-
 
 function mostrarErro(msgCurta, detalhes=""){
   $("statusLogin").classList.add("show");
@@ -1819,7 +1714,6 @@ function render164Resultado(diffMap){
 
   if(!sobras.length){
     document.getElementById("res164Hint").textContent = "✅ 164 está certo: nenhuma sobra.";
-    filterTableRows('#tbl164Res tbody', (document.getElementById('m164_busca')?.value||""));
     return;
   }
 
@@ -1838,15 +1732,8 @@ function render164Resultado(diffMap){
     td2.textContent = formatQtdTxtFromNum(qtd);
     tr.appendChild(td1);
     tr.appendChild(td2);
-
-    // tudo que aparece aqui é divergência (erro)
-    const tip = (qtd>0) ? "Erro: sobrou na Planilha A (A > B)." : "Erro: faltou na Planilha A (B > A).";
-    markRowStatus(tr, "err", tip);
-
     tbody.appendChild(tr);
   }
-
-  filterTableRows('#tbl164Res tbody', (document.getElementById('m164_busca')?.value||""));
 }
 
 function comparar164(){
@@ -2335,11 +2222,8 @@ async function salvarEntradaSaidaCompartilhado(){
 
 async function carregarEntradaSaidaCompartilhado(){
   try{
-
-    const histMes = document.getElementById("es_hist_mes");
-    if(histMes && !histMes.value){ histMes.value = _esMesRef(); }
-    // carrega histórico do mês atual
-    carregarHistoricoEntradaSaida(histMes?.value || _esMesRef());
+    const mesEl = document.getElementById("es_mes_ref");
+    if(mesEl) mesEl.textContent = `(${_esMesRef()})`;
 
     const res = await api("cod_get", _esKey("DATA"));
     if(!res || !res.ok || !res.found) {
@@ -2399,97 +2283,6 @@ function recalcularEntradaSaida(){
   _scheduleSalvarEntradaSaida();
 }
 
-async function registrarHistoricoEntradaSaida(){
-  try{
-    // snapshot atual (do layout)
-    const left = _getEsLeftCells();
-    const realTd = _getEsRealTd();
-    if(!left || !realTd) return toast("warn","Histórico","Abra a tela Entrada x Saída.");
-
-    const saldo = (left.saldoTd?.innerText||"0").trim();
-    const entrada = (left.entradaTd?.innerText||"0").trim();
-    const saida = (left.saidaTd?.innerText||"0").trim();
-    const ajuste = (left.ajusteTd?.innerText||"0").trim();
-    const real = (realTd?.innerText||"0").trim();
-
-    const total = document.getElementById("es_total")?.innerText || "";
-    const diff = document.getElementById("es_diff")?.innerText || "";
-
-    const entry = {
-      ts: Date.now(),
-      user: USUARIO_LOGADO || "",
-      saldo, entrada, saida, ajuste, total, real, diff
-    };
-
-    // carrega lista atual
-    const key = _esKey("HIST");
-    const res = await api("cod_get", key);
-    let arr = [];
-    if(res && res.ok && res.found){
-      try{ arr = JSON.parse(res.value||"[]"); }catch(_){ arr=[]; }
-      if(!Array.isArray(arr)) arr = [];
-    }
-
-    arr.unshift(entry);
-    // limita pra não explodir
-    if(arr.length > 200) arr = arr.slice(0,200);
-
-    await api("cod_set", key, JSON.stringify(arr));
-    toast("ok","Histórico","Registro salvo.");
-    await carregarHistoricoEntradaSaida(document.getElementById("es_hist_mes")?.value || _esMesRef());
-  }catch(err){
-    toast("danger","Histórico", err.message || String(err));
-  }
-}
-
-async function carregarHistoricoEntradaSaida(mes){
-  try{
-    const mm = String(mes||"").trim() || _esMesRef();
-    const key = `__ENTRADA_SAIDA__${mm}__HIST`;
-    const tb = document.getElementById("es_hist_tbody");
-    const hint = document.getElementById("es_hist_hint");
-    if(tb) tb.innerHTML = "";
-    if(hint) hint.textContent = "Carregando...";
-
-    const res = await api("cod_get", key);
-    let arr = [];
-    if(res && res.ok && res.found){
-      try{ arr = JSON.parse(res.value||"[]"); }catch(_){ arr=[]; }
-      if(!Array.isArray(arr)) arr = [];
-    }
-
-    if(!arr.length){
-      if(hint) hint.textContent = "Sem registros neste mês.";
-      return;
-    }
-
-    const frag=document.createDocumentFragment();
-    for(const e of arr){
-      const tr=document.createElement("tr");
-      tr.innerHTML = `
-        <td>${escapeHtml(_fmtDateTime(e.ts))}</td>
-        <td>${escapeHtml(e.user||"")}</td>
-        <td>${escapeHtml(e.saldo||"")}</td>
-        <td>${escapeHtml(e.entrada||"")}</td>
-        <td>${escapeHtml(e.saida||"")}</td>
-        <td>${escapeHtml(e.ajuste||"")}</td>
-        <td>${escapeHtml(e.total||"")}</td>
-        <td>${escapeHtml(e.real||"")}</td>
-        <td style="font-weight:900;">${escapeHtml(e.diff||"")}</td>
-      `;
-      frag.appendChild(tr);
-    }
-    if(tb) tb.appendChild(frag);
-    if(hint) hint.textContent = `${arr.length} registro(s)`;
-  }catch(err){
-    const hint = document.getElementById("es_hist_hint");
-    if(hint) hint.textContent = "Falha ao carregar.";
-    console.warn("Histórico ES:", err);
-  }
-}
-
-
-
 function limparEntradaSaida(){
   const sec = document.getElementById("entradaSaida");
   if(!sec) return;
@@ -2543,12 +2336,9 @@ async function importacaoTransferencia(){
     const mov = await escolherMovOrigemSePreciso();
     const rows=tableBody("transferencia").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
-
-    let _imp_total=0, _imp_importadas=0, _imp_ignoradas=0, _imp_erros=0;
+    const out=[];
 
     for(const tr of rows){
-      _imp_total++;
-      try{
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
       while(c.length<COL_TRANSFER) c.push("");
 
@@ -2561,7 +2351,7 @@ async function importacaoTransferencia(){
       const qtd2=normalizeQTD(c[6]||"0");
 
       const qtd3Abs = absQTDNumFromText(c[7]||"0");
-      if(qtd3Abs === 0){ _imp_ignoradas++; markRowStatus(tr,"warn","Ignorado: quantidade 0."); continue; }
+      if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
       const localInformado=(c[8]||"164").trim() || "164";
@@ -2579,18 +2369,12 @@ async function importacaoTransferencia(){
 
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
 
-      markRowStatus(tr,"ok","OK: linha importada.");
-      _imp_importadas++;
-
       out.push([mov,"T",hoje,codigo,f5,f6,f7,origem,destino,qtd3Txt,"0,01",valor,"5949"].join("|"));
-      }catch(e){
-        _imp_erros++; markRowStatus(tr,'err', 'Erro: ' + (e.message||String(e)));
-      }
     }
 
-    if(!out.length){ showImportResumo("Importação", {importadas:0, ignoradas:_imp_ignoradas, erros:_imp_erros}); return toast("warn","Importação","Nada para importar."); }
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_transferencia", out.join("\n"));
-    showImportResumo("Importação", {importadas:_imp_importadas, ignoradas:_imp_ignoradas, erros:_imp_erros});
+    toast("ok","Importação",`${out.length} linhas geradas.`);
   }catch(err){
     toast("danger","Erro",err.message);
   }finally{
@@ -2604,12 +2388,9 @@ async function importacaoZeramento(){
     const mov = await escolherMovOrigemSePreciso();
     const rows=tableBody("zeramento").querySelectorAll("tr");
     const hoje=dataHoje_ptBR();
-
-    let _imp_total=0, _imp_importadas=0, _imp_ignoradas=0, _imp_erros=0;
+    const out=[];
 
     for(const tr of rows){
-      _imp_total++;
-      try{
       const c=[...tr.cells].map(td=>(td.innerText||"").trim());
       while(c.length<COL_DEFAULT) c.push("");
 
@@ -2619,7 +2400,7 @@ async function importacaoZeramento(){
       const qtd2=normalizeQTD(c[6]||"0");
 
       const qtd3Abs = absQTDNumFromText(c[7]||"0");
-      if(qtd3Abs === 0){ _imp_ignoradas++; markRowStatus(tr,"warn","Ignorado: quantidade 0."); continue; }
+      if(qtd3Abs === 0) continue;
       const qtd3Txt = formatQtdTxtFromNum(qtd3Abs);
 
       const local=(c[8]||"164").trim() || "164";
@@ -2632,18 +2413,12 @@ async function importacaoZeramento(){
       const final=(qtd2>qtd1)?"1905":"5906";
       const valor=(qtd3Abs*0.01).toFixed(2).replace(".",",");
 
-      markRowStatus(tr,"ok","OK: linha importada.");
-      _imp_importadas++;
-
       out.push([mov,tipo,hoje,codigo,f5,f6,f7,local,qtd3Txt,"0,01",valor,final].join("|"));
-      }catch(e){
-        _imp_erros++; markRowStatus(tr,'err', 'Erro: ' + (e.message||String(e)));
-      }
     }
 
-    if(!out.length){ showImportResumo("Importação", {importadas:0, ignoradas:_imp_ignoradas, erros:_imp_erros}); return toast("warn","Importação","Nada para importar."); }
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_zeramento", out.join("\n"));
-    showImportResumo("Importação", {importadas:_imp_importadas, ignoradas:_imp_ignoradas, erros:_imp_erros});
+    toast("ok","Importação",`${out.length} linhas geradas.`);
   }catch(err){
     toast("danger","Erro",err.message);
   }finally{
@@ -2654,51 +2429,32 @@ async function importacaoZeramento(){
 async function importacaoRequisicao(){
   try{
     loading(true, "Gerando TXT...");
-    const rows = tableBody("requisicao").querySelectorAll("tr");
-    const hoje = dataHoje_ptBR();
-    const requisitante = await getRequisitantePorUsuario(USUARIO_LOGADO);
+    const rows=tableBody("requisicao").querySelectorAll("tr");
+    const hoje=dataHoje_ptBR();
+    const requisitante=await getRequisitantePorUsuario(USUARIO_LOGADO);
 
-    let _imp_total=0, _imp_importadas=0, _imp_ignoradas=0, _imp_erros=0;
-
-    const pedidos = new Map();
+    const pedidos=new Map();
     for(const tr of rows){
-      try{
-        const raw=[...tr.cells].map(td=>(td.innerText||"").trim());
-        if(raw.every(x=>!x)) continue;
+      const raw=[...tr.cells].map(td=>(td.innerText||"").trim());
+      if(raw.every(x=>!x)) continue;
 
-        _imp_total++;
+      const pedido=(raw[0]||"").trim();
+      const cliente=(raw[1]||"").trim();
+      const codigo=(raw[2]||"").trim();
+      const k5=(raw[3]||"").trim();
+      const k6=(raw[4]||"").trim();
+      const k7=(raw[5]||"").trim();
 
-        const pedido=(raw[0]||"").trim();
-        const cliente=(raw[1]||"").trim();
-        const codigo=(raw[2]||"").trim();
-        const k5=(raw[3]||"").trim();
-        const k6=(raw[4]||"").trim();
-        const k7=(raw[5]||"").trim();
+      const qtdAbs = absQTDNumFromText(raw[6]||"0");
+      if(qtdAbs === 0) continue;
+      const qtd = formatQtdTxtFromNum(qtdAbs);
 
-        const qtdAbs = absQTDNumFromText(raw[6]||"0");
-        if(qtdAbs === 0){
-          _imp_ignoradas++;
-          markRowStatus(tr,"warn","Ignorado: quantidade 0.");
-          continue;
-        }
-        const qtd = formatQtdTxtFromNum(qtdAbs);
+      if(!pedido || !codigo) continue;
 
-        if(!pedido || !codigo){
-          _imp_ignoradas++;
-          markRowStatus(tr,"warn","Ignorado: faltou Pedido ou Código.");
-          continue;
-        }
+      if(!pedidos.has(pedido)) pedidos.set(pedido,{cliente,itens:[]});
+      else if(!pedidos.get(pedido).cliente && cliente) pedidos.get(pedido).cliente=cliente;
 
-        if(!pedidos.has(pedido)) pedidos.set(pedido,{cliente,itens:[]});
-        else if(!pedidos.get(pedido).cliente && cliente) pedidos.get(pedido).cliente=cliente;
-
-        pedidos.get(pedido).itens.push({codigo,k5,k6,k7,qtd});
-        _imp_importadas++;
-        markRowStatus(tr,"ok","OK: linha importada.");
-      }catch(e){
-        _imp_erros++;
-        markRowStatus(tr,"err","Erro: " + (e.message||String(e)));
-      }
+      pedidos.get(pedido).itens.push({codigo,k5,k6,k7,qtd});
     }
 
     const out=[];
@@ -2710,13 +2466,9 @@ async function importacaoRequisicao(){
       }
     }
 
-    if(!out.length){
-      showImportResumo("Importação", {importadas:0, ignoradas:_imp_ignoradas, erros:_imp_erros});
-      return toast("warn","Importação","Nada para importar.");
-    }
-
+    if(!out.length) return toast("warn","Importação","Nada para importar.");
     baixarComoTXT("importacao_requisicao", out.join("\n"));
-    showImportResumo("Importação", {importadas:_imp_importadas, ignoradas:_imp_ignoradas, erros:_imp_erros});
+    toast("ok","Importação",`${out.length} linhas geradas.`);
   }catch(err){
     toast("danger","Erro",err.message);
   }finally{
@@ -3342,9 +3094,6 @@ function _prodRenderTabelaResultado(rowsOut){
   const frag=document.createDocumentFragment();
   for(const r of rowsOut){
     const tr=document.createElement("tr");
-    const isOk = Math.abs(Number(r.dif||0)) < 0.0000001;
-    const tip = isOk ? "OK: bateu." : (Number(r.dif||0) > 0 ? "Sobrou entrada (entrou mais do que o esperado)." : "Faltou entrada (entrou menos do que o esperado).");
-    markRowStatus(tr, isOk ? "ok" : "err", tip);
     tr.innerHTML = `
       <td>${escapeHtml(r.nome)}</td>
       <td>${escapeHtml(r.g1||"")}</td>
@@ -3357,8 +3106,6 @@ function _prodRenderTabelaResultado(rowsOut){
     frag.appendChild(tr);
   }
   tb.appendChild(frag);
-  // atualiza contador da busca
-  filterTableRows('#prod_tbody', (document.getElementById('prod_busca')?.value||""));
 }
 
 let _prodUltimosErrosTxt = "";
