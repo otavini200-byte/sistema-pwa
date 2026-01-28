@@ -480,6 +480,35 @@ table.sheet{ width:100%; border-collapse:collapse; }
   background: rgba(106,75,201,.25);
   border-color: rgba(106,75,201,.55);
 }
+
+/* Modal de Erros (para telas travadas/sem scroll) */
+.prod-modal-overlay{
+  position:fixed; inset:0; background:rgba(15,23,42,.55);
+  display:flex; align-items:center; justify-content:center;
+  z-index:9999;
+}
+.prod-modal{
+  width:min(900px, calc(100vw - 24px));
+  max-height: min(78vh, 640px);
+  overflow:auto;
+  background:var(--card, #fff);
+  border-radius:14px;
+  box-shadow:0 20px 55px rgba(0,0,0,.35);
+  padding:14px;
+}
+.prod-modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.prod-modal-title{ font-size:14px; font-weight:900; }
+.prod-modal-close{
+  border:none; background:transparent; cursor:pointer;
+  font-size:18px; line-height:1;
+  padding:6px 10px; border-radius:10px;
+}
+.prod-modal-close:hover{ background:rgba(0,0,0,.06); }
+
 </style>
 </head>
 
@@ -618,7 +647,8 @@ table.sheet{ width:100%; border-collapse:collapse; }
         </div>
 
         <div id="sub_producao" class="subitems hidden">
-          <div id="m_producao" class="subitem" onclick="abrir('producao')">🏭 Planilha de Produção</div>
+          <div id="m_producao" class="subitem" onclick="abrir('producao')">⚖️ Entrada x Saída</div>
+          <div id="m_conversaoProduto" class="subitem" onclick="abrir('conversaoProduto')">🔁 Conversão de Produto</div>
         </div>
 
         <!-- 3) Transferência -->
@@ -816,40 +846,238 @@ table.sheet{ width:100%; border-collapse:collapse; }
 
 
       
-      <section class="card hidden" id="producao">
-        <h2>🏭 Produção</h2>
+      
 
-        <div class="subhint">
-          Cole a planilha de produção abaixo. Mantém o mesmo layout e paleta do sistema.
+<section class="card hidden" id="producao" style="overflow:hidden;">
+  <h2>⚖️ Entrada x Saída (Produção)</h2>
+
+  <div class="subhint" style="margin-top:10px;">
+    Cole as <b>2 planilhas</b> abaixo (mesmo layout do 164).<br>
+    <b>A) Entrada</b> = itens que entraram no setor (componentes)<br>
+    <b>B) Saída</b> = itens que saíram do setor (produto final)<br>
+    Nesta conferência, o sistema faz a regra <b>3 por 1</b>: para cada <b>1</b> saída, espera <b>3</b> na entrada do <b>mesmo nome + grades</b>.
+  </div>
+
+  <div id="wrapProdInputs" style="display:block;">
+    <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha A — Entrada</h3>
+    <div class="sheet-wrap" id="prodWrapA" style="flex:0 0 auto; max-height:150px;">
+      <table class="sheet" id="tblProdA">
+        <thead>
+          <tr>
+            <th>Código Local</th><th>Código Produto</th><th>Nome</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Quantidade</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha B — Saída</h3>
+    <div class="sheet-wrap" id="prodWrapB" style="flex:0 0 auto; max-height:150px;">
+      <table class="sheet" id="tblProdB">
+        <thead>
+          <tr>
+            <th>Código Local</th><th>Código Produto</th><th>Nome</th><th>Grade 1</th><th>Grade 2</th><th>Grade 3</th><th>Quantidade</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions" style="margin-top:14px;">
+    <button class="btn btn-primary" onclick="prodConferir3por1()">Conferir</button>
+    <button class="btn btn-ghost" onclick="prodLimpar()">Limpar</button>
+    <button class="btn btn-ghost" onclick="prodToggleMore()">Mostrar mais</button>
+  </div>
+
+  <div id="prod_status" class="subhint" style="margin-top:10px;">—</div>
+
+  
+  <div id="prod_errorBox" class="sheet-wrap" style="display:none; margin-top:10px; padding:10px; border:1px solid rgba(239,68,68,.35); background:rgba(239,68,68,.08); border-radius:12px;">
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="font-weight:700; color:#b91c1c;">Erro (detalhes)</div>
+      <button class="btn btn-ghost" style="padding:6px 10px;" onclick="document.getElementById('prod_errorBox').style.display='none';">Fechar</button>
+    </div>
+    <pre id="prod_errorText" style="white-space:pre-wrap; margin:10px 0 0 0; font-size:12px; color:#7f1d1d;"></pre>
+  </div>
+<h3 style="margin:12px 0 8px 0; font-size:14px;">Resultado</h3>
+  <div class="sheet-wrap" style="overflow:hidden;">
+    <table class="sheet" style="width:100%;">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Grade 1</th>
+          <th>Grade 2</th>
+          <th>Grade 3</th>
+          <th>Entrada</th>
+          <th>Esperado (Saída × 3)</th>
+          <th>Diferença</th>
+        </tr>
+      </thead>
+      <tbody id="prod_tbody"></tbody>
+    </table>
+  </div>
+
+  
+  <h3 style="margin:12px 0 8px 0; font-size:14px;">Erros</h3>
+  <div class="subhint" style="margin-top:0;">Mostra itens que não batem, ou que aparecem só em uma das planilhas.</div>
+
+  <div class="actions" style="margin-top:10px;">
+    <button class="btn btn-primary" onclick="prodAbrirErros()" style="display:flex;align-items:center;gap:8px;">
+      Ver erros <span id="prod_err_badge" style="display:inline-block;min-width:22px;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.18);font-weight:900;">0</span>
+    </button>
+  </div>
+
+
+  <div class="subhint" style="margin-top:10px;">
+    ✅ Dica: Diferença <b>0</b> = bateu. Diferença <b>positiva</b> = entrou mais que o esperado. Diferença <b>negativa</b> = faltou entrada.
+  </div>
+</section>
+
+
+<section class="card hidden" id="conversaoProduto" style="overflow:hidden;">
+  <h2>🔁 Conversão de Produto</h2>
+
+  <div class="subhint" style="margin-top:10px;">
+    Informe o <b>produto final</b>. Se não estiver cadastrado, o sistema vai pedir a <b>composição</b> (componentes) e salvar.
+    Ao converter, gera um TXT com <b>SAÍDA</b> (componentes) + <b>ENTRADA</b> (produto final).
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:14px;">
+    <div class="sheet-wrap" style="padding:14px;">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div>
+          <label style="margin-top:0;">Código do produto</label>
+          <input id="cp_codigo" placeholder="Ex: 2900" inputmode="numeric">
         </div>
-
-        <div class="sheet-wrap" style="margin-top:10px;">
-          <table class="sheet">
-            <thead>
-              <tr>
-                <th>Ordem</th>
-                <th>Código</th>
-                <th>Descrição</th>
-                <th>Grade 1</th>
-                <th>Grade 2</th>
-                <th>Grade 3</th>
-                <th>Quantidade</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+        <div>
+          <label style="margin-top:0;">Quantidade</label>
+          <input id="cp_qtd" placeholder="Ex: 10" inputmode="decimal">
         </div>
-
-        <div class="actions">
-          <button class="btn btn-primary" onclick="importacaoProducao()">Importação</button>
-          <button class="btn btn-ghost" onclick="limparTabela('producao')">Limpar</button>
+        <div>
+          <label>Gênero</label>
+          <input id="cp_genero" placeholder="Ex: Masculino">
         </div>
+        <div>
+          <label>Tamanho</label>
+          <input id="cp_tamanho" placeholder="Ex: G">
+        </div>
+        <div style="grid-column:1 / -1;">
+          <label>Cor</label>
+          <input id="cp_cor" placeholder="Ex: Preto">
+        </div>
+      </div>
 
-        <div class="subhint">✅ Cole e importe.</div>
-      </section>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+        <div>
+          <label style="margin-top:0;">Local SAÍDA</label>
+          <input id="cp_local_saida" placeholder="Ex: 164" value="164">
+        </div>
+        <div>
+          <label style="margin-top:0;">Local ENTRADA</label>
+          <input id="cp_local_entrada" placeholder="Ex: 1175" value="1175">
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="converterProduto()">Converter</button>
+        <button class="btn btn-ghost" onclick="abrirCadastroComposicao()">Cadastrar composição</button>
+        <button class="btn btn-ghost" onclick="limparConversaoProduto()">Limpar</button>
+      </div>
+
+      <div class="subhint" style="margin-top:8px;">
+        ✅ A composição herda Gênero/Tamanho/Cor do produto final quando o componente estiver vazio.
+      </div>
+    </div>
+
+    <div class="sheet-wrap" style="overflow:hidden;">
+      <table class="sheet" style="width:100%;">
+        <thead>
+          <tr><th colspan="2" style="text-align:center;">Prévia</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="font-weight:800;">Produto</td><td id="cp_prev_prod">—</td></tr>
+          <tr><td style="font-weight:800;">Componentes</td><td id="cp_prev_comp">—</td></tr>
+          <tr><td style="font-weight:800;">Linhas TXT</td><td id="cp_prev_linhas">0</td></tr>
+        </tbody>
+      </table>
+
+      <div style="padding:12px 14px; border-top:1px solid var(--line);">
+        <label style="margin-top:0;">TXT gerado</label>
+        <textarea id="cp_txt" style="width:100%; height:220px; resize:none; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text);" placeholder="Após converter, o TXT aparece aqui."></textarea>
+        <div class="actions" style="margin-top:10px;">
+          <button class="btn btn-ghost" onclick="baixarTXTConversao()">Baixar TXT</button>
+          <button class="btn btn-ghost" onclick="copiarTXTConversao()">Copiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal: Cadastro de Composição -->
+<div id="modalComp" class="overlay">
+  <div class="login-card" style="width:min(780px, calc(100vw - 36px)); max-height:min(82vh, 720px); overflow:auto;">
+    <div class="brand" style="margin-bottom:8px;">
+      <div class="logo" style="width:38px; height:38px;"></div>
+      <div>
+        <h2 style="margin:0;">Composição do produto</h2>
+        <p style="margin:2px 0 0 0;">Cole linhas no formato: <b>codigo\tgrade1\tgrade2\tgrade3\tquantidade</b></p>
+      </div>
+    </div>
+
+    <div class="subhint" style="margin-top:6px;">
+      Exemplo: <span style="color:var(--muted);">22148	Masculino	G	Preto	1</span>
+      <br>✅ Se algum grade ficar vazio, o sistema herda do produto final.
+    </div>
+
+    <label>Código do produto final (para cadastrar)</label>
+    <input id="mc_prod_codigo" placeholder="Ex: 2900" inputmode="numeric">
+
+    <label style="margin-top:10px;">Composição (1 componente por linha)</label>
+    
+    <div class="sheet-wrap" style="margin-top:8px; overflow:hidden;">
+      <table class="sheet" style="width:100%;">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Código</th>
+            <th style="text-align:left;">Grade 1</th>
+            <th style="text-align:left;">Grade 2</th>
+            <th style="text-align:left;">Grade 3</th>
+            <th style="text-align:left;">Qtd (por 1)</th>
+            <th style="width:52px;"></th>
+          </tr>
+        </thead>
+        <tbody id="mc_tbody"></tbody>
+      </table>
+      <div class="actions" style="padding:12px 14px; border-top:1px solid var(--line);">
+        <button class="btn btn-ghost" style="width:auto;" onclick="mcAddRow()">+ Linha</button>
+        <button class="btn btn-ghost" style="width:auto;" onclick="mcAddRows(10)">+10</button>
+        <button class="btn btn-ghost" style="width:auto;" onclick="mcLimpar()">Limpar</button>
+      </div>
+    </div>
+
+    <details style="margin-top:10px;">
+      <summary style="cursor:pointer; color:var(--muted); font-weight:700;">Colar em texto (opcional)</summary>
+      <textarea id="mc_linhas" style="width:100%; height:160px; resize:none; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text); margin-top:8px;" placeholder="Cole linhas no formato: codigo[TAB]grade1[TAB]grade2[TAB]grade3[TAB]quantidade"></textarea>
+      <div class="actions" style="margin-top:10px;">
+        <button class="btn btn-ghost" style="width:auto;" onclick="mcImportarTexto()">Importar para tabela</button>
+      </div>
+    </details>
 
 
-      <section class="card hidden" id="entradaSaida" style="overflow:hidden;">
+    <div class="actions" style="margin-top:12px;">
+      <button class="btn btn-primary" onclick="salvarComposicao()">Salvar composição</button>
+      <button class="btn btn-ghost" onclick="fecharCadastroComposicao()">Cancelar</button>
+    </div>
+
+    <div class="subhint" style="margin-top:8px;">
+      ✅ Fica salvo no dispositivo (localStorage) para usar sempre.
+    </div>
+  </div>
+</div>
+
+
+<section class="card hidden" id="entradaSaida" style="overflow:hidden;">
         <h2>⚖️ Entrada x Saída</h2>
         <div class="es-titlebar" style="margin-top:10px; position:relative;">
           <div class="subhint" style="margin:0;">
@@ -1235,7 +1463,8 @@ function abrir(id){
     document.getElementById("m_requisicao_pedidos")?.classList.remove("active");
   }
   if(id==="aba164"){ setTop("164",""); setActiveNav("aba164"); }
-  if(id==="producao"){ setTop("Produção","Cole e clique em Importação"); setActiveNav("producao"); }
+  if(id==="producao"){ setTop("Entrada x Saída (Produção)","Cole Entrada e Saída/Baixa e confira pela composição"); setActiveNav("producao"); try{ const a=document.querySelector("#tblProdA tbody"); const b=document.querySelector("#tblProdB tbody"); if((a && a.children.length===0) || (b && b.children.length===0)) initProducao(); }catch(e){} }
+  if(id==="conversaoProduto"){ setTop("Conversão de Produto","Gera TXT: SAÍDA (composição) + ENTRADA (produto)"); setActiveNav("conversaoProduto"); }
   if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
@@ -1243,6 +1472,7 @@ function abrir(id){
 }
 
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
+function norm(s){return (s||"").toString().trim();}
 function normalizeQTD(str){
   const s=(str||"0").toString().trim();
   let v=parseFloat(s.replace(/\./g,"").replace(",", "."));
@@ -1256,6 +1486,19 @@ function formatQtdTxtFromNum(n){
   s = s.replace(/0+$/,"").replace(/,$/,"");
   return s;
 }
+
+
+// Escape simples para evitar HTML quebrado em tabelas (Produção)
+function escapeHtml(value){
+  const s = String(value ?? "");
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function baixarComoTXT(nome,texto){
   const blob=new Blob([texto],{type:"text/plain"});
   const a=document.createElement("a");
@@ -1350,6 +1593,8 @@ function init164(){
 
 function limpar164(){
   init164();
+initProducao();
+initProducao();
     carregarEntradaSaidaCompartilhado();
   const wrap = document.getElementById("wrap164Inputs");
   if(wrap) wrap.style.display = "block";
@@ -1521,15 +1766,32 @@ function handlePaste(e){
   e.preventDefault();
   const text=(e.clipboardData||window.clipboardData).getData("text");
   const rows=text.split(/\r?\n/).filter(r=>r!=="");
+
   const startCell=e.target, tr=startCell.parentElement, tbody=tr.parentElement;
   const rowIndex=Array.from(tbody.rows).indexOf(tr);
   const colIndex=Array.from(tr.cells).indexOf(startCell);
 
   const table = tbody.closest("table");
   const colCount = table ? table.querySelectorAll("thead th").length : COL_DEFAULT;
+  const tableId = table ? (table.id || "") : "";
 
   rows.forEach((r,i)=>{
-    const cols=r.split(/\t/);
+    let cols=r.split(/\t/);
+
+    // ✅ Ajuste especial para Produção (A/B):
+    // muitos relatórios vêm com 6 colunas (sem "Código Local").
+    // Quando colando a partir da 1ª coluna, shift +1 para alinhar:
+    // [codigo, nome, g1, g2, g3, qtd] -> ["", codigo, nome, g1, g2, g3, qtd]
+    if((tableId==="tblProdA" || tableId==="tblProdB") && colCount===7 && colIndex===0){
+      // se vier 6 colunas e a última parece número => assume sem local
+      const last = (cols[cols.length-1]||"").trim();
+      const isNum = last!=="" && !isNaN(Number(String(last).replace(",", ".")));
+      if(cols.length===6 && isNum){
+        cols = ["", ...cols];
+      }
+      // alguns saem com 7 colunas mas ordem diferente; não mexe
+    }
+
     let targetRow=tbody.rows[rowIndex+i];
     if(!targetRow){
       targetRow=tbody.insertRow();
@@ -1706,7 +1968,8 @@ function aplicarPermissoesUI(){
       if(small) small.textContent = "Abrir";
     }
   }
-  setSubitem("m_producao", PERMS.producao, "🏭 Planilha de Produção");
+  setSubitem("m_producao", PERMS.producao, "⚖️ Entrada x Saída");
+  setSubitem("m_conversaoProduto", PERMS.producao, "🔁 Conversão de Produto");
 
   // ✅ Admin menu
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
@@ -1812,6 +2075,7 @@ async function entrar(){
     criarTabela("requisicao",10,COL_DEFAULT);
     criarTabela("producao",10,7);
     init164();
+initProducao();
 
     $("cfgLocalOutro").value = LOCAL_OUTRO_TRANSFER;
 
@@ -2710,12 +2974,822 @@ $("senha").addEventListener("keyup",(e)=>{ if(e.key==="Enter") entrar(); });
 $("appVersion").textContent = "v" + APP_VERSION;
 trocarView("login");
 init164();
+initProducao();
 
 // ✅ PWA (GitHub Pages em /sistema-pwa/)
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sistema-pwa/sw.js").catch(console.log);
 }
 
+
+/* =========================
+   ✅ Entrada x Saída (Produção) - 2 planilhas (layout do 164)
+   - Planilha A: Entrada (componentes)
+   - Planilha B: Saída (produto final)
+   - Regra: 3 por 1 (Saída × 3 = Esperado na Entrada) por NOME + GRADES
+   - Mostra erros com “onde deu erro”
+   ========================= */
+
+let _prodMore = false;
+
+function initProducao(){
+  const a = document.querySelector("#tblProdA tbody");
+  const b = document.querySelector("#tblProdB tbody");
+  if(a) criarTabelaCustom(a, 12, 7);
+  if(b) criarTabelaCustom(b, 12, 7);
+  const r = document.getElementById("prod_tbody"); if(r) r.innerHTML="";
+  const e = document.getElementById("prod_err_tbody"); if(e) e.innerHTML="";
+  const st = document.getElementById("prod_status"); if(st) st.textContent="—";
+}
+
+function prodToggleMore(){
+  const wrap = document.getElementById("wrapProdInputs");
+  // Se inputs estiverem escondidos (após conferir), mostra de volta
+  if(wrap && (wrap.style.display === "none")){
+    wrap.style.display = "block";
+    toast("ok","Produção","Mostrando as planilhas.");
+    return;
+  }
+
+  _prodMore = !_prodMore;
+  const h = _prodMore ? 260 : 150;
+  const a = document.getElementById("prodWrapA");
+  const b = document.getElementById("prodWrapB");
+  if(a) a.style.maxHeight = h+"px";
+  if(b) b.style.maxHeight = h+"px";
+
+  const btns = [...document.querySelectorAll('#producao .actions .btn')];
+  const btn = btns.find(x => (x.textContent||"").toLowerCase().includes("mostrar"));
+  if(btn) btn.textContent = _prodMore ? "Mostrar menos" : "Mostrar mais";
+}
+
+function prodLimpar(){
+  initProducao();
+  toast("ok","Produção","Limpo.");
+}
+
+function _prodNormName(s){
+  return String(s||"")
+    .toUpperCase()
+    .replace(/\s+/g," ")
+    .trim();
+}
+function _prodKeyNome(nome,g1,g2,g3){
+  return [_prodNormName(nome), String(g1||"").trim(), String(g2||"").trim(), String(g3||"").trim()].join("¦");
+}
+
+function _prodMapFromTable(tbodyEl){
+  const map = new Map();
+  if(!tbodyEl) return map;
+  const rows = Array.from(tbodyEl.rows||[]);
+  for(const tr of rows){
+    const c = Array.from(tr.cells||[]).map(td => norm(td.innerText));
+    // colunas esperadas: [local, codigo, nome, g1, g2, g3, qtd]
+    const nome = c[2] || "";
+    const g1 = c[3] || "";
+    const g2 = c[4] || "";
+    const g3 = c[5] || "";
+    const qtd = normalizeQTD(c[6] || "0");
+    if(!nome || !qtd) continue;
+
+    const k = _prodKeyNome(nome,g1,g2,g3);
+    map.set(k, (map.get(k)||0) + qtd);
+  }
+  return map;
+}
+
+function _prodRowsFromTable(tbodyEl){
+  const out = [];
+  if(!tbodyEl) return out;
+  const rows = Array.from(tbodyEl.rows||[]);
+  for(const tr of rows){
+    const c = Array.from(tr.cells||[]).map(td => norm(td.innerText));
+    const nome = c[2] || "";
+    const g1 = c[3] || "";
+    const g2 = c[4] || "";
+    const g3 = c[5] || "";
+    const qtd = normalizeQTD(c[6] || "0");
+    if(!nome || !qtd) continue;
+    out.push({nome, g1, g2, g3, qtd});
+  }
+  return out;
+}
+
+
+function _prodRenderTabelaResultado(rowsOut){
+  const tb = document.getElementById("prod_tbody");
+  if(!tb) return;
+  tb.innerHTML="";
+  const frag=document.createDocumentFragment();
+  for(const r of rowsOut){
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td>${escapeHtml(r.nome)}</td>
+      <td>${escapeHtml(r.g1||"")}</td>
+      <td>${escapeHtml(r.g2||"")}</td>
+      <td>${escapeHtml(r.g3||"")}</td>
+      <td>${formatQtdTxtFromNum(r.ent)}</td>
+      <td>${formatQtdTxtFromNum(r.esp)}</td>
+      <td style="font-weight:900;">${formatQtdTxtFromNum(r.dif)}</td>
+    `;
+    frag.appendChild(tr);
+  }
+  tb.appendChild(frag);
+}
+
+let _prodUltimosErrosTxt = "";
+
+function _prodRenderErros(errRows){
+  const tb = document.getElementById("prod_err_tbody");
+  if(!tb) return;
+  tb.innerHTML="";
+  const frag=document.createDocumentFragment();
+  const lines=[];
+  for(const e of errRows){
+    const tr=document.createElement("tr");
+    tr.innerHTML = `<td>${escapeHtml(e.onde)}</td><td>${escapeHtml(e.item)}</td><td>${escapeHtml(e.det)}</td>`;
+    frag.appendChild(tr);
+    lines.push(`${e.onde}\t${e.item}\t${e.det}`);
+  }
+  tb.appendChild(frag);
+  _prodUltimosErrosTxt = lines.join("\n");
+  const badge = document.getElementById("prod_err_badge");
+  if(badge) badge.textContent = String(errRows.length||0);
+}
+
+function prodBaixarErros(){
+  if(!_prodUltimosErrosTxt){
+    toast("warn","Produção","Sem erros para baixar.");
+    return;
+  }
+  baixarComoTXT("erros_producao", _prodUltimosErrosTxt);
+  toast("ok","Produção","Erros baixados.");
+}
+
+
+function prodAbrirErros(){
+  const modal = document.getElementById("prodErrModal");
+  if(!modal) return;
+  modal.classList.remove("hidden");
+  // garante foco no topo
+  try{ modal.querySelector(".prod-modal")?.scrollTo({top:0}); }catch(e){}
+}
+function prodFecharErros(ev){
+  // se chamado por click no overlay, fecha; se chamado por botão, também fecha
+  const modal = document.getElementById("prodErrModal");
+  if(!modal) return;
+  modal.classList.add("hidden");
+}
+
+
+function prodConferir3por1(){
+  try{
+    const aBody = document.querySelector("#tblProdA tbody");
+    const bBody = document.querySelector("#tblProdB tbody");
+    const st = document.getElementById("prod_status");
+
+    const sizeSet = new Set([
+      "PP","P","M","G","GG","XG","XGG","EG","EGG","XXG","XXXG","XXXXG",
+      "XPP","XP","XM","XG","XGG","XEG","XEGG"
+    ]);
+
+    const norm = (s)=>String(s||"")
+      .toUpperCase()
+      .replace(/\s+/g," ")
+      .trim()
+      .replaceAll("CALCA","CALÇA")
+      .replaceAll("GALPAO","GALPÃO");
+
+    const parseNum = (v)=>{
+      const t = String(v||"").trim().replace(/\./g,"").replace(",",".");
+      const n = Number(t);
+      return isNaN(n) ? 0 : n;
+    };
+
+    function rowToObj(cellTexts){
+      const cells = cellTexts.map(x=>String(x||"").trim());
+      // tira vazios do fim
+      while(cells.length && !cells[cells.length-1]) cells.pop();
+      if(cells.length < 3) return null;
+
+      // qty = último número
+      const qty = parseNum(cells[cells.length-1]);
+      if(!qty) return null;
+
+      // detecta se tem "Código Local" (primeira coluna local numérico + segunda coluna código)
+      const c0 = cells[0] || "";
+      const c1 = cells[1] || "";
+      const isNum0 = c0 && !isNaN(Number(String(c0).replace(",", ".")));
+      const isNum1 = c1 && !isNaN(Number(String(c1).replace(",", ".")));
+      const looksLikeCode = (s)=>/^[0-9A-Z\/-]+$/i.test(String(s||"").trim()) && /\d/.test(String(s||""));
+
+      // muitos relatórios vêm como: LOCAL (num) | CÓDIGO (alfa-num) | NOME | ... | QTD
+      const hasLocalCode = !!(isNum0 && (isNum1 || looksLikeCode(c1)) && cells.length >= 4);
+
+      let code="", name="", attrsStart=0;
+      if(hasLocalCode){
+        code = cells[1];
+        name = cells[2] || "";
+        attrsStart = 3;
+      }else{
+        code = cells[0];
+        name = cells[1] || "";
+        attrsStart = 2;
+      }
+      if(!name) return null;
+
+      // atributos entre name e qty
+      const attrs = cells.slice(attrsStart, cells.length-1).filter(x=>String(x).trim()!=="").map(norm);
+
+      let g1="", g2="", g3="";
+
+      // gênero (grade1) e tamanho (grade2)
+      for(const a of attrs){
+        if(!g1 && (/\bMASCULINO\b/.test(a) || /\bFEMININO\b/.test(a))) g1 = a;
+        if(!g2 && (sizeSet.has(a) || /^[PEXGM]{1,4}G?$/.test(a) || /^X{1,4}G$/.test(a) || /^E(GG?)$/.test(a) || /^XXG$/.test(a) || /^XXXG$/.test(a))) g2 = a;
+      }
+
+      // cor/grade3: pega a 1ª "coisa" que não é gênero nem tamanho (e junta cores de 2 palavras comuns)
+      const others = [];
+      for(const a of attrs){
+        if(/\bMASCULINO\b/.test(a) || /\bFEMININO\b/.test(a)) continue;
+        if(a === g2) continue;
+        if(sizeSet.has(a) || /^[PEXGM]{1,4}G?$/.test(a) || /^X{1,4}G$/.test(a) || /^E(GG?)$/.test(a) || /^XXG$/.test(a) || /^XXXG$/.test(a)) continue;
+        others.push(a);
+      }
+      if(others.length){
+        // tenta montar cores de 2 palavras (ex: AMARELO OURO)
+        const o0 = others[0];
+        const o1 = others[1] || "";
+        if((o0==="AMARELO" && o1==="OURO") || (o0==="AZUL" && o1==="MARINHO") || (o0==="CINZA" && o1==="CLARO") || (o0==="CINZA" && o1==="ESCURO")){
+          g3 = `${o0} ${o1}`.trim();
+        }else{
+          g3 = o0;
+        }
+      }
+
+      return { code: norm(code), nome: norm(name), g1, g2, g3, qtd: qty };
+    }
+
+    function rowsFromTbody(tbody){
+      const out=[];
+      const rows = Array.from((tbody && tbody.rows) ? tbody.rows : []);
+      for(const tr of rows){
+        const cellTexts = Array.from(tr.cells||[]).map(td=>td.innerText);
+        const obj = rowToObj(cellTexts);
+        if(obj) out.push(obj);
+      }
+      return out;
+    }
+
+    const rowsEntrada = rowsFromTbody(aBody);
+    const rowsSaida   = rowsFromTbody(bBody);
+
+    if(!rowsEntrada.length) return toast("warn","Produção","Preencha/cole a Planilha A (Entrada).");
+    if(!rowsSaida.length)   return toast("warn","Produção","Preencha/cole a Planilha B (Saída/Baixa).");
+
+    const isManga = (nome)=>/\bMANGA\b/.test(norm(nome)) || /\bPAR DE MANGA\b/.test(norm(nome));
+
+    // famílias mais comuns
+    const familias = ["COMBATE","POP","ELITE","BRAVO","STORM","CORREIOS","PADRÃO","PADRAO","SANTA CRUZ","OCEANPACT"];
+    const pickFamilia = (nome)=>{
+      const n0 = norm(nome);
+      const n = n0.replace(/\s+/g,' ').trim();
+      for(const f of familias){
+        const ff = norm(f).replace(/\s+/g,' ').trim();
+        if(!ff) continue;
+        // match por palavra (ex: '... - COMBATE ...')
+        const esc = ff.replace(/[-/\\^$*+?.()|[\]{}]/g,'\\$&');
+        const rx = new RegExp('(^|[^A-ZÀ-Ú0-9])'+esc+'([^A-ZÀ-Ú0-9]|$)');
+        if(rx.test(n)) return ff;
+        if(n.includes(ff)) return ff;
+      }
+      return "";
+    };
+
+    // entrada agregada por key (nome + grades; grades vazias viram coringa '*')
+    const mEntrada = new Map();
+    const entradaNames = new Set();
+    for(const r of rowsEntrada){
+      const nome = norm(r.nome);
+      entradaNames.add(nome);
+      const g1 = norm(r.g1);
+      const g2 = norm(r.g2);
+      const g2k = g2 ? g2 : "*";
+      const g3 = norm(r.g3);
+      const g1k = g1 ? g1 : "*";
+      const g3k = g3 ? g3 : "*";
+      const k = `${nome}¦${g1k}¦${g2k}¦${g3k}`;
+      mEntrada.set(k, (mEntrada.get(k)||0) + r.qtd);
+    }
+
+    // helper: score simples por match de tokens
+    const tokenize = (s)=> norm(s).split(/[^A-ZÀ-Ú0-9]+/).filter(t=>t && t.length>1);
+    const scoreName = (candidate, outNome, familia, categoria)=>{
+      const c = norm(candidate);
+      let s = 0;
+      if(familia && c.includes(familia)) s += 100;
+      if(categoria && c.includes(categoria)) s += 50;
+      const outT = new Set(tokenize(outNome));
+      for(const t of tokenize(c)){ if(outT.has(t)) s += 3; }
+      return s;
+    };
+
+    function findComponentName(outRow, categoria){
+  const familia = pickFamilia(outRow.nome);
+  const outNome = norm(outRow.nome);
+
+  let bestName = "";
+  let bestScore = -1;
+
+  // preferências por categoria (pra bater com seu exemplo: CORPO CALÇA / CORTE JAQUETA / MANGA JAQUETA)
+  const prefer = {
+    "CALÇA": [/\bCORPO\s+CALÇA\b/, /\bCORPO\s+DA\s+CALÇA\b/, /\bCALÇA\b/],
+    "JAQUETA": [/\bCORTE\s+JAQUETA\b/, /\bJAQUETA\b/],
+    "MANGA": [/\bMANGA\s+JAQUETA\b/, /\bPAR\s+DE\s+MANGA\b/, /\bMANGA\b/]
+  };
+
+  const prefs = prefer[categoria] || [new RegExp("\\b"+categoria+"\\b")];
+
+  for(const n of entradaNames){
+    const nn = norm(n);
+
+    // categoria básica
+    if(!prefs.some(rx => rx.test(nn))) continue;
+
+    // combate consome combate (mesma família)
+    if(familia && !nn.includes(familia)) continue;
+
+    let sc = scoreName(nn, outNome, familia, categoria);
+
+    // bônus por casar com a preferência mais forte
+    if(prefs[0] && prefs[0].test(nn)) sc += 80;
+    else if(prefs[1] && prefs[1].test(nn)) sc += 40;
+
+    if(sc > bestScore){
+      bestScore = sc;
+      bestName = nn;
+    }
+  }
+  return bestName;
+}
+    // lookup na entrada com suporte a coringa '*' (quando o item da Entrada não tem grade preenchida)
+    function entradaQty(nome, g1, g2, g3){
+      const n = norm(nome);
+      const a = g1 ? norm(g1) : "";
+      const b = g2 ? norm(g2) : "";
+      const c = g3 ? norm(g3) : "";
+
+      const keys = [
+        `${n}¦${a}¦${b}¦${c}`,
+        `${n}¦${a}¦${b}¦*`,
+        `${n}¦${a}¦*¦${c}`,
+        `${n}¦*¦${b}¦${c}`,
+        `${n}¦${a}¦*¦*`,
+        `${n}¦*¦${b}¦*`,
+        `${n}¦*¦*¦${c}`,
+        `${n}¦*¦*¦*`
+      ];
+
+      let sum = 0;
+      for(const k of keys){
+        const v = mEntrada.get(k);
+        if(v) sum += v;
+      }
+      return sum;
+    }
+
+
+
+
+    // esperado por key (nomeComp + grades herdadas do output)
+    const esperado = new Map();
+    const errRows = [];
+
+    for(const out of rowsSaida){
+      const qOut = out.qtd || 0;
+      if(qOut<=0) continue;
+
+      const fam = pickFamilia(out.nome);
+      // se não achar família, segue mesmo assim (não bloqueia)
+
+      const compCalca  = findComponentName(out, "CALÇA");
+      const compJaq    = findComponentName(out, "JAQUETA");
+      const compManga  = findComponentName(out, "MANGA");
+
+      if(!compCalca) errRows.push({onde:"Mapeamento", item:`${out.nome} (${[out.g1,out.g2,out.g3].filter(Boolean).join(" / ")})`, det:"Não achei CALÇA da mesma família na Entrada"});
+      if(!compJaq)   errRows.push({onde:"Mapeamento", item:`${out.nome} (${[out.g1,out.g2,out.g3].filter(Boolean).join(" / ")})`, det:"Não achei JAQUETA da mesma família na Entrada"});
+      if(!compManga) errRows.push({onde:"Mapeamento", item:`${out.nome} (${[out.g1,out.g2,out.g3].filter(Boolean).join(" / ")})`, det:"Não achei MANGA da mesma família na Entrada"});
+
+      const add = (nomeComp, categoria)=>{
+        if(!nomeComp) return;
+        const nome = norm(nomeComp);
+        const g1 = norm(out.g1);
+        const g2 = norm(out.g2);
+        // ✅ só ignora grade quando o componente na Entrada não tiver (aí ele foi salvo como '*')
+        const g3 = norm(out.g3);
+        const g1k = g1 ? g1 : "*";
+        const g2k = g2 ? g2 : "*";
+        const g3k = g3 ? g3 : "*";
+        const k = `${nome}¦${g1k}¦${g2k}¦${g3k}`;
+        esperado.set(k, (esperado.get(k)||0) + qOut);
+      };
+
+      // 3 por 1 (1 calça + 1 jaqueta + 1 manga)
+      add(compCalca,"CALÇA");
+      add(compJaq,"JAQUETA");
+      add(compManga,"MANGA");
+    }
+
+    const keys = new Set([...mEntrada.keys(), ...esperado.keys()]);
+    const rowsOut=[];
+    for(const k of keys){
+      const [nome,g1,g2,g3] = k.split("¦");
+      const ent = entradaQty(nome, g1, g2, g3);
+      const esp = esperado.get(k)||0;
+      const dif = ent - esp;
+      rowsOut.push({nome, g1, g2, g3, ent, esp, dif});
+
+            if(esp!==0 && ent===0){
+        errRows.push({onde:"Entrada", item:`${nome} (${[g1,g2,g3].filter(Boolean).join(" / ")})`, det:`Faltou entrada (esperado ${formatQtdTxtFromNum(esp)})`});
+      }else if(Math.abs(dif) > 1e-9){
+const det = dif>0
+          ? `Sobra ${formatQtdTxtFromNum(dif)} (Entrada ${formatQtdTxtFromNum(ent)} vs Esperado ${formatQtdTxtFromNum(esp)})`
+          : `Falta ${formatQtdTxtFromNum(Math.abs(dif))} (Entrada ${formatQtdTxtFromNum(ent)} vs Esperado ${formatQtdTxtFromNum(esp)})`;
+        errRows.push({onde:"Conferência", item:`${nome} (${[g1,g2,g3].filter(Boolean).join(" / ")})`, det});
+      }
+    }
+
+    rowsOut.sort((a,b)=> (a.nome||"").localeCompare(b.nome||"", "pt-BR") || (a.g2||"").localeCompare(b.g2||"", "pt-BR"));
+
+    _prodRenderTabelaResultado(rowsOut);
+
+    // erros únicos
+    const uniq = new Set();
+    const errUniq = [];
+    for(const e of errRows){
+      const key = `${e.onde}¦${e.item}¦${e.det}`;
+      if(uniq.has(key)) continue;
+      uniq.add(key);
+      errUniq.push(e);
+    }
+    _prodRenderErros(errUniq);
+    if(errUniq.length>0) prodAbrirErros();
+
+    const totalSaida = rowsSaida.reduce((s,r)=>s+(r.qtd||0),0);
+    const totalEsperado = Array.from(esperado.values()).reduce((s,v)=>s+v,0);
+    const ok3 = Math.abs(totalEsperado - (totalSaida*3)) < 1e-9;
+
+    const msg3 = ok3
+      ? `Regra 3 por 1 OK (Esperado total ${formatQtdTxtFromNum(totalEsperado)} = Saída total ${formatQtdTxtFromNum(totalSaida)} × 3)`
+      : `Atenção: regra 3 por 1 não fechou (Esperado total ${formatQtdTxtFromNum(totalEsperado)} vs Saída total ${formatQtdTxtFromNum(totalSaida)} × 3 = ${formatQtdTxtFromNum(totalSaida*3)})`;
+
+    if(errUniq.length===0){
+      st.innerHTML = `✅ Bateu! ${msg3}`;
+      toast("ok","Produção","Conferência OK.");
+    }else{
+      st.innerHTML = `⚠ Encontramos ${errUniq.length} item(ns) com divergência. ${msg3}`;
+      toast("warn","Produção","Há divergências. Veja a tabela de erros.");
+    }
+
+  }catch(err){
+    console.error(err);
+    const box = document.getElementById("prod_errorBox");
+    const pre = document.getElementById("prod_errorText");
+    const msg = (err && err.stack) ? err.stack : String(err);
+    if(pre) pre.textContent = msg;
+    if(box) box.style.display = "block";
+    const st = document.getElementById("prod_status");
+    if(st) st.innerHTML = "❌ Ocorreu um erro ao conferir. Veja os detalhes abaixo.";
+    toast("danger","Produção","Erro ao conferir. Detalhes exibidos na tela.");
+  }
+}
+
+
+
+/* =========================
+   ✅ Conversão de Produto
+   - Produto final (código + gênero + cor + tamanho + quantidade)
+   - Se não cadastrado: pede composição (codigo + grade1 + grade2 + grade3 + qtd)
+   - Gera TXT: SAÍDA (componentes) + ENTRADA (produto final)
+   ========================= */
+const CONV_STORE_KEY = "conv_comp_map_v1";
+
+function getConvMap(){
+  try{ return JSON.parse(localStorage.getItem(CONV_STORE_KEY)||"{}") || {}; }
+  catch(e){ return {}; }
+}
+function setConvMap(map){
+  localStorage.setItem(CONV_STORE_KEY, JSON.stringify(map||{}));
+}
+function showModalComp(show){
+  const m=document.getElementById("modalComp");
+  if(!m) return;
+  m.classList.toggle("show", !!show);
+}
+function abrirCadastroComposicao(){
+  const prod = (document.getElementById("cp_codigo")?.value||"").trim();
+  const mc = document.getElementById("mc_prod_codigo");
+  if(mc) mc.value = prod;
+  showModalComp(true);
+  mcEnsureMinRows(8);
+}
+function fecharCadastroComposicao(){
+  showModalComp(false);
+}
+function parseCompLines(txt){
+  const lines = (txt||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const comps=[];
+  for(const line of lines){
+    const parts=line.split("\t");
+    // aceita também separado por múltiplos espaços
+    const p = parts.length>=2 ? parts : line.split(/\s{2,}|\s+(?=\d+(?:[.,]\d+)?$)/);
+    const [codigo, g1="", g2="", g3="", qtd=""] = (p.concat(["","","","",""])).slice(0,5);
+    const q = normalizeQTD(qtd||"0");
+    if(!codigo || q===0) continue;
+    comps.push({codigo:String(codigo).trim(), g1:String(g1||"").trim(), g2:String(g2||"").trim(), g3:String(g3||"").trim(), qtd:q});
+  }
+  return comps;
+}
+
+function mcTbody(){ return document.getElementById("mc_tbody"); }
+function mcAddRow(pref){
+  const tb=mcTbody(); if(!tb) return;
+  const p=pref||{};
+  const tr=document.createElement("tr");
+  tr.innerHTML = `
+    <td><input class="mc_in" data-k="codigo" placeholder="Ex: 22148" value="${(p.codigo||"")}" inputmode="numeric" style="padding:10px; border-radius:10px;"></td>
+    <td><input class="mc_in" data-k="g1" placeholder="Ex: Masculino" value="${(p.g1||"")}" style="padding:10px; border-radius:10px;"></td>
+    <td><input class="mc_in" data-k="g2" placeholder="Ex: G" value="${(p.g2||"")}" style="padding:10px; border-radius:10px;"></td>
+    <td><input class="mc_in" data-k="g3" placeholder="Ex: Preto" value="${(p.g3||"")}" style="padding:10px; border-radius:10px;"></td>
+    <td><input class="mc_in" data-k="qtd" placeholder="Ex: 1" value="${(p.qtd!=null ? String(p.qtd).replace(".",",") : "")}" inputmode="decimal" style="padding:10px; border-radius:10px;"></td>
+    <td><button class="btn btn-ghost" style="width:44px; padding:10px;" title="Remover" onclick="this.closest('tr')?.remove()">✕</button></td>
+  `;
+  tb.appendChild(tr);
+}
+function mcAddRows(n){
+  const k = Math.max(1, Number(n||1));
+  for(let i=0;i<k;i++) mcAddRow({});
+}
+function mcEnsureMinRows(minRows){
+  const tb=mcTbody(); if(!tb) return;
+  const min = Math.max(1, Number(minRows||8));
+  const cur = tb.querySelectorAll("tr").length;
+  if(cur===0) mcAddRows(min);
+}
+function mcLimpar(){
+  const tb=mcTbody(); if(tb) tb.innerHTML="";
+  const ta=document.getElementById("mc_linhas"); if(ta) ta.value="";
+  mcAddRows(8);
+}
+function mcGetCompsFromTable(){
+  const tb=mcTbody(); if(!tb) return [];
+  const rows=[...tb.querySelectorAll("tr")];
+  const comps=[];
+  for(const r of rows){
+    const get=(k)=> (r.querySelector(`[data-k="${k}"]`)?.value||"").trim();
+    const codigo=get("codigo");
+    const g1=get("g1");
+    const g2=get("g2");
+    const g3=get("g3");
+    const qtd=normalizeQTD(get("qtd")||"0");
+    if(!codigo || !qtd || qtd===0) continue;
+    comps.push({codigo:String(codigo).trim(), g1, g2, g3, qtd});
+  }
+  return comps;
+}
+function mcImportarTexto(){
+  const ta=document.getElementById("mc_linhas");
+  const txt = ta ? ta.value : "";
+  const comps=parseCompLines(txt);
+  if(!comps.length) return toast("warn","Importar","Nenhuma linha válida para importar.");
+  const tb=mcTbody(); if(tb) tb.innerHTML="";
+  for(const c of comps) mcAddRow(c);
+  toast("ok","Importar",`${comps.length} item(ns) importados para a tabela.`);
+}
+
+function salvarComposicao(){
+  const prod=(document.getElementById("mc_prod_codigo")?.value||"").trim();
+  if(!prod) return toast("warn","Composição","Informe o código do produto final.");
+
+  // 1) tenta pela TABELA (campos de grades)
+  let comps = mcGetCompsFromTable();
+
+  // 2) fallback: texto (opcional)
+  if(!comps.length){
+    const txt=(document.getElementById("mc_linhas")?.value||"");
+    comps=parseCompLines(txt);
+  }
+
+  if(!comps.length) return toast("warn","Composição","Preencha pelo menos 1 componente (código + quantidade).");
+
+  const map=getConvMap();
+  map[prod]=comps;
+  setConvMap(map);
+  showModalComp(false);
+  toast("ok","Composição","Salva com sucesso.");
+  atualizarPreviaConversao();
+}
+function getProdutoForm(){
+  const codigo=(document.getElementById("cp_codigo")?.value||"").trim();
+  const genero=(document.getElementById("cp_genero")?.value||"").trim();
+  const cor=(document.getElementById("cp_cor")?.value||"").trim();
+  const tamanho=(document.getElementById("cp_tamanho")?.value||"").trim();
+  const qtd=normalizeQTD(document.getElementById("cp_qtd")?.value||"0");
+  const localSaida=(document.getElementById("cp_local_saida")?.value||"164").trim()||"164";
+  const localEntrada=(document.getElementById("cp_local_entrada")?.value||"1175").trim()||"1175";
+  return {codigo,genero,cor,tamanho,qtd,localSaida,localEntrada};
+}
+function atualizarPreviaConversao(){
+  const {codigo,genero,cor,tamanho,qtd}=getProdutoForm();
+  const map=getConvMap();
+  const comps = codigo ? (map[codigo]||[]) : [];
+  const p=document.getElementById("cp_prev_prod");
+  const c=document.getElementById("cp_prev_comp");
+  if(p) p.textContent = codigo ? `${codigo} • ${genero||"-"} • ${tamanho||"-"} • ${cor||"-"} • Qtd ${formatQtdTxtFromNum(qtd||0)}` : "—";
+  if(c) c.textContent = comps.length ? `${comps.length} item(ns) cadastrados` : "—";
+}
+["cp_codigo","cp_genero","cp_cor","cp_tamanho","cp_qtd"].forEach(id=>{
+  document.addEventListener("input",(e)=>{ if(e.target && e.target.id===id) atualizarPreviaConversao(); }, true);
+});
+
+async function converterProduto(){
+  try{
+    const form=getProdutoForm();
+    if(!form.codigo) return toast("warn","Conversão","Informe o código do produto.");
+    if(!form.qtd || form.qtd<=0) return toast("warn","Conversão","Informe a quantidade.");
+    const map=getConvMap();
+    const comps = map[form.codigo];
+
+    if(!comps){
+      // pede composição
+      abrirCadastroComposicao();
+      toast("warn","Conversão","Produto sem composição. Cadastre a composição e tente novamente.");
+      return;
+    }
+
+    loading(true,"Gerando TXT...");
+    const mov = await escolherMovOrigemSePreciso();
+    const hoje=dataHoje_ptBR();
+    const out=[];
+    let linhas=0;
+
+    // SAÍDA: componentes
+    for(const comp of comps){
+      const g1 = comp.g1 || form.genero;
+      const g2 = comp.g2 || form.tamanho;
+      const g3 = comp.g3 || form.cor;
+
+      const f5=await mapearOuCadastrar(g1);
+      const f6=await mapearOuCadastrar(g2);
+      const f7=await mapearOuCadastrar(g3);
+
+      const qtdAbs = Math.abs((comp.qtd||0) * form.qtd);
+      if(qtdAbs===0) continue;
+      const qtdTxt = formatQtdTxtFromNum(qtdAbs);
+      const valor=(qtdAbs*0.01).toFixed(2).replace(".",",");
+
+      // mesmo padrão do Zeramento (S)
+      out.push([mov,"S",hoje,comp.codigo,f5,f6,f7,form.localSaida,qtdTxt,"0,01",valor,"5906"].join("|"));
+      linhas++;
+    }
+
+    // ENTRADA: produto final
+    {
+      const f5=await mapearOuCadastrar(form.genero);
+      const f6=await mapearOuCadastrar(form.tamanho);
+      const f7=await mapearOuCadastrar(form.cor);
+      const qtdAbs = Math.abs(form.qtd);
+      const qtdTxt = formatQtdTxtFromNum(qtdAbs);
+      const valor=(qtdAbs*0.01).toFixed(2).replace(".",",");
+      out.push([mov,"E",hoje,form.codigo,f5,f6,f7,form.localEntrada,qtdTxt,"0,01",valor,"1905"].join("|"));
+      linhas++;
+    }
+
+    const txt = out.join("\n");
+    const ta=document.getElementById("cp_txt");
+    if(ta) ta.value = txt;
+
+    const prevLin=document.getElementById("cp_prev_linhas");
+    if(prevLin) prevLin.textContent = String(linhas);
+
+    const prevComp=document.getElementById("cp_prev_comp");
+    if(prevComp) prevComp.textContent = `${(comps||[]).length} item(ns) cadastrados`;
+
+    atualizarPreviaConversao();
+
+    toast("ok","Conversão",`TXT gerado com ${linhas} linha(s).`);
+  }catch(err){
+    toast("danger","Erro",err.message);
+  }finally{
+    loading(false);
+  }
+}
+function baixarTXTConversao(){
+  const txt=(document.getElementById("cp_txt")?.value||"").trim();
+  if(!txt) return toast("warn","Conversão","Nada para baixar. Gere o TXT primeiro.");
+  baixarComoTXT("importacao_conversao", txt);
+  toast("ok","Conversão","TXT baixado.");
+}
+async function copiarTXTConversao(){
+  const txt=(document.getElementById("cp_txt")?.value||"").trim();
+  if(!txt) return toast("warn","Conversão","Nada para copiar.");
+  try{
+    await navigator.clipboard.writeText(txt);
+    toast("ok","Conversão","Copiado!");
+  }catch(e){
+    toast("warn","Conversão","Não consegui copiar automaticamente neste navegador.");
+  }
+}
+function limparConversaoProduto(){
+  ["cp_codigo","cp_genero","cp_cor","cp_tamanho","cp_qtd"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+  const ta=document.getElementById("cp_txt"); if(ta) ta.value="";
+  const prevLin=document.getElementById("cp_prev_linhas"); if(prevLin) prevLin.textContent="0";
+  const prevProd=document.getElementById("cp_prev_prod"); if(prevProd) prevProd.textContent="—";
+  const prevComp=document.getElementById("cp_prev_comp"); if(prevComp) prevComp.textContent="—";
+  toast("ok","Conversão","Limpo.");
+}
+
+
+/* ===== Global error handler: mostra erro na tela (sem console) ===== */
+(function(){
+  function showGlobalErr(msg, stack){
+    try{
+      var box = document.getElementById("prod_errorBox");
+      var pre = document.getElementById("prod_errorText");
+      var st  = document.getElementById("prod_status");
+      if(pre) pre.textContent = (stack ? (msg+"\n\n"+stack) : msg);
+      if(box) box.style.display = "block";
+      if(st) st.innerHTML = "❌ Ocorreu um erro. Detalhes exibidos abaixo.";
+      // tenta abrir modal de erros também, se existir
+      if(typeof prodAbrirErros === "function"){ /* noop */ }
+    }catch(e){}
+  }
+
+  window.addEventListener("error", function(ev){
+    var msg = (ev && ev.message) ? String(ev.message) : "Erro desconhecido";
+    var stack = ev && ev.error && ev.error.stack ? String(ev.error.stack) : "";
+    showGlobalErr(msg, stack);
+  });
+
+  window.addEventListener("unhandledrejection", function(ev){
+    var msg = "Promise rejeitada sem tratamento";
+    var stack = "";
+    if(ev && ev.reason){
+      if(typeof ev.reason === "string") msg = ev.reason;
+      else {
+        msg = ev.reason.message || msg;
+        stack = ev.reason.stack || "";
+      }
+    }
+    showGlobalErr(msg, stack);
+  });
+
+  // garante que a função do botão existe (evita "não definida")
+  document.addEventListener("DOMContentLoaded", function(){
+    try{
+      if(typeof window.prodConferir3por1 !== "function" && typeof prodConferir3por1 === "function"){
+        window.prodConferir3por1 = prodConferir3por1;
+      }
+    }catch(e){}
+  });
+})();
+
 </script>
+
+<!-- Modal de Erros (Produção) -->
+<div id="prodErrModal" class="hidden">
+  <div class="prod-modal-overlay" onclick="prodFecharErros(event)">
+    <div class="prod-modal" onclick="event.stopPropagation()">
+      <div class="prod-modal-header">
+        <div class="prod-modal-title">Erros da Conferência</div>
+        <button class="prod-modal-close" aria-label="Fechar" onclick="prodFecharErros()">✕</button>
+      </div>
+
+      <div class="subhint" style="margin-top:0;">
+        Itens que não batem, ou que aparecem só em uma das planilhas.
+      </div>
+
+      <div class="sheet-wrap" style="margin-top:10px; overflow:hidden;">
+        <table class="sheet" style="width:100%;">
+          <thead>
+            <tr>
+              <th>Onde</th>
+              <th>Item</th>
+              <th>Detalhe</th>
+            </tr>
+          </thead>
+          <tbody id="prod_err_tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="actions" style="margin-top:10px;">
+        <button class="btn btn-ghost" onclick="prodBaixarErros()">Baixar erros (TXT)</button>
+        <button class="btn btn-primary" onclick="prodFecharErros()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
