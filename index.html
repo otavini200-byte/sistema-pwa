@@ -662,6 +662,127 @@ input:focus,select:focus,textarea:focus{
   backdrop-filter: blur(10px);
 }
 
+
+/* ===== v12 layout polish (dark / futuristic) ===== */
+*{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+::selection{ background: rgba(34,211,238,.22); }
+
+:root{
+  --radius-sm: 14px;
+  --radius-lg: 22px;
+  --ring: 0 0 0 4px rgba(34,211,238,.14);
+  --ring2: 0 0 0 4px rgba(168,85,247,.14);
+}
+
+/* Scrollbars */
+*::-webkit-scrollbar{ width:10px; height:10px; }
+*::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius: 999px; }
+*::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius: 999px; border:2px solid rgba(0,0,0,0); background-clip: padding-box; }
+*::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.22); border:2px solid rgba(0,0,0,0); background-clip: padding-box; }
+
+/* Sidebar: glass + cleaner */
+.sidebar{
+  width:300px;
+  background: linear-gradient(180deg, rgba(13,18,32,.92), rgba(7,10,18,.86));
+  border-right: 1px solid rgba(148,163,184,.18);
+  box-shadow: 0 18px 55px rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+}
+.side-top{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  border-radius: var(--radius-lg);
+}
+.icon-btn{
+  border-radius: 16px;
+}
+.icon-btn:focus{ box-shadow: var(--ring); }
+
+/* Nav items: better active */
+.nav .item{
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.045);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow:hidden;
+}
+.nav .item::after{
+  content:"";
+  position:absolute; inset:-1px;
+  background: radial-gradient(120px 70px at 22% 10%, rgba(34,211,238,.18), transparent 60%),
+              radial-gradient(140px 90px at 82% 50%, rgba(168,85,247,.14), transparent 65%);
+  opacity:.0;
+  transition: opacity .18s ease;
+  pointer-events:none;
+}
+.nav .item:hover::after{ opacity:1; }
+.nav .item.active{
+  border-color: rgba(34,211,238,.35);
+  background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(168,85,247,.10));
+  box-shadow: 0 0 0 1px rgba(34,211,238,.18), 0 10px 26px rgba(0,0,0,.35);
+}
+.nav .item.active::before{
+  content:"";
+  position:absolute; left:10px; top:50%;
+  width:7px; height:18px; transform:translateY(-50%);
+  border-radius:999px;
+  background: linear-gradient(180deg, var(--accent), var(--secondary));
+  box-shadow: 0 0 12px rgba(34,211,238,.28);
+}
+
+/* Topbar: subtle gradient border */
+.topbar{
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border: 1px solid rgba(148,163,184,.18);
+}
+.topbar::before{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+}
+.topbar{ position:relative; }
+
+/* Inputs: cleaner & hover */
+input, select{
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: var(--radius-sm);
+}
+input:hover, select:hover{ border-color: rgba(34,211,238,.26); }
+input:focus, select:focus{
+  border-color: rgba(34,211,238,.42);
+  box-shadow: var(--ring);
+}
+
+/* Buttons: glow + press */
+.btn{
+  border-radius: var(--radius-sm);
+  letter-spacing: .2px;
+}
+.btn-primary{
+  box-shadow: 0 10px 24px rgba(0,0,0,.45), 0 0 26px rgba(34,211,238,.10);
+}
+.btn-primary:focus{ box-shadow: 0 10px 24px rgba(0,0,0,.45), var(--ring2); }
+.btn:active{ transform: translateY(0px) scale(.99); }
+
+/* Sheets: zebra + hover */
+table.sheet tbody tr:nth-child(odd) td{ background: rgba(255,255,255,.012); }
+table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
+
+/* Modals: blur and dark close hover */
+.prod-modal-overlay{
+  background: rgba(2,6,23,.62);
+  backdrop-filter: blur(8px);
+}
+.prod-modal{
+  border:1px solid rgba(148,163,184,.18);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(13,18,32,.92), rgba(7,10,18,.88));
+}
+.prod-modal-close:hover{ background: rgba(255,255,255,.06); }
+/* ===== end v12 ===== */
+
 </style>
 </head>
 
@@ -1001,17 +1122,17 @@ input:focus,select:focus,textarea:focus{
       
 
 <section class="card hidden" id="producao" style="overflow:hidden;">
-  <h2>⚖️ Entrada x Saída </h2>
+  <h2>⚖️ Entrada x Saída (Produção)</h2>
 
   <div class="subhint" style="margin-top:10px;">
-    Cole as <b>2 planilhas</b> .<br>
-    <b>A) Entrada</b> <br>
-    <b>B) Saída</b> <br>
-   <b>3 por 1</b>: para cada <b>1</b> saída <b>3</b>.  <b></b>
+    Cole as <b>2 planilhas</b> abaixo (mesmo layout do 164).<br>
+    <b>A) Entrada</b> = itens que entraram no setor (componentes)<br>
+    <b>B) Saída</b> = itens que saíram do setor (produto final)<br>
+    Nesta conferência, o sistema faz a regra <b>3 por 1</b>: para cada <b>1</b> saída, espera <b>3</b> na entrada do <b>mesmo nome + grades</b>.
   </div>
 
   <div id="wrapProdInputs" style="display:block;">
-    <h3 style="margin:14px 0 8px 0; font-size:14px;">composição</h3>
+    <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha A — Entrada</h3>
     <div class="sheet-wrap" id="prodWrapA" style="flex:0 0 auto; max-height:150px;">
       <table class="sheet" id="tblProdA">
         <thead>
@@ -1023,7 +1144,7 @@ input:focus,select:focus,textarea:focus{
       </table>
     </div>
 
-    <h3 style="margin:14px 0 8px 0; font-size:14px;">conjunto</h3>
+    <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha B — Saída</h3>
     <div class="sheet-wrap" id="prodWrapB" style="flex:0 0 auto; max-height:150px;">
       <table class="sheet" id="tblProdB">
         <thead>
