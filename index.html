@@ -1510,7 +1510,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
         </div>
 
         <div class="actions" style="margin-top:12px;">
-          <button class="btn btn-primary" onclick="recalcularEntradaSaida(); salvarEntradaSaidaCompartilhado();">Salvar</button>
+          <button class="btn btn-primary" onclick="salvarEntradaSaidaManual()">Salvar</button>
           <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
         </div>
 
@@ -2797,10 +2797,7 @@ function _getEsRealTd(){
   return document.getElementById("es_real");
 }
 
-function _scheduleSalvarEntradaSaida(){
-  clearTimeout(_esSaveTimer);
-  _esSaveTimer = setTimeout(()=> salvarEntradaSaidaCompartilhado(), 450);
-}
+function _scheduleSalvarEntradaSaida(){ /* autosave desativado: agora é só no botão SALVAR */ }
 
 async function salvarEntradaSaidaCompartilhado(){
   try{
@@ -2808,16 +2805,52 @@ async function salvarEntradaSaidaCompartilhado(){
     const realTd = _getEsRealTd();
     if(!left || !realTd) return;
 
-    const payload = {
-      saldo: (left.saldoTd?.innerText||"0").trim(),
-      entrada: (left.entradaTd?.innerText||"0").trim(),
-      saida: (left.saidaTd?.innerText||"0").trim(),
-      ajuste: (left.ajusteTd?.innerText||"0").trim(),
-      real: (realTd?.innerText||"0").trim(),
-      ts: Date.now()
-    };
+    // valores do mês (último salvo)
+    const saldoTxt  = (left.saldoTd?.innerText||"0").trim();
+    const entradaTxt= (left.entradaTd?.innerText||"0").trim();
+    const saidaTxt  = (left.saidaTd?.innerText||"0").trim();
+    const ajusteTxt = (left.ajusteTd?.innerText||"0").trim();
+    const realTxt   = (realTd?.innerText||"0").trim();
 
-    await api("cod_set", _esKey("DATA"), JSON.stringify(payload));
+    const saldo  = _parseBRNum(saldoTxt);
+    const entrada= _parseBRNum(entradaTxt);
+    const saida  = _parseBRNum(saidaTxt);
+    const ajuste = _parseBRNum(ajusteTxt);
+    const total  = saldo + entrada + saida + ajuste;
+    const real   = _parseBRNum(realTxt);
+    const diferenca = real - total;
+
+    const now = new Date();
+    const updatedAt = now.toLocaleString("pt-BR");
+    const updatedBy = (window.USUARIO_LOGADO || "APP");
+
+    // ✅ 1) salva o "último do mês" (todo mundo vê quando abrir)
+    const payloadMes = {
+      saldo: saldoTxt,
+      entrada: entradaTxt,
+      saida: saidaTxt,
+      ajuste: ajusteTxt,
+      real: realTxt,
+      ts: Date.now(),
+      updatedAt,
+      updatedBy
+    };
+    await api("cod_set", _esKey("DATA"), JSON.stringify(payloadMes));
+
+    // ✅ 2) salva o "último do dia" (para clicar na data e puxar certo)
+    const dateKey = _toDateKey(new Date());
+    const payloadDia = {
+      saldoInicial: saldoTxt,
+      entrada: entradaTxt,
+      saida: saidaTxt,
+      total: _fmtBRIntOrDec(total),
+      real: realTxt,
+      diferenca: _fmtBRIntOrDec(diferenca),
+      updatedAt,
+      updatedBy
+    };
+    await salvarEntradaSaidaDiaCompartilhado(dateKey, payloadDia);
+
   }catch(err){
     console.warn("Falha ao salvar Entrada x Saída:", err.message || err);
   }
@@ -2890,9 +2923,14 @@ function recalcularEntradaSaida(){
       _autoMarcarHitHoje();
     }
   }catch(_){}
+}
 
-  // (autosave removido: salvar só no botão)
-  
+
+async function salvarEntradaSaidaManual(){
+  // botão "Salvar" (sem auto-salvar)
+  recalcularEntradaSaida();
+  await salvarEntradaSaidaCompartilhado();
+  toast("ok","Entrada x Saída","Salvo para todos e registrado no dia de hoje.");
 }
 
 function limparEntradaSaida(){
@@ -2905,7 +2943,6 @@ function limparEntradaSaida(){
   if(totalEl) totalEl.textContent = "0";
   if(diffEl){ diffEl.textContent = ""; diffEl.style.background = ""; }
   toast("ok","Entrada x Saída","Campos limpos.");
-  salvarEntradaSaidaCompartilhado();
 }
 
 /* ✅ Menu 3 pontos (saldo inicial do mês) */
