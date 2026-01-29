@@ -2730,6 +2730,11 @@ async function renderInicioCalendar(){
         td.textContent = String(day);
         if(hitSet.has(day)) td.classList.add("hit");
 
+        // id único do dia (YYYY-MM-DD) para highlight/seleção
+        const _dtCell = new Date(base.getFullYear(), base.getMonth(), Number(day));
+        const _ymdCell = _toDateKey(_dtCell);
+        td.setAttribute("data-cal-date", _ymdCell);
+
         td.addEventListener("click", async (ev)=>{
   // Usa Date() pra normalizar (se o calendário tiver dias fora do mês)
   const dt = new Date(base.getFullYear(), base.getMonth(), Number(day));
@@ -4153,11 +4158,11 @@ function _esDiaHuman(dateKey){
 
 async function salvarEntradaSaidaDiaCompartilhado(dateKey, payload){
   const key = _esDiaKey(dateKey);
-  return await api("cod_set", [key, JSON.stringify(payload)]);
+  return await api("cod_set", key, JSON.stringify(payload));
 }
 async function carregarEntradaSaidaDiaCompartilhado(dateKey){
   const key = _esDiaKey(dateKey);
-  const res = await api("cod_get", [key]);
+  const res = await api("cod_get", key);
   if(!res || !res.ok || res.found === false) return null;
   const raw = String(res.value || "");
   if(!raw.trim()) return null;
