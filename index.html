@@ -1538,7 +1538,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyT64TnOiwe48YYY57tBGta7BDVKh_diG3MLFs4_wDMC8zh2-b8wg12ezYhSF4T4HNwCg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz4zw-QYdNIHM4y2UacJ0glwS323r0p1ZPHAFsC-AHjKyNx3b1BoLj1VK9cIFdbr7nWwg/exec";
 const APP_VERSION = "3.0";
 
 let LAST_VIEW_ID = "transferencia";
@@ -2727,7 +2727,7 @@ async function carregarEntradaSaidaCompartilhado(){
     if(mesEl) mesEl.textContent = `(${_esMesRef()})`;
 
     const res = await api("cod_get", _esKey("DATA"));
-    if(!res || !res.ok || !res.found) {
+    if(!res || !res.ok || (res.found === false)) {
       recalcularEntradaSaida();
       return;
     }
