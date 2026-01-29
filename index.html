@@ -103,7 +103,7 @@ body{
   opacity:0; pointer-events:none;
   transition:opacity .18s ease;
 }
-.overlay.show{ opacity:1; pointer-events:auto; }
+.overlay.show{ opacity:1; pointer-events:none; }
 .loading-box{
   background:var(--card);
   border:1px solid var(--line);
@@ -910,6 +910,39 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 }
 /* ===== fim Painel Início ===== */
 
+
+/* Modal */
+.modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:18px; z-index:9999; backdrop-filter: blur(6px); }
+.modal-card{ width:min(760px, 100%); background:rgba(17,24,39,.92); border:1px solid rgba(255,255,255,.10); border-radius:20px; box-shadow:0 22px 80px rgba(0,0,0,.45); overflow:hidden; }
+.modal-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:16px 16px 12px 16px; border-bottom:1px solid rgba(255,255,255,.08); }
+.modal-title{ font-size:15px; font-weight:800; letter-spacing:.2px; }
+.modal-sub{ font-size:12px; opacity:.75; margin-top:3px; }
+.modal-body{ padding:14px 16px 16px 16px; }
+.modal-close{ height:36px; min-width:36px; padding:0 10px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:inherit; cursor:pointer; }
+.modal-close:hover{ background:rgba(255,255,255,.08); }
+
+.grid-3{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; }
+.kpi{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:12px; }
+.kpi-label{ font-size:12px; opacity:.75; }
+.kpi-value{ font-size:18px; font-weight:900; margin-top:4px; }
+@media (max-width:760px){ .grid-3{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width:520px){ .grid-3{ grid-template-columns:1fr; } }
+}
+
+
+/* Modal footer */
+.modal-footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
+.modal-footer-title{ font-weight:800; opacity:.95; }
+.modal-close{ height:40px; padding:0 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:inherit; cursor:pointer; }
+.modal-close:hover{ background:rgba(255,255,255,.08); }
+
+
+/* Calendário: dia selecionado */
+.cal-selected{
+  outline: 2px solid rgba(16,185,129,.65) !important;
+  box-shadow: 0 0 0 4px rgba(16,185,129,.12) !important;
+}
+
 </style>
 </head>
 
@@ -1111,7 +1144,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
           <div class="mini">
             <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
               <div>
-                <h3>⚖️ Entrada x Saída — visão rápida</h3>
+                <h3>⚖️ Entrada x Saídavisão rápida</h3>
                 <div style="font-size:12px; color:var(--muted);">Pega o último valor salvo (compartilhado).</div>
               </div>
               <button class="btn btn-primary" style="width:auto; padding:10px 12px;" onclick="abrir('entradaSaida')">Abrir</button>
@@ -1861,11 +1894,12 @@ async function api(action, ...args){
     });
     txt = await r.text();
   }catch(e){
-    throw new Error("Sem conexão com a API. Verifique internet ou URL /exec.");
+    // Não quebra o JS do app: retorna erro e deixa a UI viva
+    return { ok:false, msg:"Sem conexão com a API. Verifique internet ou URL /exec." };
   }
 
   if (txt && (txt.trim().startsWith("<!DOCTYPE html") || txt.includes("<html"))){
-    throw new Error("API retornou HTML (Deploy/Permissão). Publique como Web App: Anyone e use a URL /exec.");
+    return { ok:false, msg:"API retornou HTML (Deploy/Permissão). Publique como Web App: Anyone e use a URL /exec." };
   }
 
   if(!r.ok){
@@ -1873,8 +1907,8 @@ async function api(action, ...args){
   }
 
   try{
-    return JSON.parse(txt);
-  }catch(e){
+    try{ return JSON.parse(txt); }catch(e){ return { ok:false, msg:"Resposta inválida da API" }; }
+}catch(e){
     throw new Error("API respondeu formato inválido (não JSON).");
   }
 }
@@ -2637,23 +2671,27 @@ async function renderInicioCalendar(){
         td.textContent = String(day);
         if(hitSet.has(day)) td.classList.add("hit");
 
-        td.addEventListener("click", async ()=>{
-          const y = base.getFullYear();
-          const m = String(base.getMonth()+1).padStart(2,"0");
-          const dd = String(day).padStart(2,"0");
-          const ymd = `${y}-${m}-${dd}`;
+        td.addEventListener("click", async (ev)=>{
+  // Usa Date() pra normalizar (se o calendário tiver dias fora do mês)
+  const dt = new Date(base.getFullYear(), base.getMonth(), Number(day));
+  const ymd = _toDateKey(dt);
 
-          const all = await _carregarHitsMes();
-          const set = new Set(all);
-          if(set.has(ymd)){
-            set.delete(ymd);
-          }else{
-            set.add(ymd);
-          }
-          await _salvarHitsMes(Array.from(set).sort());
-          renderInicioCalendar();
-        });
-        day++;
+  // Clique normal: abre detalhe do dia (Entrada x Saída)
+  if(!ev || !ev.shiftKey){
+    if(typeof mostrarEntradaSaidaDoDia === "function"){
+      await mostrarEntradaSaidaDoDia(ymd);
+    }
+    return;
+  }
+
+  // Shift+clique: marca/desmarca "bateu" (mantém seu recurso)
+  const all = await _carregarHitsMes();
+  const set = new Set(all);
+  if(set.has(ymd)) set.delete(ymd); else set.add(ymd);
+  await _salvarHitsMes(Array.from(set).sort());
+  renderInicioCalendar();
+});
+day++;
       }
 
       tr.appendChild(td);
@@ -4031,6 +4069,172 @@ const det = dif>0
   });
 })();
 
+
+/***********************
+ * ✅ Registro diário (compartilhado) — Entrada x Saída
+ ***********************/
+function _pad2(n){ n=Number(n||0); return (n<10?("0"+n):(""+n)); }
+function _fmtQtd(v){
+  const num = Number(String(v??"").replace(/\./g,"").replace(",", ".")) || 0;
+  const abs = Math.abs(num);
+  const decimals = (abs % 1 === 0) ? 0 : (abs*10 % 1 === 0 ? 1 : (abs*100 % 1 === 0 ? 2 : 3));
+  return num.toLocaleString("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function _toDateKey(d){ return `${d.getFullYear()}-${_pad2(d.getMonth()+1)}-${_pad2(d.getDate())}`; }
+function _esDiaKey(dateKey){ return `__ENTRADA_SAIDA_DIA__${dateKey}__DATA`; }
+function _esDiaHuman(dateKey){
+  try{
+    const [y,m,d] = String(dateKey).split("-").map(Number);
+    const dt = new Date(y, (m||1)-1, d||1);
+    return dt.toLocaleDateString("pt-BR");
+  }catch(e){
+    return String(dateKey||"");
+  }
+}
+
+async function salvarEntradaSaidaDiaCompartilhado(dateKey, payload){
+  const key = _esDiaKey(dateKey);
+  return await api("cod_set", [key, JSON.stringify(payload)]);
+}
+async function carregarEntradaSaidaDiaCompartilhado(dateKey){
+  const key = _esDiaKey(dateKey);
+  const res = await api("cod_get", [key]);
+  if(!res || !res.ok || res.found === false) return null;
+  const raw = String(res.value || "");
+  if(!raw.trim()) return null;
+  try{ return JSON.parse(raw); }catch(_){ return null; }
+}
+
+/***********************
+ * ✅ Modal (detalhe do dia)
+ ***********************/
+function abrirEsDiaModal(){ const m=document.getElementById("esDiaModal"); if(m) m.style.display="flex"; }
+function fecharEsDiaModal(){ const m=document.getElementById("esDiaModal"); if(m) m.style.display="none"; }
+
+async function mostrarEntradaSaidaDoDia(dateKey){
+  const human = _esDiaHuman(dateKey);
+const h1 = document.getElementById("esDiaModalData");
+  const h2 = document.getElementById("esDiaModalDataFooter");
+  if(h1) h1.textContent = human;
+  if(h2) h2.textContent = human;
+
+  const msg = document.getElementById("esDiaModalMsg");
+  if(msg){ msg.style.display="none"; msg.textContent=""; }
+
+  const data = await carregarEntradaSaidaDiaCompartilhado(dateKey);
+
+  let used = data;
+  let from = "dia";
+  if(!used){
+    from = "mes";
+    if(msg){
+      msg.style.display="block";
+      msg.textContent="Sem registro salvo para este dia. Mostrando os valores atuais do mês (se houver).";
+    }
+    used = {
+      saldoInicial: (window.__es_saldoInicial ?? 0),
+      entrada:      (window.__es_entrada ?? 0),
+      saida:        (window.__es_saida ?? 0),
+      total:        (window.__es_total ?? 0),
+      real:         (window.__es_real ?? 0),
+      diferenca:    (window.__es_diferenca ?? 0),
+      updatedAt:    (window.__es_updatedAt ?? ""),
+      updatedBy:    (window.__es_updatedBy ?? ""),
+    };
+  }
+
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el) el.textContent = String(val); };
+
+  set("esDiaSaldoInicial", _fmtQtd(used.saldoInicial));
+  set("esDiaEntrada",      _fmtQtd(used.entrada));
+  set("esDiaSaida",        _fmtQtd(used.saida));
+  set("esDiaTotal",        _fmtQtd(used.total));
+  set("esDiaReal",         _fmtQtd(used.real));
+  set("esDiaDiferenca",    _fmtQtd(used.diferenca));
+
+  const meta = [];
+  if(used.updatedBy) meta.push("Por: " + used.updatedBy);
+  if(used.updatedAt) meta.push("Atualizado: " + used.updatedAt);
+  meta.push("Origem: " + (from === "dia" ? "registro do dia" : "fallback do mês"));
+  const metaEl = document.getElementById("esDiaMeta");
+  if(metaEl) metaEl.textContent = meta.join(" • ");
+
+  abrirEsDiaModal();
+}
+
+// fechar modal (botão e clique fora)
+document.addEventListener("click", (ev)=>{
+  if(ev.target && ev.target.id === "btnFecharEsDia") fecharEsDiaModal();
+  const ov = document.getElementById("esDiaModal");
+  if(ov && ev.target === ov) fecharEsDiaModal();
+});
+
+/***********************
+ * ✅ Integração: ao salvar Entrada x Saída, guarda snapshot do dia (compartilhado)
+ ***********************/
+(function(){
+  const orig = window.salvarEntradaSaidaCompartilhado;
+  if(typeof orig !== "function") return;
+
+  window.salvarEntradaSaidaCompartilhado = async function(){
+    const r = await orig.apply(this, arguments);
+    try{
+      const dateKey = _toDateKey(new Date());
+      const getVal = (id)=>{
+        const el = document.getElementById(id);
+        return el ? (el.value ?? el.textContent ?? "") : "";
+      };
+
+      const payload = {
+        saldoInicial: getVal("esSaldoInicial") || window.__es_saldoInicial || 0,
+        entrada:      getVal("esEntrada")     || window.__es_entrada || 0,
+        saida:        getVal("esSaida")       || window.__es_saida || 0,
+        total:        getVal("esTotal")       || window.__es_total || 0,
+        real:         getVal("esReal")        || window.__es_real || 0,
+        diferenca:    getVal("esDiferenca")   || window.__es_diferenca || 0,
+        updatedAt:    new Date().toLocaleString("pt-BR"),
+        updatedBy:    (window.USER && window.USER.usuario) ? window.USER.usuario : (window.currentUser || "")
+      };
+
+      window.__es_saldoInicial = payload.saldoInicial;
+      window.__es_entrada = payload.entrada;
+      window.__es_saida = payload.saida;
+      window.__es_total = payload.total;
+      window.__es_real = payload.real;
+      window.__es_diferenca = payload.diferenca;
+      window.__es_updatedAt = payload.updatedAt;
+      window.__es_updatedBy = payload.updatedBy;
+
+      await salvarEntradaSaidaDiaCompartilhado(dateKey, payload);
+    }catch(e){ console.warn("Snapshot diário não salvo:", e); }
+    return r;
+  };
+})();
+
+
+/***********************
+ * ✅ Calendário: destacar o dia clicado
+ ***********************/
+function _calClearSelected(){
+  document.querySelectorAll(".cal-selected").forEach(el=>el.classList.remove("cal-selected"));
+}
+function _calSelectByDateKey(dateKey){
+  _calClearSelected();
+  // tenta achar célula pelo atributo data-cal-date
+  const el = document.querySelector(`[data-cal-date="${dateKey}"]`);
+  if(el) el.classList.add("cal-selected");
+}
+
+// Ao abrir o detalhe do dia, também destaca no calendário
+(function(){
+  const _origShow = window.mostrarEntradaSaidaDoDia;
+  if(typeof _origShow !== "function") return;
+  window.mostrarEntradaSaidaDoDia = async function(dateKey){
+    _calSelectByDateKey(dateKey);
+    return await _origShow.apply(this, arguments);
+  };
+})();
+
 </script>
 
 <!-- Modal de Erros (Produção) -->
@@ -4064,6 +4268,61 @@ const det = dif>0
         <button class="btn btn-primary" onclick="prodFecharErros()">Fechar</button>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- Modal: Detalhe Entrada x Saída do dia -->
+<div id="esDiaModal" class="modal-overlay" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Entrada x Saída </div>
+        <div class="modal-sub" id="esDiaModalSub">Registro compartilhado</div>
+      </div>
+      
+    </div>
+
+    <div class="modal-body">
+      <div id="esDiaModalMsg" class="hint" style="display:none;"></div>
+
+      <div class="grid-3">
+        <div class="kpi">
+          <div class="kpi-label">Saldo inicial</div>
+          <div class="kpi-value" id="esDiaSaldoInicial">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Entrada</div>
+          <div class="kpi-value" id="esDiaEntrada">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Saída</div>
+          <div class="kpi-value" id="esDiaSaida">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Total (teórico)</div>
+          <div class="kpi-value" id="esDiaTotal">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Real</div>
+          <div class="kpi-value" id="esDiaReal">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Diferença</div>
+          <div class="kpi-value" id="esDiaDiferenca">—</div>
+        </div>
+      </div>
+
+      <div class="card-body" id="esDiaObs" style="white-space:pre-wrap;">—</div>
+      </div>
+
+      <div class="hint" id="esDiaMeta" style="margin-top:10px;"></div>
+    
+  <div class="modal-footer">
+    <button class="modal-close" id="btnFecharEsDia" type="button">Fechar</button>
+  </div>
+
+</div>
   </div>
 </div>
 
