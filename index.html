@@ -1510,7 +1510,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
         </div>
 
         <div class="actions" style="margin-top:12px;">
-          <button class="btn btn-primary" onclick="recalcularEntradaSaida()">Recalcular</button>
+          <button class="btn btn-primary" onclick="recalcularEntradaSaida(); salvarEntradaSaidaCompartilhado();">Salvar</button>
           <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
         </div>
 
@@ -1618,7 +1618,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbx2RAFEG6Lx1iDU7ztuXsjmfqaRKA0sO7AYScnXnhoX090EyD3zHd_wTxGFzOecp18lpQ/exec";
+const API_URL = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLgFPTWGEBVwO3QDU9CttD7Hi6ikanxSdnj7xALimdgiBamexnensDqRuNgTJc5d74_ivggW9TiZ1trXKaFMVGkRWksvFoHhs2l8YXbPzQK6H--1Hm8xQb9nuGR-FBHo-N2EXFCFIhb9cngqSUA4slQuI_jOv_Y2cA5L1Hg3gqenqPkBB9PKiR5R2kKIZ4Dz5JrYNxbT8L969YUMImTYkXqIWQKeK-GSH6t7j4fQL9PrMm9Z8W_axgNz8E8GHixSceGxh2CGbXg80haq2d2OIyQoKgNKtYpAtXOS6tUQ&lib=McTwOPg6EjKgsOsf3ykd3XBrns8elDHiD";
 const APP_VERSION = "3.0";
 
 let LAST_VIEW_ID = "transferencia";
@@ -2891,7 +2891,8 @@ function recalcularEntradaSaida(){
     }
   }catch(_){}
 
-  _scheduleSalvarEntradaSaida();
+  // (autosave removido: salvar só no botão)
+  
 }
 
 function limparEntradaSaida(){
