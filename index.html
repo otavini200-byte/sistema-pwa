@@ -783,6 +783,133 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 .prod-modal-close:hover{ background: rgba(255,255,255,.06); }
 /* ===== end v12 ===== */
 
+
+/* ===== Painel Início (Dashboard) ===== */
+#inicio .dash{
+  display:grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap:18px;
+  margin-top:14px;
+  align-items:start;
+}
+#inicio .mini{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  background: rgba(255,255,255,.03);
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+}
+#inicio .mini h3{ margin:0 0 8px 0; font-size:14px; letter-spacing:.2px; }
+#inicio .kpis{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:10px;
+  margin-top:10px;
+}
+#inicio .kpi{
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.16);
+  background: rgba(255,255,255,.02);
+}
+#inicio .kpi b{ display:block; font-size:12px; color:var(--muted); }
+#inicio .kpi span{ display:block; margin-top:6px; font-size:18px; font-weight:900; }
+#inicio .badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background: rgba(34,211,238,.08);
+  font-size:12px;
+  font-weight:900;
+  margin-top:10px;
+}
+#inicio .badge .dot{
+  width:10px; height:10px; border-radius:999px;
+  background: var(--warn);
+  box-shadow: 0 0 0 4px rgba(245,158,11,.14);
+}
+#inicio .badge.ok{ background: rgba(34,197,94,.10); }
+#inicio .badge.ok .dot{ background: var(--ok); box-shadow: 0 0 0 4px rgba(34,197,94,.14); }
+
+#inicio .cal-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+#inicio .cal-top b{ font-size:14px; }
+#inicio .cal-controls{ display:flex; gap:8px; }
+#inicio .cal-btn{
+  width:auto;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.02);
+  color:var(--text);
+  cursor:pointer;
+  font-weight:900;
+}
+#inicio .cal-btn:hover{ opacity:.92; transform:translateY(-1px); }
+#inicio .calendar{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:8px;
+}
+#inicio .calendar th{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:900;
+  text-align:center;
+  padding:4px 0;
+}
+#inicio .calendar td{
+  text-align:center;
+  padding:10px 0;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.16);
+  background: rgba(255,255,255,.02);
+  cursor:pointer;
+  user-select:none;
+  font-weight:900;
+}
+#inicio .calendar td.muted{
+  opacity:.35;
+  cursor:default;
+}
+#inicio .calendar td.hit{
+  background: rgba(34,197,94,.10);
+  border-color: rgba(34,197,94,.35);
+  box-shadow: 0 0 0 2px rgba(34,197,94,.12);
+}
+#inicio .legend{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+#inicio .legend .lg{
+  display:flex; align-items:center; gap:8px;
+}
+#inicio .legend .box{
+  width:14px; height:14px; border-radius:6px;
+  border:1px solid rgba(148,163,184,.18);
+  background: rgba(255,255,255,.02);
+}
+#inicio .legend .box.hit{
+  background: rgba(34,197,94,.10);
+  border-color: rgba(34,197,94,.35);
+}
+@media (max-width: 980px){
+  #inicio .dash{ grid-template-columns: 1fr; }
+}
+/* ===== fim Painel Início ===== */
+
 </style>
 </head>
 
@@ -899,6 +1026,10 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
       </div>
 
       <div class="nav" id="menuPrincipal">
+        <div id="m_inicio" class="item" onclick="abrir('inicio')">
+          <span>🏠 Início</span><small>Painel</small>
+        </div>
+
         <!-- 1) Estoque -->
         <div id="m_estoque" class="item" onclick="toggleSubmenu('sub_estoque')">
           <span>📦 Estoque</span><small>Abrir</small>
@@ -969,6 +1100,75 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
         </div>
         <div class="pill" id="pillUser">—</div>
       </div>
+
+
+      <section class="card hidden" id="inicio">
+        <h2>🏠 Início</h2>
+        <div class="subhint">Resumo do <b>Entrada x Saída</b> + calendário dos dias que <b>bateram</b> (diferença = 0).</div>
+
+        <div class="dash">
+          <!-- Resumo Entrada x Saída -->
+          <div class="mini">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+              <div>
+                <h3>⚖️ Entrada x Saída — visão rápida</h3>
+                <div style="font-size:12px; color:var(--muted);">Pega o último valor salvo (compartilhado).</div>
+              </div>
+              <button class="btn btn-primary" style="width:auto; padding:10px 12px;" onclick="abrir('entradaSaida')">Abrir</button>
+            </div>
+
+            <div class="kpis">
+              <div class="kpi"><b>Total</b><span id="inicio_es_total">—</span></div>
+              <div class="kpi"><b>Real</b><span id="inicio_es_real">—</span></div>
+              <div class="kpi"><b>Diferença</b><span id="inicio_es_diff">—</span></div>
+            </div>
+
+            <div id="inicio_es_badge" class="badge" title="Quando a diferença fica 0, marca como 'bateu'.">
+              <span class="dot"></span>
+              <span id="inicio_es_badge_txt">Aguardando...</span>
+            </div>
+
+            <div class="actions" style="margin-top:12px;">
+              <button class="btn btn-ghost" style="width:auto;" onclick="renderInicio()">Atualizar painel</button>
+              <button class="btn btn-ghost" style="width:auto;" onclick="marcarHojeSeBateu()">Marcar hoje (se bateu)</button>
+            </div>
+
+            <div class="subhint" style="margin-top:10px;">
+              ✅ Dica: toda vez que a <b>diferença</b> ficar <b>0</b>, você pode marcar o dia como “bateu”.
+            </div>
+          </div>
+
+          <!-- Calendário -->
+          <div class="mini">
+            <div class="cal-top">
+              <b id="inicio_mes_label">—</b>
+              <div class="cal-controls">
+                <button class="cal-btn" onclick="inicioMesNav(-1)">‹</button>
+                <button class="cal-btn" onclick="inicioMesNav(1)">›</button>
+              </div>
+            </div>
+
+            <div class="sheet-wrap" style="overflow:hidden; padding:10px;">
+              <table class="calendar" id="inicio_calendar">
+                <thead>
+                  <tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="legend">
+              <div class="lg"><span class="box hit"></span> Bateu (diferença 0)</div>
+              <div class="lg"><span class="box"></span> Normal</div>
+            </div>
+
+            <div class="subhint" style="margin-top:10px;">
+              Clique em um dia do mês para <b>marcar/desmarcar</b> como “bateu”.
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <section class="card hidden" id="transferencia">
         <h2>📦 Transferência</h2>
@@ -1338,7 +1538,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbztsAvRCZV_5Nx5bbcOagmMdu27Bs4hbZO12upvwdOTvYuJIDKIt7Xpb0IuShVIHIYV7A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyT64TnOiwe48YYY57tBGta7BDVKh_diG3MLFs4_wDMC8zh2-b8wg12ezYhSF4T4HNwCg/exec";
 const APP_VERSION = "3.0";
 
 let LAST_VIEW_ID = "transferencia";
@@ -1585,6 +1785,13 @@ function abrir(id){
   document.querySelectorAll(".main .card").forEach(s=>s.classList.add("hidden"));
   $(id).classList.remove("hidden");
 
+  if(id==="inicio"){
+    setTop("Início","Resumo do Entrada x Saída + calendário do mês");
+    setActiveNav("inicio");
+    renderInicio();
+    return;
+  }
+
   if(id==="transferencia"){ setTop("Transferência","Cole e clique em Importação"); setActiveNav("transferencia"); }
   if(id==="zeramento"){ setTop("Zeramento","Cole e clique em Importação"); setActiveNav("zeramento"); }
   if(id==="requisicao"){ setTop("Requisição","Cole pedidos e clique em Importação"); setActiveNav("requisicao");
@@ -1599,7 +1806,7 @@ function abrir(id){
   }
   if(id==="aba164"){ setTop("164",""); setActiveNav("aba164"); }
   if(id==="producao"){ setTop("Entrada x Saída (Produção)","Cole Entrada e Saída/Baixa e confira pela composição"); setActiveNav("producao"); try{ const a=document.querySelector("#tblProdA tbody"); const b=document.querySelector("#tblProdB tbody"); if((a && a.children.length===0) || (b && b.children.length===0)) initProducao(); }catch(e){} }
-if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); }
+if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); carregarEntradaSaidaCompartilhado(); }
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
@@ -1980,7 +2187,7 @@ async function salvarSenha(){
       $("senhaNova2").value="";
       toast("ok","Senha","Senha atualizada!");
       voltarMenu();
-      abrir("transferencia");
+      abrir("inicio");
     }else{
       toast("danger","Senha", r.msg || "Erro ao alterar.");
     }
@@ -2213,7 +2420,7 @@ initProducao();
 
     aplicarPermissoesUI();
     voltarMenu();
-    abrir("transferencia");
+    abrir("inicio");
 
     toast("ok","Bem-vindo",`Você entrou como ${NIVEL}.`);
     if(NIVEL==="ADMIN") adminRecarregar();
@@ -2281,6 +2488,179 @@ function _esMesRef(){
   return `${y}-${m}`; // YYYY-MM
 }
 function _esKey(suf){ return `__ENTRADA_SAIDA__${_esMesRef()}__${suf}`; }
+
+/* =========================
+   Início (Dashboard)
+   ========================= */
+let INICIO_MES_OFFSET = 0;
+
+function _ymdLocal(d=new Date()){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const da = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${da}`;
+}
+function _addMonths(date, delta){
+  const d = new Date(date.getFullYear(), date.getMonth()+delta, 1);
+  return d;
+}
+function _monthLabel(date){
+  const meses = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+  return `${meses[date.getMonth()]} / ${date.getFullYear()}`;
+}
+function _monthRefFromDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  return `${y}-${m}`;
+}
+function _esHitsKey(){ return _esKey("HITS"); }
+
+async function _carregarHitsMes(){
+  try{
+    const res = await api("cod_get", _esHitsKey());
+    if(!res || !res.ok || !res.found) return [];
+    const arr = JSON.parse(res.value || "[]");
+    return Array.isArray(arr) ? arr : [];
+  }catch(_){
+    return [];
+  }
+}
+async function _salvarHitsMes(arr){
+  try{
+    await api("cod_set", _esHitsKey(), JSON.stringify(arr || []));
+  }catch(err){
+    console.warn("Falha ao salvar calendário:", err.message || err);
+  }
+}
+
+async function _autoMarcarHitHoje(){
+  // Evita gravar demais: só marca 1x por dia
+  const hoje = _ymdLocal(new Date());
+  const hits = await _carregarHitsMes();
+  if(hits.includes(hoje)) return;
+  hits.push(hoje);
+  await _salvarHitsMes(hits);
+  // atualiza painel se estiver aberto
+  if(!document.getElementById("inicio")?.classList.contains("hidden")){
+    await renderInicioCalendar();
+  }
+}
+
+async function marcarHojeSeBateu(){
+  // usado no painel Início
+  try{
+    const diffTxt = document.getElementById("es_diff")?.textContent || "";
+    const diff = _parseBRNum(diffTxt);
+    if(Math.abs(diff) < 0.0000001){
+      await _autoMarcarHitHoje();
+      toast("ok","Calendário","Hoje marcado como 'bateu'.");
+    }else{
+      toast("warn","Calendário","Ainda não bateu (diferença diferente de 0).");
+    }
+  }catch(err){
+    toast("danger","Calendário", err.message || "Erro ao marcar.");
+  }
+}
+
+function inicioMesNav(delta){
+  INICIO_MES_OFFSET += delta;
+  renderInicioCalendar();
+}
+
+function _updateInicioSnapshot(){
+  const t = document.getElementById("es_total")?.textContent || "0";
+  const r = document.getElementById("es_real")?.innerText || "0";
+  const d = document.getElementById("es_diff")?.textContent || "";
+
+  document.getElementById("inicio_es_total").textContent = t || "0";
+  document.getElementById("inicio_es_real").textContent  = (r||"0").trim();
+  document.getElementById("inicio_es_diff").textContent  = d || "—";
+
+  const badge = document.getElementById("inicio_es_badge");
+  const badgeTxt = document.getElementById("inicio_es_badge_txt");
+  const diff = _parseBRNum(d);
+  if(Math.abs(diff) < 0.0000001){
+    badge?.classList.add("ok");
+    if(badgeTxt) badgeTxt.textContent = "Bateu (diferença 0)";
+  }else{
+    badge?.classList.remove("ok");
+    if(badgeTxt) badgeTxt.textContent = "Não bateu ainda";
+  }
+}
+
+async function renderInicio(){
+  try{
+    // carrega o último valor compartilhado do Entrada x Saída (sem abrir a tela)
+    await carregarEntradaSaidaCompartilhado();
+    _updateInicioSnapshot();
+    await renderInicioCalendar();
+  }catch(err){
+    console.warn(err);
+    _updateInicioSnapshot();
+    await renderInicioCalendar();
+  }
+}
+
+async function renderInicioCalendar(){
+  const cal = document.getElementById("inicio_calendar");
+  const tbody = cal?.querySelector("tbody");
+  if(!cal || !tbody) return;
+
+  const base = _addMonths(new Date(), INICIO_MES_OFFSET);
+  const mesLabel = document.getElementById("inicio_mes_label");
+  if(mesLabel) mesLabel.textContent = "📅 " + _monthLabel(base);
+
+  const monthRef = _monthRefFromDate(base);
+  const hits = (await _carregarHitsMes()).filter(d => (d||"").startsWith(monthRef + "-"));
+  const hitSet = new Set(hits.map(d => Number(String(d).slice(8,10))));
+
+  const first = new Date(base.getFullYear(), base.getMonth(), 1);
+  const last  = new Date(base.getFullYear(), base.getMonth()+1, 0);
+  const startDow = first.getDay(); // 0 dom
+
+  // limpa
+  tbody.innerHTML = "";
+
+  let day = 1;
+  // 6 semanas
+  for(let w=0; w<6; w++){
+    const tr = document.createElement("tr");
+    for(let dow=0; dow<7; dow++){
+      const td = document.createElement("td");
+
+      const cellIndex = w*7 + dow;
+      if(cellIndex < startDow || day > last.getDate()){
+        td.textContent = "";
+        td.classList.add("muted");
+        td.style.cursor = "default";
+      }else{
+        td.textContent = String(day);
+        if(hitSet.has(day)) td.classList.add("hit");
+
+        td.addEventListener("click", async ()=>{
+          const y = base.getFullYear();
+          const m = String(base.getMonth()+1).padStart(2,"0");
+          const dd = String(day).padStart(2,"0");
+          const ymd = `${y}-${m}-${dd}`;
+
+          const all = await _carregarHitsMes();
+          const set = new Set(all);
+          if(set.has(ymd)){
+            set.delete(ymd);
+          }else{
+            set.add(ymd);
+          }
+          await _salvarHitsMes(Array.from(set).sort());
+          renderInicioCalendar();
+        });
+        day++;
+      }
+
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
 
 function _parseBRNum(v){
   const s = String(v||"0").trim();
@@ -2400,6 +2780,14 @@ function recalcularEntradaSaida(){
     diffEl.style.borderRadius = "12px";
     diffEl.style.textAlign = "center";
   }
+
+
+  // ✅ se estiver na tela Entrada x Saída e a diferença bater (0), marca o dia no calendário do Início
+  try{
+    if(Math.abs(diff) < 0.0000001 && sec && !sec.classList.contains("hidden")){
+      _autoMarcarHitHoje();
+    }
+  }catch(_){}
 
   _scheduleSalvarEntradaSaida();
 }
