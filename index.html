@@ -103,7 +103,7 @@ body{
   opacity:0; pointer-events:none;
   transition:opacity .18s ease;
 }
-.overlay.show{ opacity:1; pointer-events:none; }
+.overlay.show{ opacity:1; pointer-events:auto; }
 .loading-box{
   background:var(--card);
   border:1px solid var(--line);
@@ -1086,7 +1086,8 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
         <div id="sub_producao" class="subitems hidden">
           <div id="m_producao" class="subitem" onclick="abrir('producao')">⚖️ Entrada x Saída</div>
-</div>
+          <div id="m_conversaoProduto" class="subitem" onclick="abrir('conversaoProduto')">🔄 Conversão de Produto</div>
+        </div>
 
         <!-- 3) Transferência -->
         <div id="m_transferencia" class="item" onclick="abrir('transferencia')">
@@ -1517,6 +1518,52 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
           ✅ Você pode digitar valores direto nas células. “Total” = Saldo inicial + Entrada + Saída + Ajuste. “Diferença” = Real − Total.
         </div>
       </section>
+<section class="card hidden" id="conversaoProduto" style="overflow:hidden;">
+  <h2>🔄 Conversão de Produto</h2>
+
+  <div class="subhint" style="margin-top:10px;">
+    Registre uma conversão (ex.: matéria-prima → produto acabado).<br>
+    <b>Obs:</b> esta tela é nova e não altera nada do que já existia.
+  </div>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px;">
+    <div>
+      <label>Produto origem (código)</label>
+      <input id="convOrigem" placeholder="Ex: 12345">
+    </div>
+    <div>
+      <label>Produto destino (código)</label>
+      <input id="convDestino" placeholder="Ex: 67890">
+    </div>
+    <div>
+      <label>Qtd origem</label>
+      <input id="convQtdOrigem" placeholder="Ex: 10" inputmode="decimal">
+    </div>
+    <div>
+      <label>Qtd destino</label>
+      <input id="convQtdDestino" placeholder="Ex: 10" inputmode="decimal">
+    </div>
+  </div>
+
+  <div class="actions" style="margin-top:12px;">
+    <button class="btn btn-primary" onclick="conversao_registrar()">Registrar</button>
+    <button class="btn btn-ghost" onclick="conversao_limpar()">Limpar</button>
+  </div>
+
+  <div class="sheet-wrap" style="margin-top:14px;">
+    <table class="sheet">
+      <thead>
+        <tr>
+          <th>Data</th><th>Origem</th><th>Qtd</th><th>Destino</th><th>Qtd</th><th>Obs.</th>
+        </tr>
+      </thead>
+      <tbody id="convTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="subhint">✅ Salva no banco do app (APP_DATA) para não sujar a aba COD.</div>
+</section>
+
 
 <section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
@@ -1571,7 +1618,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwax85Vsvw0jwdgz_9aVdqocPovT9aO26uFLxkryUGVCwTQQgdmVBHDhvLBFhdUILTqlQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx2RAFEG6Lx1iDU7ztuXsjmfqaRKA0sO7AYScnXnhoX090EyD3zHd_wTxGFzOecp18lpQ/exec";
 const APP_VERSION = "3.0";
 
 let LAST_VIEW_ID = "transferencia";
@@ -1843,6 +1890,16 @@ if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real
   if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
+  if(id==="conversaoProduto"){
+    setTop("Conversão de Produto","Produção");
+    setActiveNav("conversaoProduto");
+    // mantém a pasta Produção aberta
+    try{ document.getElementById("sub_producao").classList.remove("hidden"); }catch(_){}
+    try{ document.getElementById("m_producao_group").classList.add("open"); }catch(_){}
+    try{ conversao_carregar(); }catch(_){ }
+    return;
+  }
+
 }
 
 function dataHoje_ptBR(){ return new Date().toLocaleDateString("pt-BR"); }
@@ -2346,7 +2403,9 @@ function aplicarPermissoesUI(){
   setSubitem("m_producao", PERMS.producao, "⚖️ Entrada x Saída");
 // ✅ Admin menu
   $("btnAdminMenu").classList.toggle("hidden", NIVEL !== "ADMIN");
+  try{ setSubitem("m_conversaoProduto", PERMS.producao, "🔄 Conversão de Produto"); }catch(_){}
 }
+
 
 
 
@@ -4235,6 +4294,89 @@ function _calSelectByDateKey(dateKey){
   };
 })();
 
+
+// ✅ Hardening: garante que os onclick do HTML sempre encontrem as funções (mesmo em ambientes que isolam escopo)
+try{
+  Object.assign(window, {
+    entrar, cadastrar, recuperarSenha, sair,
+    abrir, voltarMenu, trocarView,
+    limparTabela, importarTabela: importacaoTransferencia,
+    importacaoTransferencia, importacaoZeramento, importacaoRequisicao, importacaoRequisicaoManual,
+    importacao164, conferir164, init164,
+    initProducao, prodConferir3por1,
+    carregarEntradaSaidaCompartilhado, salvarEntradaSaidaCompartilhado,
+    abrirPainelInicioMes, fecharPainelInicioMes, salvarInicioMesOffset
+  });
+}catch(e){}
+
+
+/* =========================
+   Conversão de Produto (Produção)
+   - salva no banco do app via cod_set com chave __CONVERSAO__
+   ========================= */
+function _convKey(){
+  const d = _ymdLocal(new Date());
+  return `__CONVERSAO__${d}__DATA`;
+}
+
+async function conversao_carregar(){
+  try{
+    const r = await api("cod_get", _convKey());
+    const tbody = $("convTbody");
+    if(!tbody) return;
+    tbody.innerHTML = "";
+    if(r && r.ok && r.found){
+      let arr = [];
+      try{ arr = JSON.parse(r.value||"[]"); }catch(_){}
+      arr.forEach(row=>{
+        const tr = document.createElement("tr");
+        row.forEach(v=>{
+          const td = document.createElement("td");
+          td.textContent = String(v??"");
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
+  }catch(_){}
+}
+
+function conversao_limpar(){
+  ["convOrigem","convDestino","convQtdOrigem","convQtdDestino"].forEach(id=>{ const el=$(id); if(el) el.value=""; });
+  toast("ok","Conversão","Campos limpos.");
+}
+
+async function conversao_registrar(){
+  const origem = String($("convOrigem")?.value||"").trim();
+  const destino = String($("convDestino")?.value||"").trim();
+  const qO = String($("convQtdOrigem")?.value||"").trim();
+  const qD = String($("convQtdDestino")?.value||"").trim();
+  if(!origem || !destino || !qO || !qD){
+    toast("danger","Conversão","Preencha todos os campos.");
+    return;
+  }
+  const obs = "";
+  const row = [_ymdLocal(new Date()), origem, qO, destino, qD, obs];
+
+  try{
+    const r = await api("cod_get", _convKey());
+    let arr = [];
+    if(r && r.ok && r.found){
+      try{ arr = JSON.parse(r.value||"[]"); }catch(_){}
+    }
+    arr.push(row);
+    const save = await api("cod_set", _convKey(), JSON.stringify(arr));
+    if(save && save.ok){
+      toast("ok","Conversão","Registrado!");
+      conversao_limpar();
+      await conversao_carregar();
+    }else{
+      toast("danger","Conversão", (save && save.msg) ? save.msg : "Erro ao salvar");
+    }
+  }catch(err){
+    toast("danger","Conversão", err.message);
+  }
+}
 </script>
 
 <!-- Modal de Erros (Produção) -->
