@@ -1086,7 +1086,6 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
         <div id="sub_producao" class="subitems hidden">
           <div id="m_producao" class="subitem" onclick="abrir('producao')">⚖️ Entrada x Saída</div>
-          <div id="m_conversaoProduto" class="subitem" onclick="abrir('conversaoProduto')">🔄 Conversão de Produto</div>
         </div>
 
         <!-- 3) Transferência -->
@@ -1514,56 +1513,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
           <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
         </div>
 
-        <div class="subhint">
-          ✅ Você pode digitar valores direto nas células. “Total” = Saldo inicial + Entrada + Saída + Ajuste. “Diferença” = Real − Total.
-        </div>
-      </section>
-<section class="card hidden" id="conversaoProduto" style="overflow:hidden;">
-  <h2>🔄 Conversão de Produto</h2>
-
-  <div class="subhint" style="margin-top:10px;">
-    Registre uma conversão (ex.: matéria-prima → produto acabado).<br>
-    <b>Obs:</b> esta tela é nova e não altera nada do que já existia.
-  </div>
-
-  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px;">
-    <div>
-      <label>Produto origem (código)</label>
-      <input id="convOrigem" placeholder="Ex: 12345">
-    </div>
-    <div>
-      <label>Produto destino (código)</label>
-      <input id="convDestino" placeholder="Ex: 67890">
-    </div>
-    <div>
-      <label>Qtd origem</label>
-      <input id="convQtdOrigem" placeholder="Ex: 10" inputmode="decimal">
-    </div>
-    <div>
-      <label>Qtd destino</label>
-      <input id="convQtdDestino" placeholder="Ex: 10" inputmode="decimal">
-    </div>
-  </div>
-
-  <div class="actions" style="margin-top:12px;">
-    <button class="btn btn-primary" onclick="conversao_registrar()">Registrar</button>
-    <button class="btn btn-ghost" onclick="conversao_limpar()">Limpar</button>
-  </div>
-
-  <div class="sheet-wrap" style="margin-top:14px;">
-    <table class="sheet">
-      <thead>
-        <tr>
-          <th>Data</th><th>Origem</th><th>Qtd</th><th>Destino</th><th>Qtd</th><th>Obs.</th>
-        </tr>
-      </thead>
-      <tbody id="convTbody"></tbody>
-    </table>
-  </div>
-
-  <div class="subhint">✅ Salva no banco do app (APP_DATA) para não sujar a aba COD.</div>
-</section>
-
+       
 
 <section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
