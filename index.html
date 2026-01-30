@@ -273,7 +273,6 @@ input:focus,select:focus{
 .nav .item.active{ background:rgba(255,255,255,.22); }
 .nav .item small{ opacity:.8; font-size:12px; }
 
-/* ✅ item bloqueado (sem mudar layout) */
 .nav .item.disabled{
   opacity:.55;
   pointer-events:none;
@@ -369,7 +368,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 }
 .actions .btn{ width:auto; padding:12px 16px; border-radius:14px; }
 
-  /* ✅ submenu (Requisições) */
+
   .subitems{margin-left:10px; border-left:2px solid rgba(255,255,255,.08); padding-left:10px; margin-top:6px;}
   .subitem{padding:10px 12px; border-radius:12px; cursor:pointer; opacity:.95; user-select:none;}
   .subitem:hover{background:rgba(255,255,255,.06);}
@@ -377,7 +376,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
   .subitem.locked{opacity:.5; pointer-events:none;}
 
 
-/* ✅ Entrada x Saída - visibilidade maior (escopo pela section) */
+
 #entradaSaida .sheet thead th{ font-size:14px; padding:14px 12px; }
 #entradaSaida .sheet td{ font-size:18px; padding:14px 12px; min-width:160px; }
 #entradaSaida .sheet td[contenteditable="true"]{ font-weight:800; }
@@ -409,7 +408,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 }
 
 
-/* ✅ Polimento visual (mantém paleta) */
+
 .sidebar{
   box-shadow: 0 18px 40px rgba(0,0,0,.35);
 }
@@ -469,7 +468,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
   font-weight:800;
 }
 
-/* ✅ Destaque forte do item/pasta selecionada */
+
 .nav .item.active{
   background: linear-gradient(135deg, rgba(106,75,201,.45), rgba(44,26,77,.65));
   border-color: rgba(106,75,201,.9);
@@ -485,7 +484,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
   box-shadow: 0 0 0 2px rgba(106,75,201,.35);
 }
 
-/* subitem selecionado */
+
 .subitem.active{
   background: linear-gradient(135deg, rgba(106,75,201,.35), rgba(44,26,77,.55));
   border:1px solid rgba(106,75,201,.6);
@@ -493,13 +492,13 @@ table.sheet{ width:100%; border-collapse:collapse; }
   font-weight:800;
 }
 
-/* quando pasta está aberta (estoque / produção) */
+
 .item.open{
   background: rgba(106,75,201,.25);
   border-color: rgba(106,75,201,.55);
 }
 
-/* Modal de Erros (para telas travadas/sem scroll) */
+
 .prod-modal-overlay{
   position:fixed; inset:0; background:rgba(15,23,42,.55);
   display:flex; align-items:center; justify-content:center;
@@ -528,11 +527,7 @@ table.sheet{ width:100%; border-collapse:collapse; }
 .prod-modal-close:hover{ background:rgba(0,0,0,.06); }
 
 
-/* =========================
-   Futurista / Profissional
-   ========================= */
 
-/* Fundo com grade sutil + glow */
 body{
   background:
     radial-gradient(900px 520px at 16% 10%, rgba(168,85,247,.18), transparent 55%),
@@ -553,7 +548,7 @@ body::before{
   mix-blend-mode: overlay;
 }
 
-/* Scrollbar discreta */
+
 *::-webkit-scrollbar{ height:10px; width:10px; }
 *::-webkit-scrollbar-thumb{
   background: rgba(148,163,184,.22);
@@ -563,14 +558,14 @@ body::before{
 }
 *::-webkit-scrollbar-thumb:hover{ background: rgba(148,163,184,.32); border:2px solid transparent; background-clip:padding-box; }
 
-/* Cartões com “glass” */
+
 .topbar,.card,.login-card,.loading-box,.toast{
   background: linear-gradient(180deg, var(--glass2), transparent 120%), var(--card);
   border-color: var(--line);
   box-shadow: var(--shadow2);
 }
 
-/* Inputs mais “clean” */
+
 input,select,textarea,button{
   border-color: var(--line);
 }
@@ -582,7 +577,7 @@ input:focus,select:focus,textarea:focus{
   box-shadow: 0 0 0 4px rgba(34,211,238,.12), var(--glow);
 }
 
-/* Botões com neon sutil */
+
 .btn-primary{
   background:
     linear-gradient(135deg, rgba(34,211,238,.92), rgba(168,85,247,.92));
@@ -593,7 +588,7 @@ input:focus,select:focus,textarea:focus{
 }
 .btn:hover{ filter:saturate(1.05); }
 
-/* Sidebar mais futurista */
+
 .sidebar{
   background:
     radial-gradient(700px 420px at 20% 10%, rgba(34,211,238,.18), transparent 55%),
@@ -613,7 +608,7 @@ input:focus,select:focus,textarea:focus{
 }
 .icon-btn:hover{ box-shadow: var(--glow); }
 
-/* Menu: item ativo com glow */
+
 .nav .item, .subitem{
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(148,163,184,.14);
@@ -635,7 +630,7 @@ input:focus,select:focus,textarea:focus{
   box-shadow: 0 10px 22px rgba(0,0,0,.20);
 }
 
-/* Tabelas com destaque ao passar o mouse */
+
 .sheet tbody tr:hover td{
   background: rgba(34,211,238,.06);
 }
@@ -644,26 +639,26 @@ input:focus,select:focus,textarea:focus{
     linear-gradient(180deg, rgba(34,211,238,.14), rgba(168,85,247,.08));
 }
 
-/* Pills */
+
 .pill{
   background: rgba(34,211,238,.08);
   border-color: rgba(34,211,238,.22);
 }
 
-/* Toast refinado */
+
 .toast{
   backdrop-filter: blur(12px);
 }
 .toast .dot{ box-shadow: 0 0 0 4px rgba(34,211,238,.12); }
 
-/* Overlay */
+
 .overlay{
   background: rgba(0,0,0,.35);
   backdrop-filter: blur(10px);
 }
 
 
-/* ===== v12 layout polish (dark / futuristic) ===== */
+
 *{ -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 ::selection{ background: rgba(34,211,238,.22); }
 
@@ -674,13 +669,13 @@ input:focus,select:focus,textarea:focus{
   --ring2: 0 0 0 4px rgba(168,85,247,.14);
 }
 
-/* Scrollbars */
+
 *::-webkit-scrollbar{ width:10px; height:10px; }
 *::-webkit-scrollbar-track{ background: rgba(255,255,255,.04); border-radius: 999px; }
 *::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.14); border-radius: 999px; border:2px solid rgba(0,0,0,0); background-clip: padding-box; }
 *::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.22); border:2px solid rgba(0,0,0,0); background-clip: padding-box; }
 
-/* Sidebar: glass + cleaner */
+
 .sidebar{
   width:300px;
   background: linear-gradient(180deg, rgba(13,18,32,.92), rgba(7,10,18,.86));
@@ -698,7 +693,7 @@ input:focus,select:focus,textarea:focus{
 }
 .icon-btn:focus{ box-shadow: var(--ring); }
 
-/* Nav items: better active */
+
 .nav .item{
   border: 1px solid rgba(255,255,255,.08);
   background: rgba(255,255,255,.045);
@@ -730,7 +725,7 @@ input:focus,select:focus,textarea:focus{
   box-shadow: 0 0 12px rgba(34,211,238,.28);
 }
 
-/* Topbar: subtle gradient border */
+
 .topbar{
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -743,7 +738,6 @@ input:focus,select:focus,textarea:focus{
 }
 .topbar{ position:relative; }
 
-/* Inputs: cleaner & hover */
 input, select{
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(148,163,184,.18);
@@ -755,7 +749,7 @@ input:focus, select:focus{
   box-shadow: var(--ring);
 }
 
-/* Buttons: glow + press */
+
 .btn{
   border-radius: var(--radius-sm);
   letter-spacing: .2px;
@@ -766,11 +760,11 @@ input:focus, select:focus{
 .btn-primary:focus{ box-shadow: 0 10px 24px rgba(0,0,0,.45), var(--ring2); }
 .btn:active{ transform: translateY(0px) scale(.99); }
 
-/* Sheets: zebra + hover */
+
 table.sheet tbody tr:nth-child(odd) td{ background: rgba(255,255,255,.012); }
 table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
-/* Modals: blur and dark close hover */
+
 .prod-modal-overlay{
   background: rgba(2,6,23,.62);
   backdrop-filter: blur(8px);
@@ -781,10 +775,10 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
   background: linear-gradient(180deg, rgba(13,18,32,.92), rgba(7,10,18,.88));
 }
 .prod-modal-close:hover{ background: rgba(255,255,255,.06); }
-/* ===== end v12 ===== */
 
 
-/* ===== Painel Início (Dashboard) ===== */
+
+
 #inicio .dash{
   display:grid;
   grid-template-columns: 1.05fr .95fr;
@@ -908,7 +902,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 @media (max-width: 980px){
   #inicio .dash{ grid-template-columns: 1fr; }
 }
-/* ===== fim Painel Início ===== */
+
 
 
 /* Modal */
@@ -930,18 +924,23 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 }
 
 
-/* Modal footer */
 .modal-footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.08); }
 .modal-footer-title{ font-weight:800; opacity:.95; }
 .modal-close{ height:40px; padding:0 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:inherit; cursor:pointer; }
 .modal-close:hover{ background:rgba(255,255,255,.08); }
 
 
-/* Calendário: dia selecionado */
+
 .cal-selected{
   outline: 2px solid rgba(16,185,129,.65) !important;
   box-shadow: 0 0 0 4px rgba(16,185,129,.12) !important;
 }
+
+
+
+#tblRelLocal tbody tr.wrong td{ background: rgba(240,68,56,.12); }
+#tblRelLocal tbody tr.ok td{ background: rgba(18,183,106,.10); }
+#tblRelLocal tbody tr.unknown td{ background: rgba(245,158,11,.10); }
 
 </style>
 </head>
@@ -969,7 +968,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
       <div class="logo"></div>
       <div>
         <h2>Sistema</h2>
-        <p>Login e importação de arquivos</p>
+        <p></p>
       </div>
     </div>
 
@@ -984,7 +983,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
     <div class="login-links">
       <span onclick="trocarView('cadastro')">Criar conta</span> |
       <span onclick="trocarView('recuperar')">Recuperar senha</span> |
-      <span onclick="toggleSenha()">👁 Ver senha</span>
+      <span onclick="toggleSenha()">Ver senha</span>
     </div>
 
     <div class="small" id="statusLogin">
@@ -1075,11 +1074,13 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
             <div id="m_requisicao_manual" class="subitem" onclick="abrir('requisicaoManual')">✍️ Manual</div>
           </div>
 
-          <div id="m_aba164" class="subitem" onclick="abrir('aba164')">📌 164</div>
           <div id="m_entradaSaida" class="subitem" onclick="abrir('entradaSaida')">⚖️ Entrada x Saída</div>
+		            <div id="m_aba164" class="subitem" onclick="abrir('aba164')">📌 164</div>
+          <div id="m_relatorioLocal" class="subitem" onclick="abrir('relatorioLocal')">📋 Relatório Local</div>
+
         </div>
 
-        <!-- 2) Produção -->
+       
         <div id="m_producao_group" class="item" onclick="toggleSubmenu('sub_producao')">
           <span>🏭 Produção</span><small>Abrir</small>
         </div>
@@ -1117,10 +1118,10 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
       </div>
 
       <div class="side-bottom">
-        <!-- ✅ Sair + versão ao lado (v2.1) -->
+      
         <div style="display:flex; align-items:center; gap:10px;">
           <button class="btn btn-ghost" onclick="sair()">🚪 Sair</button>
-          <span id="appVersion" style="opacity:.85; font-size:12px;">v2.1</span>
+          <span id="appVersion" style="opacity:.85; font-size:12px;">v2.9</span>
         </div>
       </div>
     </aside>
@@ -1137,15 +1138,15 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
       <section class="card hidden" id="inicio">
         <h2>🏠 Início</h2>
-        <div class="subhint">Resumo do <b>Entrada x Saída</b> + calendário dos dias que <b>bateram</b> (diferença = 0).</div>
+        <div class="subhint">Resumo do <b>Entrada x Saída</b> </b></div>
 
         <div class="dash">
-          <!-- Resumo Entrada x Saída -->
+          <!-- Entrada x Saída -->
           <div class="mini">
             <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
               <div>
-                <h3>⚖️ Entrada x Saídavisão rápida</h3>
-                <div style="font-size:12px; color:var(--muted);">Pega o último valor salvo (compartilhado).</div>
+                <h3>⚖️ Entrada x Saída</h3>
+                <div style="font-size:12px; color:var(--muted);"></div>
               </div>
               <button class="btn btn-primary" style="width:auto; padding:10px 12px;" onclick="abrir('entradaSaida')">Abrir</button>
             </div>
@@ -1156,18 +1157,18 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
               <div class="kpi"><b>Diferença</b><span id="inicio_es_diff">—</span></div>
             </div>
 
-            <div id="inicio_es_badge" class="badge" title="Quando a diferença fica 0, marca como 'bateu'.">
+            <div id="inicio_es_badge" class="badge" title="">
               <span class="dot"></span>
               <span id="inicio_es_badge_txt">Aguardando...</span>
             </div>
 
             <div class="actions" style="margin-top:12px;">
               <button class="btn btn-ghost" style="width:auto;" onclick="renderInicio()">Atualizar painel</button>
-              <button class="btn btn-ghost" style="width:auto;" onclick="marcarHojeSeBateu()">Marcar hoje (se bateu)</button>
+              <button class="btn btn-ghost" style="width:auto;" onclick="marcarHojeSeBateu()">Marcar hoje)</button>
             </div>
 
             <div class="subhint" style="margin-top:10px;">
-              ✅ Dica: toda vez que a <b>diferença</b> ficar <b>0</b>, você pode marcar o dia como “bateu”.
+              ✅ toda vez que a <b>diferença</b> ficar <b>0</b>, você pode marcar o dia como “bateu”.
             </div>
           </div>
 
@@ -1257,7 +1258,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
             <thead>
               <tr>
                 <th>Pedido</th><th>Cliente</th><th>Código Item</th><th>Chave5</th><th>Chave6</th><th>Chave7</th>
-                <th>Qtd</th><th>(vazio)</th><th>(vazio)</th>
+                <th>Qtd</th><th></th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1286,7 +1287,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
         </div>
 
         <div class="actions" style="margin-top:10px;">
-          <button class="btn btn-primary" onclick="importacaoRequisicaoManual()">Gerar RI </button>
+          <button class="btn btn-primary" onclick="importacaoRequisicaoManual()">Importar RI </button>
           <button class="btn btn-ghost" onclick="limparReqManual()">Limpar</button>
         </div>
       </section>
@@ -1297,11 +1298,11 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
         <h2>📌 164 </h2>
 
         <div class="subhint">
-          Cole as 2 planilhas abaixo . O sistema soma itens iguais Se não sobrar nada, o 164 está certo.
+          Cole as 2 planilhas abaixo Se não sobrar nada, o 164 está certo.
         </div>
 
         <div id="wrap164Inputs" style="display:block;">
-          <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha A</h3>
+          <h3 style="margin:14px 0 8px 0; font-size:14px;">164</h3>
           <div class="sheet-wrap" style="flex:0 0 auto; max-height:150px;">
             <table class="sheet" id="tbl164A">
               <thead>
@@ -1313,7 +1314,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
             </table>
           </div>
 
-          <h3 style="margin:14px 0 8px 0; font-size:14px;">Planilha B</h3>
+          <h3 style="margin:14px 0 8px 0; font-size:14px;">Pedidos</h3>
           <div class="sheet-wrap" style="flex:0 0 auto; max-height:150px;">
             <table class="sheet" id="tbl164B">
               <thead>
@@ -1358,10 +1359,10 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
   <h2>⚖️ Entrada x Saída (Produção)</h2>
 
   <div class="subhint" style="margin-top:10px;">
-    Cole as <b>2 planilhas</b> abaixo (mesmo layout do 164).<br>
+    Cole as <b>2 planilhas</b><br>
     <b>A) Entrada</b> = itens que entraram no setor (componentes)<br>
     <b>B) Saída</b> = itens que saíram do setor (produto final)<br>
-    Nesta conferência, o sistema faz a regra <b>3 por 1</b>: para cada <b>1</b> saída, espera <b>3</b> na entrada do <b>mesmo nome + grades</b>.
+    
   </div>
 
   <div id="wrapProdInputs" style="display:block;">
@@ -1436,7 +1437,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
 
   <div class="subhint" style="margin-top:10px;">
-    ✅ Dica: Diferença <b>0</b> = bateu. Diferença <b>positiva</b> = entrou mais que o esperado. Diferença <b>negativa</b> = faltou entrada.
+    ✅ Diferença <b>0</b> = bateu. Diferença <b>positiva</b> = entrou mais que o esperado. Diferença <b>negativa</b> = faltou entrada.
   </div>
 </section>
 
@@ -1445,11 +1446,11 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
 
 
 
-<section class="card hidden" id="entradaSaida" style="overflow:hidden;">
+<section class="card hidden" id="entradaSaida" style="overflow:visible;">
         <h2>⚖️ Entrada x Saída</h2>
-        <div class="es-titlebar" style="margin-top:10px; position:relative;">
+        <div class="es-titlebar" style="margin-top:10px; position:relative; overflow:visible;">
           <div class="subhint" style="margin:0;">
-            Resumo no estilo “Entrada x Saída”, adaptado ao layout do app (mesma paleta e componentes).
+          
           </div>
 
           <button class="es-kebab" title="Configurar saldo inicial" onclick="toggleESPanel(event)">⋮</button>
@@ -1464,7 +1465,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
               <button class="btn btn-ghost" style="width:auto;" onclick="toggleESPanel(event, true)">Fechar</button>
             </div>
             <div class="subhint" style="margin-top:8px;">
-              ✅ Troque este valor no início de cada mês. Fica salvo para todos.
+             
             </div>
           </div>
         </div>
@@ -1513,7 +1514,58 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
           <button class="btn btn-ghost" onclick="limparEntradaSaida()">Limpar</button>
         </div>
 
-       
+        <div class="subhint">
+          
+        </div>
+      </section>
+
+      <section class="card hidden" id="relatorioLocal" style="overflow:visible;">
+        <h2>📋 Relatório Local (Auditoria)</h2>
+        <div class="subhint">
+          Cole a planilha do estoque e caso esteja em local errado e destacado em <b style="color:#ef4444">vermelho</b> o que estiver errado.
+        </div>
+
+        <div style="margin-top:10px;">
+          <textarea id="rlTexto" class="in" rows="7" placeholder="Cole aqui (CTRL+V)..."
+            style="width:100%; min-height:160px; resize:vertical;"></textarea>
+        </div>
+
+        <div class="actions" style="margin-top:10px;">
+          <button class="btn btn-primary" onclick="analisarRelatorioLocal()">Analisar</button>
+          <button class="btn btn-ghost" onclick="limparRelatorioLocal()">Limpar</button>
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin:14px 0 8px 0;">
+          <h3 style="margin:0; font-size:14px;">Resultado</h3>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn btn-ghost" style="width:auto;" onclick="selecionarRelatorioTodos(true)">Selecionar</button>
+            <button class="btn btn-ghost" style="width:auto;" onclick="selecionarRelatorioTodos(false)">Limpar</button>
+            <button class="btn btn-primary" style="width:auto;" onclick="cadastrarNaoCadastrados()">Cadastrar</button>
+            <button class="btn btn-primary" style="width:auto;" onclick="recadastrarLugarErrado()">Recadastrar</button>
+          </div>
+        </div>
+        <div class="sheet-wrap" style="flex:0 0 auto; max-height:260px;">
+          <table class="sheet" id="tblRelLocal">
+            <thead>
+              <tr>
+                <th>Sel.</th>
+                <th>Código Informado</th>
+                <th>Local Cadastrado</th>
+                <th>Cod.</th>
+                <th>Produto</th>
+                <th>Grade 1</th><th>Grade 2</th><th>Grade 3</th>
+                <th>Un.</th>
+                <th>Qtd. Estoque</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+<div class="subhint" id="rlHint" style="margin-top:10px;"></div>
+      </section>
+
 
 <section class="card hidden" id="cfgTransfer">
         <h2>🔁 Transferência (Locais)</h2>
@@ -1523,7 +1575,7 @@ table.sheet tbody tr:hover td{ background: rgba(34,211,238,.06); }
           <button class="btn btn-primary" onclick="salvarCfgTransfer()">Salvar</button>
           <button class="btn btn-ghost" onclick="voltarMenu()">Voltar</button>
         </div>
-        <div class="subhint">Se “Destino” estiver vazio, usa o Local aqui determinado.</div>
+        <div class="subhint"></div>
       </section>
 
       <section class="card hidden" id="cfgSenha">
@@ -1605,9 +1657,7 @@ let USUARIO_LOGADO = "";
 let PERMS = {transferencia:"EDITAR", zeramento:"EDITAR", requisicao:"EDITAR", requisicaoPedidos:"EDITAR", requisicaoManual:"EDITAR", aba164:"EDITAR", entradaSaida:"EDITAR", producao:"EDITAR"};
 const codCache = new Map();
 
-/* ✅ Esquema de Grade por Código (descobre onde vai Cor/Tamanho/Sexo) */
 
-/* ✅ Normalização (busca no banco via COD) */
 async function normalizarCorParaGrade(cor){
   let c = String(cor||"").trim();
   if(!c) c = "Preto";
@@ -1785,7 +1835,6 @@ function setActiveNav(key){
 }
 
 
-// 🔥 marca pasta aberta
 function toggleSubmenu(id){
   const el = document.getElementById(id);
   if(!el) return;
@@ -1836,8 +1885,14 @@ function abrir(id){
   }
   if(id==="aba164"){ setTop("164",""); setActiveNav("aba164"); }
   if(id==="producao"){ setTop("Entrada x Saída (Produção)","Cole Entrada e Saída/Baixa e confira pela composição"); setActiveNav("producao"); try{ const a=document.querySelector("#tblProdA tbody"); const b=document.querySelector("#tblProdB tbody"); if((a && a.children.length===0) || (b && b.children.length===0)) initProducao(); }catch(e){} }
-if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida"); carregarEntradaSaidaCompartilhado(); }
-  if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
+if(id==="entradaSaida"){ setTop("Entrada x Saída","Resumo rápido (Total x Real)"); setActiveNav("entradaSaida");
+    document.getElementById("sub_estoque")?.classList.remove("hidden"); carregarEntradaSaidaCompartilhado(); }
+  
+  if(id==="relatorioLocal"){ setTop("Relatório Local","Auditoria de local (servidor x planilha)"); setActiveNav("relatorioLocal");
+    document.getElementById("sub_estoque")?.classList.remove("hidden");
+    return;
+  }
+if(id==="cfgTransfer"){ setTop("Configurações","Transferência (Locais)"); }
   if(id==="cfgSenha"){ setTop("Configurações","Mudar senha"); }
   if(id==="adminPerms"){ setTop("Admin","Gerencie emails e permissões"); }
   if(id==="conversaoProduto"){
@@ -1946,7 +2001,7 @@ function limparTabela(sectionId){
   toast("ok","Limpar","Tabela limpa.");
 }
 
-/* ✅ ABA 164  */
+
 function criarTabelaCustom(tbodyEl, linhas=12, colunas=8){
   tbodyEl.innerHTML="";
   for(let i=0;i<linhas;i++){
@@ -2082,7 +2137,7 @@ function render164Resultado(diffMap){
     .sort((a,b)=> a[0].localeCompare(b[0], "pt-BR"));
 
   if(!sobras.length){
-    document.getElementById("res164Hint").textContent = "✅ 164 está certo: nenhuma sobra.";
+    document.getElementById("res164Hint").textContent = "";
     return;
   }
 
@@ -2160,10 +2215,7 @@ function handlePaste(e){
   rows.forEach((r,i)=>{
     let cols=r.split(/\t/);
 
-    // ✅ Ajuste especial para Produção (A/B):
-    // muitos relatórios vêm com 6 colunas (sem "Código Local").
-    // Quando colando a partir da 1ª coluna, shift +1 para alinhar:
-    // [codigo, nome, g1, g2, g3, qtd] -> ["", codigo, nome, g1, g2, g3, qtd]
+    
     if((tableId==="tblProdA" || tableId==="tblProdB") && colCount===7 && colIndex===0){
       // se vier 6 colunas e a última parece número => assume sem local
       const last = (cols[cols.length-1]||"").trim();
@@ -2239,7 +2291,7 @@ async function salvarSenha(){
   }
 }
 
-/* ✅ Menu com cadeado quando bloqueado */
+
 function aplicarPermissoesUI(){
   // item (layout com <span> e <small>)
   function setItem(id, perm, nome, smallDefault){
@@ -2280,11 +2332,11 @@ function aplicarPermissoesUI(){
     }
   }
 
-  // ✅ Transferência / Zeramento (sempre visíveis)
+
   setItem("m_transferencia", PERMS.transferencia, "📦 Transferência", "Editar");
   setItem("m_zeramento",     PERMS.zeramento,     "🔁 Zeramento",     "Editar");
 
-  // ✅ Requisições granular (Pedidos / Manual)
+ 
   // Compat: se não vier granular da API, usa PERMS.requisicao como fallback
   const pReqPed = (PERMS.requisicaoPedidos != null) ? PERMS.requisicaoPedidos : PERMS.requisicao;
   const pReqMan = (PERMS.requisicaoManual  != null) ? PERMS.requisicaoManual  : PERMS.requisicao;
@@ -2316,21 +2368,21 @@ function aplicarPermissoesUI(){
     }
   }
 
-  // Requisições (item colapsável dentro do Estoque)
+  
   setSubitem("m_requisicao", reqTudoBloq ? "BLOQUEAR" : "EDITAR", "📝 Requisições");
   const subReq = document.getElementById("sub_requisicao");
   if(subReq){
-    // se tudo bloqueado, some o submenu
+ 
     if(reqTudoBloq) subReq.classList.add("hidden");
   }
   setSubitem("m_requisicao_pedidos", pReqPed, "📄 Pedidos");
   setSubitem("m_requisicao_manual",  pReqMan, "✍️ Manual");
 
-  // Outros itens dentro do Estoque
+
   setSubitem("m_aba164",       PERMS.aba164,       "📌 164");
   setSubitem("m_entradaSaida", PERMS.entradaSaida, "⚖️ Entrada x Saída");
 
-  // ✅ Produção (grupo colapsável)
+
   const pProd = String(PERMS.producao||"").toUpperCase();
   const prodBloq = (pProd==="BLOQUEAR");
 
@@ -2523,7 +2575,7 @@ function importacaoProducao(){
 
 
 
-/* ✅ Entrada x Saída (Resumo) - compartilhado (salva na API p/ todos) */
+
 function _esMesRef(){
   const d = new Date();
   const y = d.getFullYear();
@@ -2532,9 +2584,7 @@ function _esMesRef(){
 }
 function _esKey(suf){ return `__ENTRADA_SAIDA__${_esMesRef()}__${suf}`; }
 
-/* =========================
-   Início (Dashboard)
-   ========================= */
+
 let INICIO_MES_OFFSET = 0;
 
 function _ymdLocal(d=new Date()){
@@ -2583,7 +2633,7 @@ async function _autoMarcarHitHoje(){
   if(hits.includes(hoje)) return;
   hits.push(hoje);
   await _salvarHitsMes(hits);
-  // atualiza painel se estiver aberto
+  
   if(!document.getElementById("inicio")?.classList.contains("hidden")){
     await renderInicioCalendar();
   }
@@ -2774,7 +2824,7 @@ async function salvarEntradaSaidaCompartilhado(){
     const updatedAt = now.toLocaleString("pt-BR");
     const updatedBy = (window.USUARIO_LOGADO || "APP");
 
-    // ✅ 1) salva o "último do mês" (todo mundo vê quando abrir)
+
     const payloadMes = {
       saldo: saldoTxt,
       entrada: entradaTxt,
@@ -2787,7 +2837,7 @@ async function salvarEntradaSaidaCompartilhado(){
     };
     await api("cod_set", _esKey("DATA"), JSON.stringify(payloadMes));
 
-    // ✅ 2) salva o "último do dia" (para clicar na data e puxar certo)
+ 
     const dateKey = _toDateKey(new Date());
     const payloadDia = {
       saldoInicial: saldoTxt,
@@ -2867,7 +2917,7 @@ function recalcularEntradaSaida(){
   }
 
 
-  // ✅ se estiver na tela Entrada x Saída e a diferença bater (0), marca o dia no calendário do Início
+
   try{
     if(Math.abs(diff) < 0.0000001 && sec && !sec.classList.contains("hidden")){
       _autoMarcarHitHoje();
@@ -2895,7 +2945,7 @@ function limparEntradaSaida(){
   toast("ok","Entrada x Saída","Campos limpos.");
 }
 
-/* ✅ Menu 3 pontos (saldo inicial do mês) */
+
 function toggleESPanel(ev, forceClose=false){
   if(ev) ev.stopPropagation();
   const p = document.getElementById("es_panel");
@@ -2928,6 +2978,253 @@ async function aplicarSaldoInicialMes(){
   toggleESPanel(null, true);
 }
 
+
+function limparRelatorioLocal(){
+  const t = document.getElementById("rlTexto");
+  if(t) t.value = "";
+  document.querySelector("#tblRelLocal tbody").innerHTML = "";
+const h = document.getElementById("rlHint"); if(h) h.textContent = "";
+  toast("ok","Relatório","Limpo.");
+}
+
+function _splitTSV(text){
+  return (text||"").split(/\r?\n/).map(r=>r.trim()).filter(r=>r!=="").map(r=>r.split(/\t/));
+}
+function _lower(s){ return (s||"").toString().trim().toLowerCase(); }
+function _norm(s){ return (s||"").toString().trim(); }
+
+function _detectRelLocalCols(rows){
+
+  let cols = { local:0, cod:1, prod:2, g1:3, g2:4, g3:5, un:6, qtd:7 };
+
+  if(!rows.length) return { cols, start:0 };
+
+
+  for(let i=0;i<Math.min(rows.length, 8); i++){
+    const line = rows[i].map(_lower);
+    const joined = line.join(" ");
+    if(joined.includes("código local") || joined.includes("codigo local")){
+      const found = {};
+      line.forEach((h, idx)=>{
+        if(h.includes("código local") || h.includes("codigo local")) found.local = idx;
+        if(h === "cod." || h === "cod" || h.includes("código") || h.includes("codigo")) {
+          // cuidado pra não pegar "código local"
+          if(!(h.includes("local"))) found.cod = idx;
+        }
+        if(h.includes("produto")) found.prod = idx;
+        if(h.includes("grade 1") || h==="grade1") found.g1 = idx;
+        if(h.includes("grade 2") || h==="grade2") found.g2 = idx;
+        if(h.includes("grade 3") || h==="grade3") found.g3 = idx;
+        if(h === "un." || h==="un" || h.includes("un.")) found.un = idx;
+        if(h.includes("qtd") || h.includes("qtde") || h.includes("estoque")) found.qtd = idx;
+      });
+      cols = { ...cols, ...found };
+      return { cols, start: i+1 };
+    }
+  }
+  return { cols, start:0 };
+}
+
+
+async function analisarRelatorioLocal(){
+  try{
+    const txt = document.getElementById("rlTexto")?.value || "";
+    const rows = _splitTSV(txt);
+    if(!rows.length) return toast("warn","Relatório","Cole a planilha primeiro.");
+
+    const { cols, start } = _detectRelLocalCols(rows);
+
+    const data = [];
+    for(let i=start;i<rows.length;i++){
+      const r = rows[i];
+      const cod = _norm(r[cols.cod]);
+      const local = _norm(r[cols.local]);
+      if(!cod || !local) continue;
+
+      data.push({
+        local,
+        cod,
+        prod: _norm(r[cols.prod]),
+        g1: _norm(r[cols.g1]),
+        g2: _norm(r[cols.g2]),
+        g3: _norm(r[cols.g3]),
+        un: _norm(r[cols.un]),
+        qtd: _norm(r[cols.qtd]),
+      });
+    }
+    if(!data.length) return toast("warn","Relatório","Nenhuma linha válida encontrada.");
+
+    loading(true, "Consultando locais no servidor...");
+    const cache = new Map();
+
+    async function getLocalServidor(cod){
+      const key = String(cod||"").trim();
+      if(cache.has(key)) return cache.get(key);
+      const res = await api("cod_get_local", key);
+      const v = (res && res.ok && res.found) ? String(res.value||"").trim() : "";
+      cache.set(key, v);
+      return v;
+    }
+
+    for(const item of data){
+      item.localServidor = await getLocalServidor(item.cod);
+    }
+
+    const tbody = document.querySelector("#tblRelLocal tbody");
+    tbody.innerHTML = "";
+
+    let wrongCount=0, okCount=0, unkCount=0;
+
+    for(const item of data){
+      const localInf = item.local;
+      const localSrv = item.localServidor;
+      const status = (!localSrv) ? "SEM CADASTRO" : (localSrv === localInf ? "OK" : "LOCAL ERRADO");
+
+      const tr = document.createElement("tr");
+      tr.dataset.cod = item.cod;
+      tr.dataset.localInf = localInf;
+      tr.dataset.localSrv = localSrv || "";
+      tr.dataset.status = status;
+
+      tr.className = (!localSrv) ? "unknown" : (localSrv===localInf ? "ok" : "wrong");
+
+      if(status==="LOCAL ERRADO") wrongCount++;
+      else if(status==="OK") okCount++;
+      else unkCount++;
+
+      const tdSel = document.createElement("td");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = (status !== "OK");
+      tdSel.appendChild(cb);
+      tr.appendChild(tdSel);
+
+      const cells = [
+        localInf, localSrv || "-", item.cod, item.prod, item.g1, item.g2, item.g3, item.un, item.qtd, status
+      ];
+      cells.forEach((c)=>{
+        const td = document.createElement("td");
+        td.textContent = c || "";
+        tr.appendChild(td);
+      });
+
+      const tdAct = document.createElement("td");
+      tdAct.style.whiteSpace = "nowrap";
+      const btn = document.createElement("button");
+      btn.className = "btn btn-ghost";
+      btn.style.width = "auto";
+      if(status==="SEM CADASTRO"){
+        btn.textContent = "Cadastrar";
+        btn.onclick = ()=> cadastrarLinhaRelLocal(tr);
+      }else if(status==="LOCAL ERRADO"){
+        btn.textContent = "Recadastrar";
+        btn.onclick = ()=> recadastrarLinhaRelLocal(tr);
+      }else{
+        btn.textContent = "—";
+        btn.disabled = true;
+        btn.style.opacity = ".6";
+      }
+      tdAct.appendChild(btn);
+      tr.appendChild(tdAct);
+
+      tbody.appendChild(tr);
+    }
+
+    const hint = document.getElementById("rlHint");
+    if(hint){
+      hint.textContent = `✅ OK: ${okCount} | ⚠️ Errado: ${wrongCount} | 🟠 Sem cadastro: ${unkCount}`;
+    }
+
+    toast("ok","Relatório","Análise concluída.");
+  }catch(err){
+    toast("danger","Erro", err.message || String(err));
+  }finally{
+    loading(false);
+  }
+}
+
+
+
+function _rlRows(){
+  return Array.from(document.querySelectorAll("#tblRelLocal tbody tr"));
+}
+function selecionarRelatorioTodos(v){
+  _rlRows().forEach(tr=>{
+    const cb = tr.querySelector('input[type="checkbox"]');
+    if(cb) cb.checked = !!v;
+  });
+}
+async function cadastrarLinhaRelLocal(tr){
+  const cod = tr?.dataset?.cod;
+  const localInf = tr?.dataset?.localInf;
+  if(!cod || !localInf) return;
+  loading(true, "Cadastrando no servidor...");
+  try{
+    const r = await api("cod_set_local", cod, localInf);
+    if(r && r.ok){
+      toast("ok","Cadastrar","Cadastrado/atualizado.");
+      tr.dataset.localSrv = localInf;
+      tr.dataset.status = "OK";
+      tr.className = "ok";
+      tr.children[2].textContent = localInf; // local servidor
+      tr.children[10].textContent = "OK"; // status
+      const btn = tr.querySelector("td:last-child button");
+      if(btn){ btn.textContent="—"; btn.disabled=true; btn.style.opacity=".6"; }
+    }else{
+      toast("danger","Cadastrar", (r && r.msg) ? r.msg : "Falha ao cadastrar.");
+    }
+  }catch(err){
+    toast("danger","Cadastrar", err.message || String(err));
+  }finally{
+    loading(false);
+  }
+}
+async function recadastrarLinhaRelLocal(tr){
+  const cod = tr?.dataset?.cod;
+  const localInf = tr?.dataset?.localInf;
+  if(!cod || !localInf) return;
+  loading(true, "Atualizando local no servidor...");
+  try{
+    const r = await api("cod_set_local", cod, localInf);
+    if(r && r.ok){
+      toast("ok","Recadastrar","Local atualizado no servidor.");
+      tr.dataset.localSrv = localInf;
+      tr.dataset.status = "OK";
+      tr.className = "ok";
+      tr.children[2].textContent = localInf;
+      tr.children[10].textContent = "OK";
+      const btn = tr.querySelector("td:last-child button");
+      if(btn){ btn.textContent="—"; btn.disabled=true; btn.style.opacity=".6"; }
+    }else{
+      toast("danger","Recadastrar", (r && r.msg) ? r.msg : "Falha ao atualizar local.");
+    }
+  }catch(err){
+    toast("danger","Recadastrar", err.message || String(err));
+  }finally{
+    loading(false);
+  }
+}
+async function cadastrarNaoCadastrados(){
+  const rows = _rlRows().filter(tr=>{
+    const cb = tr.querySelector('input[type="checkbox"]');
+    return cb && cb.checked && tr.dataset.status === "SEM CADASTRO";
+  });
+  if(!rows.length) return toast("warn","Cadastrar","Nenhuma linha selecionada (SEM CADASTRO).");
+  for(const tr of rows){
+    await cadastrarLinhaRelLocal(tr);
+  }
+}
+async function recadastrarLugarErrado(){
+  const rows = _rlRows().filter(tr=>{
+    const cb = tr.querySelector('input[type="checkbox"]');
+    return cb && cb.checked && tr.dataset.status === "LOCAL ERRADO";
+  });
+  if(!rows.length) return toast("warn","Recadastrar","Nenhuma linha selecionada (LOCAL ERRADO).");
+  for(const tr of rows){
+    await recadastrarLinhaRelLocal(tr);
+  }
+}
+
 /* IMPORTAÇÕES */
 async function importacaoTransferencia(){
   try{
@@ -2943,7 +3240,7 @@ async function importacaoTransferencia(){
 
       const codigo=c[0];
       const descricao=c[1]||"";
-      // ✅ sempre que gerar transferência, cadastra automaticamente para Requisição Manual (COD A/B)
+   
       await autoCadastrarParaManual(descricao, codigo);
       const chave5=c[2], chave6=c[3], chave7=c[4];
       const qtd1=normalizeQTD(c[5]||"0");
@@ -2955,7 +3252,7 @@ async function importacaoTransferencia(){
 
       const localInformado=(c[8]||"164").trim() || "164";
 
-      // ✅ 10ª coluna destino por linha; fallback config
+    
       let destinoLinha = (c[9] || "").trim();
       if(!destinoLinha) destinoLinha = (LOCAL_OUTRO_TRANSFER||"4044").trim();
 
@@ -3076,7 +3373,7 @@ async function importacaoRequisicao(){
 }
 
 
-/* ✅ Requisição Manual -> mesmo TXT de Pedidos (mensagens variadas) */
+
 function _extractPedidoCliente(text){
   const lines = String(text||"").split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   if(!lines.length) return {pedido:"", cliente:"", rest:""};
@@ -3173,7 +3470,7 @@ function _parseManualItems(text){
     const tok = toks[i];
     const next = toks[i+1];
 
-    // ✅ remoção de item: se tiver "nao vai", "não vai", "retirar", "remover", "tira"
+   
     const upTok = String(tok||"").toUpperCase();
     const upNext = String(next||"").toUpperCase();
     if(upTok === "NAO" || upTok === "NÃO"){
@@ -3586,19 +3883,12 @@ trocarView("login");
 init164();
 initProducao();
 
-// ✅ PWA (GitHub Pages em /sistema-pwa/)
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/sistema-pwa/sw.js").catch(console.log);
 }
 
 
-/* =========================
-   ✅ Entrada x Saída (Produção) - 2 planilhas (layout do 164)
-   - Planilha A: Entrada (componentes)
-   - Planilha B: Saída (produto final)
-   - Regra: 3 por 1 (Saída × 3 = Esperado na Entrada) por NOME + GRADES
-   - Mostra erros com “onde deu erro”
-   ========================= */
 
 let _prodMore = false;
 
@@ -3741,11 +4031,11 @@ function prodAbrirErros(){
   const modal = document.getElementById("prodErrModal");
   if(!modal) return;
   modal.classList.remove("hidden");
-  // garante foco no topo
+
   try{ modal.querySelector(".prod-modal")?.scrollTo({top:0}); }catch(e){}
 }
 function prodFecharErros(ev){
-  // se chamado por click no overlay, fecha; se chamado por botão, também fecha
+ 
   const modal = document.getElementById("prodErrModal");
   if(!modal) return;
   modal.classList.add("hidden");
@@ -3778,15 +4068,15 @@ function prodConferir3por1(){
 
     function rowToObj(cellTexts){
       const cells = cellTexts.map(x=>String(x||"").trim());
-      // tira vazios do fim
+      
       while(cells.length && !cells[cells.length-1]) cells.pop();
       if(cells.length < 3) return null;
 
-      // qty = último número
+      
       const qty = parseNum(cells[cells.length-1]);
       if(!qty) return null;
 
-      // detecta se tem "Código Local" (primeira coluna local numérico + segunda coluna código)
+    
       const c0 = cells[0] || "";
       const c1 = cells[1] || "";
       const isNum0 = c0 && !isNaN(Number(String(c0).replace(",", ".")));
@@ -3808,18 +4098,18 @@ function prodConferir3por1(){
       }
       if(!name) return null;
 
-      // atributos entre name e qty
+     
       const attrs = cells.slice(attrsStart, cells.length-1).filter(x=>String(x).trim()!=="").map(norm);
 
       let g1="", g2="", g3="";
 
-      // gênero (grade1) e tamanho (grade2)
+     
       for(const a of attrs){
         if(!g1 && (/\bMASCULINO\b/.test(a) || /\bFEMININO\b/.test(a))) g1 = a;
         if(!g2 && (sizeSet.has(a) || /^[PEXGM]{1,4}G?$/.test(a) || /^X{1,4}G$/.test(a) || /^E(GG?)$/.test(a) || /^XXG$/.test(a) || /^XXXG$/.test(a))) g2 = a;
       }
 
-      // cor/grade3: pega a 1ª "coisa" que não é gênero nem tamanho (e junta cores de 2 palavras comuns)
+   
       const others = [];
       for(const a of attrs){
         if(/\bMASCULINO\b/.test(a) || /\bFEMININO\b/.test(a)) continue;
@@ -3828,7 +4118,7 @@ function prodConferir3por1(){
         others.push(a);
       }
       if(others.length){
-        // tenta montar cores de 2 palavras (ex: AMARELO OURO)
+       
         const o0 = others[0];
         const o1 = others[1] || "";
         if((o0==="AMARELO" && o1==="OURO") || (o0==="AZUL" && o1==="MARINHO") || (o0==="CINZA" && o1==="CLARO") || (o0==="CINZA" && o1==="ESCURO")){
@@ -3860,7 +4150,7 @@ function prodConferir3por1(){
 
     const isManga = (nome)=>/\bMANGA\b/.test(norm(nome)) || /\bPAR DE MANGA\b/.test(norm(nome));
 
-    // famílias mais comuns
+   
     const familias = ["COMBATE","POP","ELITE","BRAVO","STORM","CORREIOS","PADRÃO","PADRAO","SANTA CRUZ","OCEANPACT"];
     const pickFamilia = (nome)=>{
       const n0 = norm(nome);
@@ -3877,7 +4167,7 @@ function prodConferir3por1(){
       return "";
     };
 
-    // entrada agregada por key (nome + grades; grades vazias viram coringa '*')
+   
     const mEntrada = new Map();
     const entradaNames = new Set();
     for(const r of rowsEntrada){
@@ -3893,7 +4183,7 @@ function prodConferir3por1(){
       mEntrada.set(k, (mEntrada.get(k)||0) + r.qtd);
     }
 
-    // helper: score simples por match de tokens
+
     const tokenize = (s)=> norm(s).split(/[^A-ZÀ-Ú0-9]+/).filter(t=>t && t.length>1);
     const scoreName = (candidate, outNome, familia, categoria)=>{
       const c = norm(candidate);
@@ -3912,7 +4202,7 @@ function prodConferir3por1(){
   let bestName = "";
   let bestScore = -1;
 
-  // preferências por categoria (pra bater com seu exemplo: CORPO CALÇA / CORTE JAQUETA / MANGA JAQUETA)
+
   const prefer = {
     "CALÇA": [/\bCORPO\s+CALÇA\b/, /\bCORPO\s+DA\s+CALÇA\b/, /\bCALÇA\b/],
     "JAQUETA": [/\bCORTE\s+JAQUETA\b/, /\bJAQUETA\b/],
@@ -3924,15 +4214,15 @@ function prodConferir3por1(){
   for(const n of entradaNames){
     const nn = norm(n);
 
-    // categoria básica
+  
     if(!prefs.some(rx => rx.test(nn))) continue;
 
-    // combate consome combate (mesma família)
+    
     if(familia && !nn.includes(familia)) continue;
 
     let sc = scoreName(nn, outNome, familia, categoria);
 
-    // bônus por casar com a preferência mais forte
+ 
     if(prefs[0] && prefs[0].test(nn)) sc += 80;
     else if(prefs[1] && prefs[1].test(nn)) sc += 40;
 
@@ -3943,7 +4233,7 @@ function prodConferir3por1(){
   }
   return bestName;
 }
-    // lookup na entrada com suporte a coringa '*' (quando o item da Entrada não tem grade preenchida)
+ 
     function entradaQty(nome, g1, g2, g3){
       const n = norm(nome);
       const a = g1 ? norm(g1) : "";
@@ -3972,7 +4262,7 @@ function prodConferir3por1(){
 
 
 
-    // esperado por key (nomeComp + grades herdadas do output)
+   
     const esperado = new Map();
     const errRows = [];
 
@@ -3981,7 +4271,7 @@ function prodConferir3por1(){
       if(qOut<=0) continue;
 
       const fam = pickFamilia(out.nome);
-      // se não achar família, segue mesmo assim (não bloqueia)
+      
 
       const compCalca  = findComponentName(out, "CALÇA");
       const compJaq    = findComponentName(out, "JAQUETA");
@@ -3996,7 +4286,7 @@ function prodConferir3por1(){
         const nome = norm(nomeComp);
         const g1 = norm(out.g1);
         const g2 = norm(out.g2);
-        // ✅ só ignora grade quando o componente na Entrada não tiver (aí ele foi salvo como '*')
+       
         const g3 = norm(out.g3);
         const g1k = g1 ? g1 : "*";
         const g2k = g2 ? g2 : "*";
@@ -4005,7 +4295,7 @@ function prodConferir3por1(){
         esperado.set(k, (esperado.get(k)||0) + qOut);
       };
 
-      // 3 por 1 (1 calça + 1 jaqueta + 1 manga)
+    
       add(compCalca,"CALÇA");
       add(compJaq,"JAQUETA");
       add(compManga,"MANGA");
@@ -4122,9 +4412,7 @@ const det = dif>0
 })();
 
 
-/***********************
- * ✅ Registro diário (compartilhado) — Entrada x Saída
- ***********************/
+
 function _pad2(n){ n=Number(n||0); return (n<10?("0"+n):(""+n)); }
 function _fmtQtd(v){
   const num = Number(String(v??"").replace(/\./g,"").replace(",", ".")) || 0;
@@ -4157,9 +4445,7 @@ async function carregarEntradaSaidaDiaCompartilhado(dateKey){
   try{ return JSON.parse(raw); }catch(_){ return null; }
 }
 
-/***********************
- * ✅ Modal (detalhe do dia)
- ***********************/
+
 function abrirEsDiaModal(){ const m=document.getElementById("esDiaModal"); if(m) m.style.display="flex"; }
 function fecharEsDiaModal(){ const m=document.getElementById("esDiaModal"); if(m) m.style.display="none"; }
 
@@ -4221,9 +4507,7 @@ document.addEventListener("click", (ev)=>{
   if(ov && ev.target === ov) fecharEsDiaModal();
 });
 
-/***********************
- * ✅ Integração: ao salvar Entrada x Saída, guarda snapshot do dia (compartilhado)
- ***********************/
+
 (function(){
   const orig = window.salvarEntradaSaidaCompartilhado;
   if(typeof orig !== "function") return;
@@ -4264,9 +4548,7 @@ document.addEventListener("click", (ev)=>{
 })();
 
 
-/***********************
- * ✅ Calendário: destacar o dia clicado
- ***********************/
+
 function _calClearSelected(){
   document.querySelectorAll(".cal-selected").forEach(el=>el.classList.remove("cal-selected"));
 }
@@ -4288,7 +4570,7 @@ function _calSelectByDateKey(dateKey){
 })();
 
 
-// ✅ Hardening: garante que os onclick do HTML sempre encontrem as funções (mesmo em ambientes que isolam escopo)
+
 try{
   Object.assign(window, {
     entrar, cadastrar, recuperarSenha, sair,
@@ -4303,10 +4585,7 @@ try{
 }catch(e){}
 
 
-/* =========================
-   Conversão de Produto (Produção)
-   - salva no banco do app via cod_set com chave __CONVERSAO__
-   ========================= */
+
 function _convKey(){
   const d = _ymdLocal(new Date());
   return `__CONVERSAO__${d}__DATA`;
@@ -4372,7 +4651,7 @@ async function conversao_registrar(){
 }
 </script>
 
-<!-- Modal de Erros (Produção) -->
+
 <div id="prodErrModal" class="hidden">
   <div class="prod-modal-overlay" onclick="prodFecharErros(event)">
     <div class="prod-modal" onclick="event.stopPropagation()">
@@ -4407,7 +4686,6 @@ async function conversao_registrar(){
 </div>
 
 
-<!-- Modal: Detalhe Entrada x Saída do dia -->
 <div id="esDiaModal" class="modal-overlay" style="display:none;">
   <div class="modal-card">
     <div class="modal-header">
